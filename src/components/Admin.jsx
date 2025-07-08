@@ -16,12 +16,13 @@ const Admin = () => {
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
 
+  const BACKEND_URL = 'https://backend-m6u3.onrender.com';
   const socket = io(import.meta.env.VITE_SOCKET_URL);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoggedIn && loginData.role === 'super') {
-      fetch('http://localhost:5000/api/admin/stats', {
+      fetch(`${BACKEND_URL}/api/admin/stats`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
         .then(res => res.json())
@@ -57,7 +58,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (selectedCard === 'incidents') {
-      fetch('http://localhost:5000/api/admin/report', {
+      fetch(`${BACKEND_URL}/api/admin/report`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
         .then(res => res.json())
@@ -72,7 +73,7 @@ const Admin = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
@@ -99,7 +100,7 @@ const Admin = () => {
     const confirm = window.confirm("❗ Are you sure you want to delete this incident?");
     if (!confirm) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/report/${id}`, {
+      const res = await fetch(`${BACKEND_URL}/api/admin/report/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       });
@@ -118,7 +119,7 @@ const Admin = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/report/${id}/status`, {
+      const res = await fetch(`${BACKEND_URL}/api/admin/report/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +143,7 @@ const Admin = () => {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registerData),
