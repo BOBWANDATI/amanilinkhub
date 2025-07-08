@@ -13,34 +13,31 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="nav-container">
+        {/* Logo */}
+        <Link to="/" className="nav-logo-button">
+          <FaDove className="logo-icon" />
+          <span className="logo-text">AmaniLink Hub</span>
+        </Link>
 
-       {/* Logo that links to home */}
-       <Link to="/" className="nav-logo-button">
-      <FaDove className="logo-icon" />
-      <span className="logo-text">AmaniLink Hub</span>
-    </Link>
-
-
-
-
-        <div className={`nav-menu ${menuOpen ? 'active' : ''}`} id="navMenu">
-          <Link to="/" className="nav-link">Home</Link>
-          <a href="/#features" className="nav-link">Features</a> {/* Use anchor for scrolling */}
-          <Link to="/report" className="nav-link">Report</Link>
-          <Link to="/map" className="nav-link">Map</Link>
-          <Link to="/stories" className="nav-link">Stories</Link>
-          <Link to="/dialogue" className="nav-link">Dialogue</Link>
-          <Link to="/contact" className="nav-link">Contact</Link>
-          <Link to="/donate" className="nav-link">Donate</Link>
-          <Link to="/news" className="nav-link">News</Link> {/* Renamed to '/news' for clarity */}
-          <Link to="/admin" className="btn btn-primary">Admin</Link>
-        
+        {/* Hamburger for mobile */}
+        <div className="hamburger" onClick={toggleMenu}>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
 
-        <div className="hamburger" id="hamburger" onClick={toggleMenu}>
-          <span></span>
-          <span></span>
-          <span></span>
+        {/* Menu Links */}
+        <div className={`nav-menu ${menuOpen ? 'active' : ''}`}>
+          <Link to="/" className="nav-link" onClick={() => setMenuOpen(false)}>Home</Link>
+          <a href="/#features" className="nav-link" onClick={() => setMenuOpen(false)}>Features</a>
+          <Link to="/report" className="nav-link" onClick={() => setMenuOpen(false)}>Report</Link>
+          <Link to="/map" className="nav-link" onClick={() => setMenuOpen(false)}>Map</Link>
+          <Link to="/stories" className="nav-link" onClick={() => setMenuOpen(false)}>Stories</Link>
+          <Link to="/dialogue" className="nav-link" onClick={() => setMenuOpen(false)}>Dialogue</Link>
+          <Link to="/contact" className="nav-link" onClick={() => setMenuOpen(false)}>Contact</Link>
+          <Link to="/donate" className="nav-link" onClick={() => setMenuOpen(false)}>Donate</Link>
+          <Link to="/news" className="nav-link" onClick={() => setMenuOpen(false)}>News</Link>
+          <Link to="/admin" className="btn btn-primary" onClick={() => setMenuOpen(false)}>Admin</Link>
         </div>
       </div>
     </nav>
