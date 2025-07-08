@@ -73,10 +73,13 @@ const Report = ({ setShowSuccessModal }) => {
 
     try {
       setLoading(true);
+      
+      //connection
+
       const response = await fetch('https://backend-m6u3.onrender.com/api/report/submit', {
-        method: 'POST',
-        body: form,
-      });
+  method: 'POST',
+  body: form,
+});
 
       const data = await response.json();
       setLoading(false);
