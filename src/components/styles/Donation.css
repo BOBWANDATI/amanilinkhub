@@ -1,0 +1,185 @@
+/* === Page Container with Background Image === */
+#donation {
+  background: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/armando-fera-i8IeYLEZ7hE-unsplash.jpg?raw=true') no-repeat center center/cover;
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* === Removed the overlay === */
+/* DO NOT include #donation::before or #donation * z-index rules */
+
+/* === Main Titles === */
+.page-title {
+  font-size: 2.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #f7fafc;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  margin-bottom: 2rem;
+}
+
+/* === Donation Layout === */
+.donation-container {
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+  padding: 2rem;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+/* === Amount Step === */
+.donation-step h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.amount-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.amount-option {
+  background-color: #edf2f7;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.amount-option:hover {
+  background-color: #d6e4f0;
+}
+
+/* === Form Section === */
+.donation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #2a2e37;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.prefix {
+  padding: 0.6rem 0.8rem;
+  background-color: #e2e8f0;
+  border: 1px solid #cbd5e0;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+}
+
+input[type="tel"],
+input[type="number"] {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 0 6px 6px 0;
+  font-size: 1rem;
+}
+
+input[type="number"] {
+  border-radius: 6px;
+}
+
+/* === Buttons === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #3182ce;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #2b6cb0;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #2d3748;
+}
+
+.btn-secondary:hover {
+  background-color: #cbd5e0;
+}
+
+/* === Success Section === */
+.donation-complete {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 3rem;
+  color: #38a169;
+  margin-bottom: 1rem;
+}
+
+/* === Info Section === */
+.donation-info {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.donation-info h4 {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.donation-info ol {
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.notice {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}

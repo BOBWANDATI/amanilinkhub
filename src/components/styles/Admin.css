@@ -1,0 +1,218 @@
+/* ===== Base Layout ===== */
+.admin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f4f4 url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/vardan-papikyan-WQXI77PubMo-unsplash.jpg?raw=true') no-repeat center center / cover;
+}
+
+.container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+/* ===== Forms ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+input, select {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+}
+
+.btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===== Incident Table ===== */
+.pretty-incident-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.pretty-incident-table thead {
+  background-color: #f0f4f8;
+}
+
+.pretty-incident-table th, .pretty-incident-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pretty-incident-table tr:hover {
+  background-color: #f9fafb;
+}
+
+/* ===== Status Buttons with Animation & Clear Colors ===== */
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.status-btn {
+  padding: 6px 14px;
+  margin: 2px 3px;
+  font-size: 13px;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  color: white;
+  animation: pop 0.3s ease-in-out;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.status-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.status-btn.pending {
+  background-color: #d32f2f; /* Bright Red */
+}
+
+.status-btn.investigating {
+  background-color: #388e3c; /* Green */
+}
+
+.status-btn.resolved {
+  background-color: #1976d2; /* Blue */
+}
+
+.status-btn.escalated {
+  background-color: #6d4c41; /* Brown */
+}
+
+.status-btn.active {
+  animation: pop 0.25s ease-in-out;
+  box-shadow: 0 0 0 2px #222;
+  transform: scale(1.05);
+}
+
+/* ===== Dashboard Card Styles ===== */
+.dashboard-cards {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.dashboard-card {
+  background: #f9f9ff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 240px;
+  flex: 1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.3rem;
+}
+
+.card-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 0.8rem;
+}
+
+.card-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* ===== Delete Button ===== */
+.btn-delete {
+  background-color: #ffdddd;
+  color: #b30000;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-delete:hover {
+  background-color: #ffcccc;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .dashboard-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-card {
+    width: 100%;
+  }
+
+  .status-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .pretty-incident-table {
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+}

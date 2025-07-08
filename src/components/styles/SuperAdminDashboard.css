@@ -1,0 +1,56 @@
+.super-admin-dashboard {
+    padding: 2rem;
+    background-color: #f9f9f9;
+  }
+  
+  .super-admin-dashboard h2 {
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    color: #333;
+    margin-top: 100px;
+    align-items: center;
+  }
+  
+  .dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .dashboard-card {
+    background: white;
+    border-left: 6px solid #0055a4;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: 0.3s ease-in-out;
+  }
+  
+  .dashboard-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  }
+  
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .card-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .card-desc {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+  }
+  
+  .card-value {
+    font-size: 1.5rem;
+    color: #0055a4;
+    font-weight: bold;
+  }
+  

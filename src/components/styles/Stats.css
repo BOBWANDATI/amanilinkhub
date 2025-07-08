@@ -1,0 +1,131 @@
+/* ===== Stats Section Styling ===== */
+.stats-section {
+  padding: 100px 40px;
+  background-color: #e0e0e0;
+  position: relative;
+  color: #ffffff;
+  padding-bottom: 70px;
+}
+
+.stats-section .container {
+  max-width: 1700px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 40px;
+  padding-top: 40px;
+}
+
+/* ===== Titles ===== */
+.section-title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #0c3765;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 60px;
+  color: #ffffff;
+  padding-bottom: 40px;
+}
+
+/* ===== Stats Grid Background ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  justify-items: center;
+  padding: 40px;
+  border-radius: 12px;
+  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/ismail-salad-osman-hajji-dirir-CvkWXr_4-r0-unsplash.jpg?raw=true');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.4);
+  padding-bottom: 70px;
+}
+
+/* ===== Stat Card ===== */
+.stat-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-bottom: 60px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  transition: transform 0.3s ease;
+  color: #ffffff;
+  animation: fadeSlideLoop 3s ease-in-out infinite;
+}
+
+/* ===== Continuous Slide-Up Animation ===== */
+@keyframes fadeSlideLoop {
+  0% {
+    opacity: 0.85;
+    transform: translateY(20px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0.85;
+    transform: translateY(20px);
+  }
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+}
+
+/* ===== Stat Icon ===== */
+.stat-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  color: #ffffff;
+  margin-top: 20px;
+}
+
+/* ===== Stat Number ===== */
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #0c3765;
+  margin-bottom: 10px;
+}
+
+/* ===== Stat Label ===== */
+.stat-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+/* ===== Stat Description ===== */
+.stat-description {
+  font-size: 0.95rem;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+/* ===== Responsive ===== */
+@media screen and (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .stats-section {
+    padding: 70px 20px;
+  }
+}

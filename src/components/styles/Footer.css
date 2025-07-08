@@ -1,0 +1,127 @@
+.footer {
+  background: #0c3765;
+  color: #0c3765;
+  padding: 40px 20px 20px;
+}
+
+.footer .container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 40px;
+}
+
+.footer-section {
+  margin-bottom: 1rem;
+}
+
+.footer-section h3,
+.footer-section h4 {
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: #0c3765;
+  margin-top: 50px;
+}
+
+.footer-section p {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #0c3765;
+  
+}
+
+.footer-section a {
+  display: inline-block;
+  background-color: #0c3765; /* Primary Blue */
+  color: #ffffff;
+  padding: 8px 14px;
+  margin: 6px 6px 6px 0;
+  font-size: 0.85rem;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer-section a:hover {
+  background-color: #c70000; /* Secondary Red */
+  transform: scale(1.05);
+}
+
+.footer-social {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 10px;
+}
+
+.footer-social a {
+  color: #ffffff;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.footer-social a:hover {
+  color: #c70000;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  color: #0c3765;
+}
+
+/* Founder Image */
+.founder-image-wrapper {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.founder-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: rotateImage 10s linear infinite;
+}
+
+.founder-image:hover {
+  transform: scale(1.05);
+}
+
+/* Rotating Animation */
+@keyframes rotateImage {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+  .footer {
+    padding: 30px 15px;
+  }
+
+  .footer-section a {
+    font-size: 0.8rem;
+    padding: 7px 12px;
+  }
+
+  .founder-image {
+    width: 120px;
+    height: 120px;
+  }
+}

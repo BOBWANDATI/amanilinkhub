@@ -1,0 +1,194 @@
+/* === Full Section Background === */
+#dialogue {
+  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/michael-wave-_wMJkbRDgNU-unsplash.jpg?raw=true');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  padding: 60px 0;
+  color: #333;
+}
+
+/* === Container Layout === */
+.dialogue-container {
+  display: flex;
+  margin-bottom: 20px;
+  gap: 2rem;
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/francesco-ungaro-i75WTJn-RBY-unsplash.jpg?raw=true');
+
+}
+
+/* === Sidebar === */
+.dialogue-sidebar {
+  flex: 1;
+  max-width: 350px;
+}
+
+/* === Main Chat Area === */
+.dialogue-main {
+  flex: 3;
+}
+
+/* === Card === */
+.dialogue-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.dialogue-card-header h3 {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #222;
+}
+
+.topics-list {
+  margin-top: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.topic-item {
+  padding: 0.6rem;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.topic-item:hover {
+  background: #f0f0f0;
+}
+
+.topic-item.active {
+  background: #e3f2fd;
+  font-weight: bold;
+  border-left: 4px solid #007bff;
+}
+
+/* === Form === */
+.new-topic-form input,
+.new-topic-form select {
+  width: 100%;
+  margin-bottom: 0.6rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+/* === Buttons === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background-color: #495057;
+}
+
+.dialogue-new-btn,
+.dialogue-peacebot-btn {
+  width: 100%;
+}
+
+/* === Chat === */
+.dialogue-chat {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 1rem;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-messages {
+  padding: 1rem;
+  height: 350px;
+  overflow-y: auto;
+  background: #fdfdfd;
+}
+
+.message {
+  margin-bottom: 1rem;
+}
+
+.message strong {
+  display: block;
+  color: #333;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: #888;
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.peacebot-message {
+  background: #e3fcec;
+  border-left: 4px solid #00c853;
+  padding: 0.6rem;
+  border-radius: 6px;
+}
+
+/* === Input === */
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-top: 1px solid #ccc;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.character-count {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* === Empty Prompt === */
+.dialogue-empty {
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 10px;
+  color: #333;
+}
