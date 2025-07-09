@@ -68,31 +68,33 @@ const Admin = () => {
   }, [loginData.role, selectedCard]);
 
   const updateStatus = async (incidentId, newStatus) => {
-  try {
-    const token = localStorage.getItem('admin_token');
-    const response = await fetch(`${BACKEND_URL}/api/report/${incidentId}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ status: newStatus })
-    });
-    const data = await response.json();
-    if (response.ok) {
-      alert('✅ Status updated');
-      setIncidents(prev =>
-        prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i)
-      );
-    } else {
-      alert(`❌ Failed: ${data.msg}`);
-    }
-  } catch (err) {
-    console.error('❌ Error updating status:', err);
-    alert('Error updating status');
-  }
-};
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`${BACKEND_URL}/api/report/${incidentId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
 
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('✅ Status updated');
+        setIncidents(prev =>
+          prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i)
+        );
+      } else {
+        console.error('❌ Backend error:', data);
+        alert(`❌ Failed to update: ${data.msg || 'Unknown error'}`);
+      }
+    } catch (err) {
+      console.error('❌ Network or server error:', err);
+      alert('❌ Error updating status. Check console for details.');
+    }
+  };
 
   return (
     <div className="admin-dashboard">
@@ -101,7 +103,7 @@ const Admin = () => {
           <h2>Incident Reports</h2>
           {incidents.map((incident) => (
             <div key={incident._id} className="incident-card">
-              <p><strong>Type:</strong> {incident.type}</p>
+              <p><strong>Type:</strong> {incident.incidentType}</p>
               <p><strong>Status:</strong> {incident.status}</p>
               <p><strong>Date:</strong> {new Date(incident.date).toLocaleString()}</p>
               <p><strong>Location:</strong> Lat {incident.location?.lat}, Lng {incident.location?.lng}</p>
