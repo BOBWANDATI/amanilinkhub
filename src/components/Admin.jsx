@@ -28,15 +28,15 @@ const Admin = () => {
 
   useEffect(() => {
     if (isLoggedIn && loginData.role === 'super') {
-      fetch(`${BACKEND_URL}/api/admin/stats`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
+      fetch(${BACKEND_URL}/api/admin/stats, {
+        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
       })
         .then(res => res.json())
         .then(data => setStats(data))
         .catch(err => console.error('Failed to fetch dashboard stats', err));
 
-      fetch(`${BACKEND_URL}/api/report`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
+      fetch(${BACKEND_URL}/api/report, {
+        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
       })
         .then(res => res.json())
         .then(data => setIncidents(data))
@@ -50,7 +50,7 @@ const Admin = () => {
     const handleNewIncident = (incident) => {
       if (loginData.role === 'super' && selectedCard === 'incidents') {
         setIncidents(prev => [incident, ...prev]);
-        alert(`🚨 New Incident Reported`);
+        alert(🚨 New Incident Reported);
       }
     };
 
@@ -67,35 +67,34 @@ const Admin = () => {
     };
   }, [loginData.role, selectedCard]);
 
- const updateStatus = async (incidentId, newStatus) => {
-  try {
-    const token = localStorage.getItem('admin_token');
-    const response = await fetch(`${BACKEND_URL}/api/report/${incidentId}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ status: newStatus })
-    });
+  const updateStatus = async (incidentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(${BACKEND_URL}/api/admin/report/${incidentId}/status, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: Bearer ${token}
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      alert('✅ Status updated');
-      setIncidents(prev =>
-        prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i)
-      );
-    } else {
-      console.error('❌ Backend error:', data);
-      alert(`❌ Failed to update: ${data.msg || 'Unknown error'}`);
+      if (response.ok) {
+        alert('✅ Status updated');
+        setIncidents(prev =>
+          prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i)
+        );
+      } else {
+        console.error('❌ Backend error:', data);
+        alert(❌ Failed to update: ${data.msg || 'Unknown error'});
+      }
+    } catch (err) {
+      console.error('❌ Network or server error:', err);
+      alert('❌ Error updating status. Check console for details.');
     }
-  } catch (err) {
-    console.error('❌ Network or server error:', err);
-    alert('❌ Error updating status. Check console for details.');
-  }
-};
-
+  };
 
   return (
     <div className="admin-dashboard">
