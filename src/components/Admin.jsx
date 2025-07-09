@@ -1,125 +1,74 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../components/styles/Admin.css';
-import '../components/styles/SuperAdminDashboard.css';
-import { io } from 'socket.io-client';
+import express from 'express';
+import Incident from '../models/incident.js';
+import {
+  getAllReports,
+  getMapData,
+  deleteIncident
+} from '../controllers/reportController.js';
 
-const Admin = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
-  const [resetEmail, setResetEmail] = useState('');
-  const [stats, setStats] = useState({});
-  const [incidents, setIncidents] = useState([]);
+const router = express.Router();
 
-  const BACKEND_URL = 'https://backend-m6u3.onrender.com';
-  const socket = useRef(null);
-  const navigate = useNavigate();
+// ✅ GET: Dashboard Stats
+router.get('/stats', async (req, res) => {
+  try {
+    const total = await Incident.countDocuments();
+    const pending = await Incident.countDocuments({ status: 'pending' });
+    const resolved = await Incident.countDocuments({ status: 'resolved' });
 
-  useEffect(() => {
-    socket.current = io(import.meta.env.VITE_SOCKET_URL || BACKEND_URL, {
-      transports: ['websocket'],
+    res.json({
+      incidentsCount: total,
+      pendingIncidents: pending,
+      resolvedIncidents: resolved,
     });
-    return () => socket.current?.disconnect();
-  }, []);
+  } catch (err) {
+    console.error('❌ Error fetching stats:', err.message);
+    res.status(500).json({ msg: '❌ Failed to load dashboard stats' });
+  }
+});
 
-  useEffect(() => {
-    if (isLoggedIn && loginData.role === 'super') {
-      fetch(${BACKEND_URL}/api/admin/stats, {
-        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
-      })
-        .then(res => res.json())
-        .then(data => setStats(data))
-        .catch(err => console.error('Failed to fetch dashboard stats', err));
+// ✅ GET: All incident reports
+router.get('/report', getAllReports);
 
-      fetch(${BACKEND_URL}/api/report, {
-        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
-      })
-        .then(res => res.json())
-        .then(data => setIncidents(data))
-        .catch(err => console.error('Failed to fetch incidents', err));
+// ✅ GET: Incident map data (for map view)
+router.get('/report/map', getMapData);
+
+// ✅ PUT: Update incident status
+router.put('/report/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['pending', 'investigating', 'resolved', 'escalated'];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ msg: '❌ Invalid status value' });
     }
-  }, [isLoggedIn, loginData.role]);
 
-  useEffect(() => {
-    if (!socket.current) return;
+    const updatedIncident = await Incident.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
 
-    const handleNewIncident = (incident) => {
-      if (loginData.role === 'super' && selectedCard === 'incidents') {
-        setIncidents(prev => [incident, ...prev]);
-        alert(🚨 New Incident Reported);
-      }
-    };
-
-    const handleIncidentUpdated = (updatedIncident) => {
-      setIncidents(prev => prev.map(i => (i._id === updatedIncident._id ? updatedIncident : i)));
-    };
-
-    socket.current.on("new_incident_reported", handleNewIncident);
-    socket.current.on("incident_updated", handleIncidentUpdated);
-
-    return () => {
-      socket.current.off("new_incident_reported", handleNewIncident);
-      socket.current.off("incident_updated", handleIncidentUpdated);
-    };
-  }, [loginData.role, selectedCard]);
-
-  const updateStatus = async (incidentId, newStatus) => {
-    try {
-      const token = localStorage.getItem('admin_token');
-      const response = await fetch(${BACKEND_URL}/api/admin/report/${incidentId}/status, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: Bearer ${token}
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('✅ Status updated');
-        setIncidents(prev =>
-          prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i)
-        );
-      } else {
-        console.error('❌ Backend error:', data);
-        alert(❌ Failed to update: ${data.msg || 'Unknown error'});
-      }
-    } catch (err) {
-      console.error('❌ Network or server error:', err);
-      alert('❌ Error updating status. Check console for details.');
+    if (!updatedIncident) {
+      return res.status(404).json({ msg: '❌ Incident not found' });
     }
-  };
 
-  return (
-    <div className="admin-dashboard">
-      {isLoggedIn && loginData.role === 'super' && selectedCard === 'incidents' && (
-        <div className="incident-list">
-          <h2>Incident Reports</h2>
-          {incidents.map((incident) => (
-            <div key={incident._id} className="incident-card">
-              <p><strong>Type:</strong> {incident.incidentType}</p>
-              <p><strong>Status:</strong> {incident.status}</p>
-              <p><strong>Date:</strong> {new Date(incident.date).toLocaleString()}</p>
-              <p><strong>Location:</strong> Lat {incident.location?.lat}, Lng {incident.location?.lng}</p>
-              <select
-                value={incident.status}
-                onChange={(e) => updateStatus(incident._id, e.target.value)}
-              >
-                <option value="pending">Pending</option>
-                <option value="resolved">Resolved</option>
-              </select>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
+    // 🔴 Emit update using Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('incident_updated', updatedIncident);
+    }
 
-export default Admin;
+    res.json({
+      msg: `✅ Status updated to '${status}'`,
+      incident: updatedIncident
+    });
+  } catch (err) {
+    console.error('❌ Error updating incident status:', err.message);
+    res.status(500).json({ msg: '❌ Server error' });
+  }
+});
+
+// ✅ DELETE: Delete incident
+router.delete('/report/:id', deleteIncident);
+
+export default router;
