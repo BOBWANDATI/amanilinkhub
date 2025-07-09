@@ -130,7 +130,7 @@ const Dialogue = () => {
           title,
           location,
           category,
-          message: `New discussion started: ${title}`,
+          message: New discussion started: ${title},
           sender: "Moderator"
         })
       });
@@ -167,7 +167,7 @@ const Dialogue = () => {
                   {topics.map(topic => (
                     <div
                       key={topic.id}
-                      className={`topic-item ${activeTopic?.id === topic.id ? 'active' : ''}`}
+                      className={topic-item ${activeTopic?.id === topic.id ? 'active' : ''}}
                       onClick={() => selectTopic(topic)}
                     >
                       <h4>{topic.title}</h4>
@@ -238,7 +238,7 @@ const Dialogue = () => {
 
                 <div className="chat-messages">
                   {messages[activeTopic.id]?.map(msg => (
-                    <div key={msg.id} className={`message ${msg.sender === 'PeaceBot' ? 'peacebot-message' : ''}`}>
+                    <div key={msg.id} className={message ${msg.sender === 'PeaceBot' ? 'peacebot-message' : ''}}>
                       <strong>{msg.sender}:</strong> {msg.text}
                       <span className="message-time">{msg.time}</span>
                     </div>
