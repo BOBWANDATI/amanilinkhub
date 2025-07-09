@@ -68,28 +68,31 @@ const Admin = () => {
   }, [loginData.role, selectedCard]);
 
   const updateStatus = async (incidentId, newStatus) => {
-    try {
-      const token = localStorage.getItem('admin_token');
-      const response = await fetch(`${BACKEND_URL}/api/report/incident/${incidentId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        alert('✅ Status updated');
-        setIncidents(prev => prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i));
-      } else {
-        alert(`❌ Failed: ${data.msg}`);
-      }
-    } catch (err) {
-      console.error('❌ Error updating status:', err);
-      alert('Error updating status');
+  try {
+    const token = localStorage.getItem('admin_token');
+    const response = await fetch(`${BACKEND_URL}/api/report/${incidentId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ status: newStatus })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      alert('✅ Status updated');
+      setIncidents(prev =>
+        prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i)
+      );
+    } else {
+      alert(`❌ Failed: ${data.msg}`);
     }
-  };
+  } catch (err) {
+    console.error('❌ Error updating status:', err);
+    alert('Error updating status');
+  }
+};
+
 
   return (
     <div className="admin-dashboard">
