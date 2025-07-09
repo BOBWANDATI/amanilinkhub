@@ -16,18 +16,14 @@ const Admin = () => {
   const [incidents, setIncidents] = useState([]);
 
   const BACKEND_URL = 'https://backend-m6u3.onrender.com';
-  const socket = useRef(null); // FIX: useRef to persist socket
+  const socket = useRef(null);
   const navigate = useNavigate();
 
-  // Init socket on mount (once)
   useEffect(() => {
-    socket.current = io(import.meta.env.VITE_SOCKET_URL, {
+    socket.current = io(import.meta.env.VITE_SOCKET_URL || BACKEND_URL, {
       transports: ['websocket'],
     });
-
-    return () => {
-      socket.current?.disconnect();
-    };
+    return () => socket.current?.disconnect();
   }, []);
 
   useEffect(() => {
@@ -38,6 +34,13 @@ const Admin = () => {
         .then(res => res.json())
         .then(data => setStats(data))
         .catch(err => console.error('Failed to fetch dashboard stats', err));
+
+      fetch(`${BACKEND_URL}/api/report`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
+      })
+        .then(res => res.json())
+        .then(data => setIncidents(data))
+        .catch(err => console.error('Failed to fetch incidents', err));
     }
   }, [isLoggedIn, loginData.role]);
 
@@ -47,14 +50,12 @@ const Admin = () => {
     const handleNewIncident = (incident) => {
       if (loginData.role === 'super' && selectedCard === 'incidents') {
         setIncidents(prev => [incident, ...prev]);
-        alert(`🚨 New Incident: ${incident.title}`);
+        alert(`🚨 New Incident Reported`);
       }
     };
 
     const handleIncidentUpdated = (updatedIncident) => {
-      setIncidents(prev =>
-        prev.map(i => (i._id === updatedIncident._id ? updatedIncident : i))
-      );
+      setIncidents(prev => prev.map(i => (i._id === updatedIncident._id ? updatedIncident : i)));
     };
 
     socket.current.on("new_incident_reported", handleNewIncident);
@@ -66,4 +67,54 @@ const Admin = () => {
     };
   }, [loginData.role, selectedCard]);
 
-  // rest of your code is unchanged...
+  const updateStatus = async (incidentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`${BACKEND_URL}/api/report/incident/${incidentId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('✅ Status updated');
+        setIncidents(prev => prev.map(i => i._id === incidentId ? { ...i, status: newStatus } : i));
+      } else {
+        alert(`❌ Failed: ${data.msg}`);
+      }
+    } catch (err) {
+      console.error('❌ Error updating status:', err);
+      alert('Error updating status');
+    }
+  };
+
+  return (
+    <div className="admin-dashboard">
+      {isLoggedIn && loginData.role === 'super' && selectedCard === 'incidents' && (
+        <div className="incident-list">
+          <h2>Incident Reports</h2>
+          {incidents.map((incident) => (
+            <div key={incident._id} className="incident-card">
+              <p><strong>Type:</strong> {incident.type}</p>
+              <p><strong>Status:</strong> {incident.status}</p>
+              <p><strong>Date:</strong> {new Date(incident.date).toLocaleString()}</p>
+              <p><strong>Location:</strong> Lat {incident.location?.lat}, Lng {incident.location?.lng}</p>
+              <select
+                value={incident.status}
+                onChange={(e) => updateStatus(incident._id, e.target.value)}
+              >
+                <option value="pending">Pending</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Admin;
