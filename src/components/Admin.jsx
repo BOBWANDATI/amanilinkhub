@@ -70,7 +70,7 @@ const Admin = () => {
   const updateStatus = async (incidentId, newStatus) => {
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch(`${BACKEND_URL}/api/report/${incidentId}/status`, {
+      const response = await fetch(`${BACKEND_URL}/api/admin/report/${incidentId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
