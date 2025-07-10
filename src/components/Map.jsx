@@ -1,250 +1,213 @@
-import { useState } from 'react';
-import {
-  FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaExclamationTriangle,
-  FaFacebook, FaTwitter, FaLinkedin, FaPaperPlane
-} from 'react-icons/fa';
-import '../components/styles/Contact.css';
+import { useEffect, useRef, useState } from 'react';
+import { FaSyncAlt } from 'react-icons/fa';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/leaflet.markercluster.js';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import '../components/styles/Map.css';
 
-// ✅ Replace with Render backend URL
+// ✅ Use deployed backend (Render)
 const API_URL = 'https://backend-m6u3.onrender.com';
+const socket = io(API_URL);
 
-const Contact = ({ setShowSuccessModal }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: '',
-    subject: '',
-    message: '',
-    newsletter: false
-  });
+const statusColors = {
+  pending: 'red',
+  investigating: 'orange',
+  resolved: 'green',
+  escalated: 'brown',
+};
 
-  const [isLoading, setIsLoading] = useState(false);
+const Map = () => {
+  const mapRef = useRef(null);
+  const markerLayerRef = useRef(null);
+  const navigate = useNavigate();
+  const [mapData, setMapData] = useState({ incidents: [], stats: {} });
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
+  const fetchMapData = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/contact/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
+      const res = await fetch(`${API_URL}/api/report/map`);
       const data = await res.json();
-      if (res.ok) {
-        alert('✅ Your message has been sent successfully!');
-        setShowSuccessModal(true);
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          category: '',
-          subject: '',
-          message: '',
-          newsletter: false
-        });
-      } else {
-        alert('❌ Failed to send message: ' + data.msg);
-      }
+      setMapData(data);
     } catch (err) {
-      console.error('Error sending message:', err);
-      alert('❌ An error occurred while sending your message');
-    } finally {
-      setIsLoading(false);
+      console.error('❌ Failed to fetch map data:', err);
     }
   };
 
+  useEffect(() => {
+    if (!mapRef.current) {
+      const map = L.map('mapDisplay').setView([1.2921, 36.8219], 6);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      mapRef.current = map;
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  const renderMarkers = () => {
+    const map = mapRef.current;
+    if (!map || !mapData?.incidents) return;
+
+    if (markerLayerRef.current) {
+      markerLayerRef.current.clearLayers();
+    }
+
+    const markerCluster = L.markerClusterGroup({
+      iconCreateFunction: (cluster) => {
+        const markers = cluster.getAllChildMarkers();
+        const statusCount = {
+          pending: 0,
+          investigating: 0,
+          resolved: 0,
+          escalated: 0,
+        };
+
+        markers.forEach(marker => {
+          const status = marker.options.status || 'pending';
+          statusCount[status] = (statusCount[status] || 0) + 1;
+        });
+
+        const dominantStatus = Object.entries(statusCount).sort((a, b) => b[1] - a[1])[0][0];
+        const dominantColor = statusColors[dominantStatus] || 'gray';
+
+        return L.divIcon({
+          html: `<div style="background-color:${dominantColor}; color:white; border-radius:50%; padding:8px 12px; font-size:12px">${cluster.getChildCount()}</div>`,
+          className: 'custom-cluster-icon',
+          iconSize: [30, 30]
+        });
+      }
+    });
+
+    mapData.incidents.forEach(({ id, location, type, status, date }) => {
+      const lat = location?.lat;
+      const lng = location?.lng;
+
+      if (lat && lng) {
+        const marker = L.circleMarker([lat, lng], {
+          radius: 8,
+          color: statusColors[status] || 'gray',
+          fillColor: statusColors[status] || 'gray',
+          fillOpacity: 0.8,
+          status: status
+        }).bindPopup(`
+          <strong>Type:</strong> ${type}<br/>
+          <strong>Status:</strong> <span style="color:${statusColors[status]}">${status}</span><br/>
+          <strong>Date:</strong> ${new Date(date).toLocaleString()}
+        `);
+
+        markerCluster.addLayer(marker);
+      }
+    });
+
+    markerCluster.addTo(map);
+    markerLayerRef.current = markerCluster;
+
+    if (markerCluster.getLayers().length > 0) {
+      map.fitBounds(markerCluster.getBounds(), { padding: [50, 50] });
+    }
+  };
+
+  useEffect(() => {
+    fetchMapData();
+  }, []);
+
+  useEffect(() => {
+    renderMarkers();
+  }, [mapData]);
+
+  useEffect(() => {
+    const handleDeleted = ({ id }) => {
+      setMapData(prev => ({
+        ...prev,
+        incidents: prev.incidents.filter(i => i.id !== id)
+      }));
+    };
+
+    const handleUpdated = (updatedIncident) => {
+      setMapData(prev => ({
+        ...prev,
+        incidents: prev.incidents.map(i =>
+          i.id === updatedIncident.id ? updatedIncident : i
+        )
+      }));
+    };
+
+    const handleNewIncident = () => {
+      fetchMapData();
+    };
+
+    socket.on('incident_deleted', handleDeleted);
+    socket.on('incident_updated', handleUpdated);
+    socket.on('new_incident_reported', handleNewIncident);
+
+    return () => {
+      socket.off('incident_deleted', handleDeleted);
+      socket.off('incident_updated', handleUpdated);
+      socket.off('new_incident_reported', handleNewIncident);
+    };
+  }, []);
+
   return (
-    <div id="contact" className="page">
+    <div id="map" className="page">
       <div className="container">
-        <h2 className="page-title">Contact AmaniLink Hub</h2>
-        <p className="page-subtitle">Get in touch with our team or partner organizations</p>
+        <h2 className="page-title">Conflict Map</h2>
+        <button onClick={() => navigate('/')} className="btn btn-secondary">Go To Home</button>
+        <p className="page-subtitle">Interactive map showing reported incidents and their status</p>
 
-        <div className="contact-container">
-          <div className="contact-info">
-            <div className="contact-card">
-              <h3>Contact Information</h3>
-              <div className="contact-item">
-                <FaPhone />
-                <div>
-                  <strong>Phone</strong>
-                  <p>+254 758 284 534</p>
-                  <small>Available 24/7 for emergencies</small>
-                </div>
-              </div>
-              <div className="contact-item">
-                <FaEnvelope />
-                <div>
-                  <strong>Email</strong>
-                  <p>bobwandati4@gmail.com</p>
-                  <small>Response within 24 hours</small>
-                </div>
-              </div>
-              <div className="contact-item">
-                <FaMapMarkerAlt />
-                <div>
-                  <strong>Address</strong>
-                  <p>Malindi, Kenya</p>
-                  <small>Serving all of East Africa</small>
-                </div>
-              </div>
-              <div className="contact-item">
-                <FaClock />
-                <div>
-                  <strong>Office Hours</strong>
-                  <p>Mon - Fri: 8:00 AM - 6:00 PM</p>
-                  <small>Emergency support available 24/7</small>
-                </div>
-              </div>
-            </div>
-
-            <div className="emergency-notice">
-              <FaExclamationTriangle />
-              <div>
-                <h4>Emergency Situations</h4>
-                <p>For immediate life-threatening emergencies:</p>
-                <p><strong>Police:</strong> 999 or 112</p>
-                <p><strong>USSD:</strong> *456*7# (Free reporting)</p>
-                <p><strong>Peace Hub Emergency:</strong> +254 758 284 534</p>
-              </div>
-            </div>
-
-            <div className="contact-card">
-              <h3>Follow Us</h3>
-              <div className="social-links">
-                <a href="https://www.facebook.com/profile.php?id=100094901075386" className="social-link">
-                  <FaFacebook /> Facebook
-                </a>
-                <a href="https://x.com/BobWandati4?t=FjcJ0x017p7UQVWcDZ_zHw&s=09" className="social-link">
-                  <FaTwitter /> Twitter
-                </a>
-                <a href="https://www.linkedin.com/in/bob-wandati-149071333" className="social-link">
-                  <FaLinkedin /> LinkedIn
-                </a>
-              </div>
-            </div>
+        <div className="map-container">
+          <div className="map-controls">
+            <select id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="investigating">Investigating</option>
+              <option value="resolved">Resolved</option>
+              <option value="escalated">Escalated</option>
+            </select>
+            <select id="typeFilter">
+              <option value="all">All Types</option>
+              <option value="theft">Theft</option>
+              <option value="fight">Fight</option>
+              <option value="shooting">Shooting</option>
+              <option value="cattle">Cattle Theft</option>
+              <option value="land">Land Dispute</option>
+              <option value="water">Water Conflict</option>
+            </select>
+            <select id="timeFilter">
+              <option value="all">All Time</option>
+              <option value="24h">Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+            <button className="btn-secondary" onClick={fetchMapData}><FaSyncAlt /> Refresh</button>
           </div>
 
-          <form id="contactForm" className="contact-form" onSubmit={handleSubmit}>
-            <h3>Send us a Message</h3>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="contactName">Full Name *</label>
-                <input
-                  type="text"
-                  id="contactName"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Your full name"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="contactEmail">Email *</label>
-                <input
-                  type="email"
-                  id="contactEmail"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="your.email@example.com"
-                />
-              </div>
-            </div>
+          <div id="mapDisplay" className="map-display"></div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="contactPhone">Phone (Optional)</label>
-                <input
-                  type="tel"
-                  id="contactPhone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="+254 XXX XXX XXX"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="contactCategory">Category *</label>
-                <select
-                  id="contactCategory"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select category</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="support">Technical Support</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="media">Media Request</option>
-                  <option value="emergency">Emergency</option>
-                  <option value="feedback">Feedback</option>
-                </select>
-              </div>
-            </div>
+          <div className="map-legend">
+            <h4>Legend</h4>
+            <div className="legend-item"><span className="legend-color red"></span> Pending</div>
+            <div className="legend-item"><span className="legend-color orange"></span> Investigating</div>
+            <div className="legend-item"><span className="legend-color green"></span> Resolved</div>
+            <div className="legend-item"><span className="legend-color brown"></span> Escalated</div>
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="contactSubject">Subject *</label>
-              <input
-                type="text"
-                id="contactSubject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleInputChange}
-                required
-                placeholder="Brief subject of your message"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="contactMessage">Message *</label>
-              <textarea
-                id="contactMessage"
-                name="message"
-                value={formData.message}
-                onChange={handleInputChange}
-                required
-                placeholder="Please provide detailed information about your inquiry..."
-                rows="6"
-              ></textarea>
-            </div>
-
-            <div className="form-group checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  id="contactNewsletter"
-                  name="newsletter"
-                  checked={formData.newsletter}
-                  onChange={handleInputChange}
-                />
-                <span className="checkmark"></span>
-                Subscribe to our peace building newsletter
-              </label>
-            </div>
-
-            <button type="submit" className="btn btn-primary btn-large" disabled={isLoading}>
-              <FaPaperPlane />
-              {isLoading ? 'Sending...' : 'Send Message'}
-            </button>
-          </form>
+          <div className="map-stats">
+            <div className="stat-item"><strong>{mapData.stats?.pending || 0}</strong><span>Pending</span></div>
+            <div className="stat-item"><strong>{mapData.stats?.resolved || 0}</strong><span>Resolved</span></div>
+            <div className="stat-item"><strong>{mapData.stats?.total || 0}</strong><span>Total</span></div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Contact;
+export default Map;
