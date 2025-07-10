@@ -1,6 +1,6 @@
 .footer {
   background: #0c3765;
-  color: #0c3765;
+  color: #ffffff; /* ✅ Set to white for readability */
   padding: 40px 20px 20px;
 }
 
@@ -25,21 +25,21 @@
 .footer-section h4 {
   margin-bottom: 12px;
   font-size: 1.1rem;
-  color: #0c3765;
-  margin-top: 50px;
+  color: #ffffff;
+  margin-top: 30px;
 }
 
 .footer-section p {
   margin-bottom: 0.5rem;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #0c3765;
-  
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #f1f1f1;
+  word-wrap: break-word;
 }
 
 .footer-section a {
   display: inline-block;
-  background-color: #0c3765; /* Primary Blue */
+  background-color: #0c3765;
   color: #ffffff;
   padding: 8px 14px;
   margin: 6px 6px 6px 0;
@@ -48,10 +48,11 @@
   text-decoration: none;
   transition: background-color 0.3s ease, transform 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .footer-section a:hover {
-  background-color: #c70000; /* Secondary Red */
+  background-color: #c70000;
   transform: scale(1.05);
 }
 
@@ -59,6 +60,7 @@
   display: flex;
   gap: 1.2rem;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .footer-social a {
@@ -76,7 +78,7 @@
   padding-top: 30px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.75rem;
-  color: #0c3765;
+  color: #ffffff;
 }
 
 /* Founder Image */
@@ -109,19 +111,45 @@
   }
 }
 
-/* Responsive Adjustments */
+/* ✅ Mobile Responsive Adjustments */
 @media screen and (max-width: 768px) {
   .footer {
     padding: 30px 15px;
   }
 
+  .footer-content {
+    grid-template-columns: 1fr; /* Stack all columns */
+    gap: 1rem;
+  }
+
+  .footer-section h3,
+  .footer-section h4 {
+    font-size: 1rem;
+    margin-top: 20px;
+  }
+
+  .footer-section p {
+    font-size: 0.85rem;
+  }
+
   .footer-section a {
     font-size: 0.8rem;
     padding: 7px 12px;
+    display: block;
+    width: fit-content;
+  }
+
+  .footer-social {
+    justify-content: center;
   }
 
   .founder-image {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .footer-bottom {
+    font-size: 0.7rem;
+    line-height: 1.4;
   }
 }
