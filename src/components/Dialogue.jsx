@@ -20,7 +20,7 @@ const Dialogue = () => {
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/api/discussions`);
+        const res = await fetch(`${CLIENT_URL}/api/discussions`);
         const data = await res.json();
 
         const aiBot = {
@@ -60,7 +60,7 @@ const Dialogue = () => {
     if (topicId === 'ai-peacebot') {
       setLoading(true);
       try {
-        const response = await fetch(`${BACKEND_URL}/api/ai/peacebot`, {
+        const response = await fetch(`${CLIENT_URL}/api/ai/peacebot`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: userMessage.text })
@@ -123,7 +123,7 @@ const Dialogue = () => {
     }
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/discussions/create`, {
+      const response = await fetch(`${CLIENT_URL}/api/discussions/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
