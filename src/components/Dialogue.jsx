@@ -17,26 +17,26 @@ const Dialogue = () => {
 
   const BACKEND_URL = 'https://backend-m6u3.onrender.com';
 
-  const fetchDiscussions = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/discussions`);
-      const data = await res.json();
-
-      const aiBot = {
-        id: 'ai-peacebot',
-        title: "Ask PeaceBot (AI)",
-        category: "ai",
-        location: "Virtual",
-        participants: 1
-      };
-
-      setTopics([...data, aiBot]);
-    } catch (error) {
-      console.error("Failed to fetch discussions:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchDiscussions = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/discussions`);
+        const data = await res.json();
+
+        const aiBot = {
+          id: 'ai-peacebot',
+          title: 'Ask PeaceBot (AI)',
+          category: 'ai',
+          location: 'Virtual',
+          participants: 1
+        };
+
+        setTopics([...data, aiBot]);
+      } catch (error) {
+        console.error('Failed to fetch discussions:', error);
+      }
+    };
+
     fetchDiscussions();
   }, []);
 
@@ -46,7 +46,7 @@ const Dialogue = () => {
     const userMessage = {
       id: Date.now(),
       text: message,
-      sender: "You",
+      sender: 'You',
       time: new Date().toLocaleTimeString()
     };
 
@@ -79,7 +79,7 @@ const Dialogue = () => {
           ...prev,
           [topicId]: [...(prev[topicId] || []), aiReply]
         }));
-      } catch {
+      } catch (error) {
         const failMsg = {
           id: Date.now() + 2,
           text: '⚠️ AI service is currently unavailable.',
@@ -101,25 +101,23 @@ const Dialogue = () => {
     if (!messages[topic.id]) {
       const welcomeText = topic.id === 'ai-peacebot'
         ? "🤖 Welcome! I'm AmaniLinkBot. Ask any question about conflict resolution, peacebuilding, or mediation."
-        : "Welcome to the discussion about " + topic.title;
+        : `Welcome to the discussion about "${topic.title}"`;
 
       setMessages(prev => ({
         ...prev,
-        [topic.id]: [
-          {
-            id: 1,
-            text: welcomeText,
-            sender: topic.id === 'ai-peacebot' ? "PeaceBot" : "Moderator",
-            time: new Date().toLocaleTimeString()
-          }
-        ]
+        [topic.id]: [{
+          id: 1,
+          text: welcomeText,
+          sender: topic.id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
+          time: new Date().toLocaleTimeString()
+        }]
       }));
     }
   };
 
   const handleCreateDiscussion = async () => {
     const { title, location, category } = newDiscussion;
-    if (!title || !location) {
+    if (!title.trim() || !location.trim()) {
       alert('Please fill in all fields.');
       return;
     }
@@ -133,7 +131,7 @@ const Dialogue = () => {
           location,
           category,
           message: `New discussion started: ${title}`,
-          sender: "Moderator"
+          sender: 'Moderator'
         })
       });
 
@@ -168,6 +166,7 @@ const Dialogue = () => {
                 <h3><FaComments /> Active Discussions</h3>
                 <p>Tap any topic to join or ask PeaceBot directly</p>
               </div>
+
               <div className="dialogue-card-content">
                 <div className="topics-list">
                   {topics.map(topic => (
