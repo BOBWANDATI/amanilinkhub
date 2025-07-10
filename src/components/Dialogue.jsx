@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { FaComments, FaPlus, FaPaperPlane, FaRobot } from 'react-icons/fa';
+import { io } from 'socket.io-client';
 import '../components/styles/Dialogue.css';
+
+const BASE_URL = 'https://backend-m6u3.onrender.com';
+const socket = io(BASE_URL); // You can use this later if real-time is needed
 
 const Dialogue = () => {
   const [activeTopic, setActiveTopic] = useState(null);
@@ -15,11 +19,6 @@ const Dialogue = () => {
     category: 'general'
   });
 
-  const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL);
-
-  const BACKEND_URL = import.meta.env.VITE_SOCKET_URL;
-
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
@@ -27,7 +26,7 @@ const socket = io(BASE_URL);
         const data = await res.json();
 
         const aiBot = {
-          id: 'ai-peacebot',
+          _id: 'ai-peacebot',
           title: 'Ask PeaceBot (AI)',
           category: 'ai',
           location: 'Virtual',
@@ -101,17 +100,17 @@ const socket = io(BASE_URL);
 
   const selectTopic = (topic) => {
     setActiveTopic(topic);
-    if (!messages[topic.id]) {
-      const welcomeText = topic.id === 'ai-peacebot'
+    if (!messages[topic._id]) {
+      const welcomeText = topic._id === 'ai-peacebot'
         ? "🤖 Welcome! I'm AmaniLinkBot. Ask any question about conflict resolution, peacebuilding, or mediation."
         : `Welcome to the discussion about "${topic.title}"`;
 
       setMessages(prev => ({
         ...prev,
-        [topic.id]: [{
+        [topic._id]: [{
           id: 1,
           text: welcomeText,
-          sender: topic.id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
+          sender: topic._id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
           time: new Date().toLocaleTimeString()
         }]
       }));
@@ -141,9 +140,9 @@ const socket = io(BASE_URL);
       const data = await response.json();
 
       const updatedTopics = [
-        ...topics.filter(t => t.id !== 'ai-peacebot'),
+        ...topics.filter(t => t._id !== 'ai-peacebot'),
         data,
-        topics.find(t => t.id === 'ai-peacebot')
+        topics.find(t => t._id === 'ai-peacebot')
       ];
 
       setTopics(updatedTopics);
@@ -174,12 +173,12 @@ const socket = io(BASE_URL);
                 <div className="topics-list">
                   {topics.map(topic => (
                     <div
-                      key={topic.id}
-                      className={`topic-item ${activeTopic?.id === topic.id ? 'active' : ''}`}
+                      key={topic._id}
+                      className={`topic-item ${activeTopic?._id === topic._id ? 'active' : ''}`}
                       onClick={() => selectTopic(topic)}
                     >
                       <h4>{topic.title}</h4>
-                      <p>{topic.location} • {topic.participants} participants</p>
+                      <p>{topic.location} • {topic.participants || 1} participants</p>
                     </div>
                   ))}
                 </div>
@@ -219,7 +218,7 @@ const socket = io(BASE_URL);
                     </button>
                     <button
                       className="btn btn-secondary dialogue-peacebot-btn pop"
-                      onClick={() => selectTopic(topics.find(t => t.id === 'ai-peacebot'))}
+                      onClick={() => selectTopic(topics.find(t => t._id === 'ai-peacebot'))}
                     >
                       <FaRobot /> Ask PeaceBot
                     </button>
@@ -240,17 +239,17 @@ const socket = io(BASE_URL);
               <div className="dialogue-chat">
                 <div className="chat-header">
                   <h3>{activeTopic.title}</h3>
-                  <p>{activeTopic.participants} participants • {activeTopic.id === 'ai-peacebot' ? 'AI PeaceBot Chat' : 'Community Discussion'}</p>
+                  <p>{activeTopic.participants || 1} participants • {activeTopic._id === 'ai-peacebot' ? 'AI PeaceBot Chat' : 'Community Discussion'}</p>
                 </div>
 
                 <div className="chat-messages">
-                  {messages[activeTopic.id]?.map(msg => (
+                  {messages[activeTopic._id]?.map(msg => (
                     <div key={msg.id} className={`message ${msg.sender === 'PeaceBot' ? 'peacebot-message' : ''}`}>
                       <strong>{msg.sender}:</strong> {msg.text}
                       <span className="message-time">{msg.time}</span>
                     </div>
                   ))}
-                  {loading && activeTopic.id === 'ai-peacebot' && (
+                  {loading && activeTopic._id === 'ai-peacebot' && (
                     <div className="message"><FaRobot /> PeaceBot is thinking...</div>
                   )}
                 </div>
@@ -258,7 +257,7 @@ const socket = io(BASE_URL);
                 <div className="chat-input">
                   <input
                     type="text"
-                    placeholder={activeTopic.id === 'ai-peacebot' ? 'Ask your question to PeaceBot...' : 'Share your thoughts...'}
+                    placeholder={activeTopic._id === 'ai-peacebot' ? 'Ask your question to PeaceBot...' : 'Share your thoughts...'}
                     value={message}
                     maxLength="500"
                     onChange={(e) => setMessage(e.target.value)}
@@ -266,7 +265,7 @@ const socket = io(BASE_URL);
                   <span className="character-count">{message.length}/500</span>
                   <button
                     className="btn btn-primary"
-                    onClick={() => handleSendMessage(activeTopic.id)}
+                    onClick={() => handleSendMessage(activeTopic._id)}
                     disabled={loading}
                   >
                     <FaPaperPlane />
