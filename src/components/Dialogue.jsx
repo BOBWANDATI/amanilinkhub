@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import '../components/styles/Dialogue.css';
 
 const socket = io(import.meta.env.VITE_SOCKET_URL, {
-  transports: ['websocket'], // force websocket
+  transports: ['websocket'],
   withCredentials: true
 });
 
@@ -23,7 +23,6 @@ const Dialogue = () => {
     category: 'general'
   });
 
-  // Fetch topics
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
@@ -47,7 +46,6 @@ const Dialogue = () => {
     fetchDiscussions();
   }, []);
 
-  // Listen to messages via socket
   useEffect(() => {
     socket.on('message', ({ topicId, message }) => {
       setMessages(prev => ({
@@ -71,13 +69,11 @@ const Dialogue = () => {
       time: new Date().toLocaleTimeString()
     };
 
-    // Save in local state
     setMessages(prev => ({
       ...prev,
       [topicId]: [...(prev[topicId] || []), userMessage]
     }));
 
-    // Emit to server (real-time)
     if (topicId !== 'ai-peacebot') {
       socket.emit('message', { topicId, message: userMessage });
     }
@@ -153,13 +149,7 @@ const Dialogue = () => {
       const response = await fetch(`${BASE_URL}/api/discussions/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          location,
-          category,
-          message: `New discussion started: ${title}`,
-          sender: 'Moderator'
-        })
+        body: JSON.stringify({ title, location, category }) // ✅ only required fields
       });
 
       const data = await response.json();
