@@ -39,7 +39,7 @@ const Contact = ({ setShowSuccessModal }) => {
 
       const data = await res.json();
       if (res.ok) {
-        alert('✅ Your message has been sent successfully!');
+        alert('✅ Thank you for sending a message you will replied shortly!');
         setShowSuccessModal(true);
         setFormData({
           name: '',
