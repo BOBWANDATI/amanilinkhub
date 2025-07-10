@@ -35,7 +35,7 @@ const Report = ({ setShowSuccessModal }) => {
           const { latitude, longitude } = position.coords;
           setFormData((prev) => ({
             ...prev,
-            location: `${latitude.toFixed(6)},${longitude.toFixed(6)}`, // ✅ accurate coords
+            location: `${latitude.toFixed(6)},${longitude.toFixed(6)}`,
             locationName: `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`
           }));
         },
@@ -57,7 +57,6 @@ const Report = ({ setShowSuccessModal }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Ensure all required fields are present
     if (!formData.location || !formData.incidentType || !formData.date || !formData.description || !formData.urgency) {
       alert('⚠️ Please fill all required fields and use your current location.');
       return;
@@ -74,10 +73,20 @@ const Report = ({ setShowSuccessModal }) => {
 
     try {
       setLoading(true);
+<<<<<<< HEAD
       const response = await fetch('http://localhost:5051/api/report/submit', {
         method: 'POST',
         body: form,
       });
+=======
+      
+      //connection
+
+      const response = await fetch('https://backend-m6u3.onrender.com/api/report/submit', {
+  method: 'POST',
+  body: form,
+});
+>>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
 
       const data = await response.json();
       setLoading(false);

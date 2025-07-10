@@ -20,7 +20,7 @@
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/francesco-ungaro-i75WTJn-RBY-unsplash.jpg?raw=true');
-
+  flex-wrap: wrap;
 }
 
 /* === Sidebar === */
@@ -32,6 +32,7 @@
 /* === Main Chat Area === */
 .dialogue-main {
   flex: 3;
+  min-width: 300px;
 }
 
 /* === Card === */
@@ -92,15 +93,19 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s ease-in-out;
 }
 
 .btn-primary {
   background-color: #007bff;
   color: #fff;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
 }
 
 .btn-primary:hover {
   background-color: #0056b3;
+  transform: scale(1.05);
 }
 
 .btn-secondary {
@@ -124,6 +129,9 @@
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .chat-header {
@@ -134,7 +142,7 @@
 
 .chat-messages {
   padding: 1rem;
-  height: 350px;
+  flex-grow: 1;
   overflow-y: auto;
   background: #fdfdfd;
 }
@@ -162,26 +170,60 @@
   border-radius: 6px;
 }
 
-/* === Input === */
+/* === Input Area (Improved) === */
 .chat-input {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.6rem;
   padding: 1rem;
   background: #f9f9f9;
   border-top: 1px solid #ccc;
+  min-height: 120px;
+  position: relative;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 0.6rem;
+  padding: 1rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  min-height: 60px;
+  transition: all 0.2s ease-in-out;
 }
 
-.character-count {
+.chat-input input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.4);
+}
+
+/* === Send Button Styling === */
+.chat-input .btn-primary {
+  padding: 0.45rem 0.8rem;
   font-size: 0.8rem;
-  color: #666;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-input .btn-primary:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+/* === Character Counter === */
+.character-count {
+  font-size: 0.75rem;
+  color: #555;
+  position: absolute;
+  bottom: 8px;
+  left: 20px;
 }
 
 /* === Empty Prompt === */

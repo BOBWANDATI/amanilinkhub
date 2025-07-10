@@ -6,42 +6,39 @@ import '../components/styles/Navbar.css';
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <nav className="navbar">
       <div className="nav-container">
+        {/* Logo */}
+        <Link to="/" className="nav-logo-button" onClick={closeMenu}>
+          <FaDove className="logo-icon" />
+          <span className="logo-text">AmaniLink Hub</span>
+        </Link>
 
-       {/* Logo that links to home */}
-       <Link to="/" className="nav-logo-button">
-      <FaDove className="logo-icon" />
-      <span className="logo-text">AmaniLink Hub</span>
-    </Link>
-
-
-
-
-        <div className={`nav-menu ${menuOpen ? 'active' : ''}`} id="navMenu">
-          <Link to="/" className="nav-link">Home</Link>
-          <a href="/#features" className="nav-link">Features</a> {/* Use anchor for scrolling */}
-          <Link to="/report" className="nav-link">Report</Link>
-          <Link to="/map" className="nav-link">Map</Link>
-          <Link to="/stories" className="nav-link">Stories</Link>
-          <Link to="/dialogue" className="nav-link">Dialogue</Link>
-          <Link to="/contact" className="nav-link">Contact</Link>
-          <Link to="/donate" className="nav-link">Donate</Link>
-          <Link to="/news" className="nav-link">News</Link> {/* Renamed to '/news' for clarity */}
-          <Link to="/admin" className="btn btn-primary">Admin</Link>
-        
-        </div>
-
-        <div className="hamburger" id="hamburger" onClick={toggleMenu}>
+        {/* Hamburger */}
+        <div className="hamburger" onClick={toggleMenu}>
           <span></span>
           <span></span>
           <span></span>
         </div>
+
+        {/* Menu */}
+        <ul className={`nav-menu ${menuOpen ? 'active' : ''}`}>
+          <li><Link to="/" className="nav-link" onClick={closeMenu}>Home</Link></li>
+          <li><a href="/#features" className="nav-link" onClick={closeMenu}>Features</a></li>
+          <li><Link to="/report" className="nav-link" onClick={closeMenu}>Report</Link></li>
+          <li><Link to="/map" className="nav-link" onClick={closeMenu}>Map</Link></li>
+          <li><Link to="/stories" className="nav-link" onClick={closeMenu}>Stories</Link></li>
+          <li><Link to="/dialogue" className="nav-link" onClick={closeMenu}>Dialogue</Link></li>
+          <li><Link to="/contact" className="nav-link" onClick={closeMenu}>Contact</Link></li>
+          <li><Link to="/donate" className="nav-link" onClick={closeMenu}>Donate</Link></li>
+          <li><Link to="/news" className="nav-link" onClick={closeMenu}>News</Link></li>
+          <li><Link to="/admin" className="btn btn-primary" onClick={closeMenu}>Admin</Link></li>
+        </ul>
       </div>
     </nav>
   );

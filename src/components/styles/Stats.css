@@ -8,7 +8,7 @@
 }
 
 .stats-section .container {
-  max-width: 1700px;
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
@@ -29,17 +29,20 @@
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 60px;
-  color: #ffffff;
+  color: #0c3765;
   padding-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* ===== Stats Grid Background ===== */
+/* ===== Stats Grid ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
   justify-items: center;
-  padding: 40px;
+  padding: 40px 20px;
   border-radius: 12px;
   background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/ismail-salad-osman-hajji-dirir-CvkWXr_4-r0-unsplash.jpg?raw=true');
   background-size: cover;
@@ -47,28 +50,29 @@
   background-repeat: no-repeat;
   position: relative;
   z-index: 1;
-  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.4);
-  padding-bottom: 70px;
+  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.45);
 }
 
 /* ===== Stat Card ===== */
 .stat-card {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding-bottom: 60px;
+  background-color: rgba(255, 255, 255, 0.12);
+  padding: 30px 20px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(6px);
   transition: transform 0.3s ease;
   color: #ffffff;
   animation: fadeSlideLoop 3s ease-in-out infinite;
+  width: 100%;
+  max-width: 280px;
 }
 
-/* ===== Continuous Slide-Up Animation ===== */
+/* ===== Animation ===== */
 @keyframes fadeSlideLoop {
   0% {
     opacity: 0.85;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   50% {
     opacity: 1;
@@ -76,7 +80,7 @@
   }
   100% {
     opacity: 0.85;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
 }
 
@@ -84,48 +88,66 @@
   transform: translateY(-6px);
 }
 
-/* ===== Stat Icon ===== */
+/* ===== Icon ===== */
 .stat-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 15px;
   color: #ffffff;
-  margin-top: 20px;
 }
 
-/* ===== Stat Number ===== */
+/* ===== Number ===== */
 .stat-value {
-  font-size: 2.5rem;
+  font-size: 2.4rem;
   font-weight: bold;
-  color: #0c3765;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
-/* ===== Stat Label ===== */
+/* ===== Label ===== */
 .stat-label {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #ffffff;
   margin-bottom: 10px;
+  color: #f8f8f8;
 }
 
-/* ===== Stat Description ===== */
+/* ===== Description ===== */
 .stat-description {
   font-size: 0.95rem;
-  color: #ffffff;
+  color: #f1f1f1;
   line-height: 1.6;
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive Design ===== */
 @media screen and (max-width: 768px) {
+  .stats-section {
+    padding: 70px 20px;
+  }
+
   .section-title {
     font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+    padding-bottom: 20px;
+  }
+
+  .stats-grid {
+    gap: 20px;
+    padding: 20px 10px;
+  }
+
+  .stat-card {
+    padding: 20px 15px;
+    max-width: 100%;
   }
 
   .stat-value {
     font-size: 2rem;
   }
 
-  .stats-section {
-    padding: 70px 20px;
+  .stat-description {
+    font-size: 0.85rem;
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
-import '../components/styles/Stories.css';
+import './styles/stories.css';
 
 const Stories = () => {
   const [stories, setStories] = useState([]);
