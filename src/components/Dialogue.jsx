@@ -15,6 +15,9 @@ const Dialogue = () => {
     category: 'general'
   });
 
+  const BASE_URL = 'https://backend-m6u3.onrender.com';
+const socket = io(BASE_URL);
+
   const BACKEND_URL = import.meta.env.VITE_SOCKET_URL;
 
   useEffect(() => {
