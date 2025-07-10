@@ -21,7 +21,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (isLoggedIn && loginData.role === 'super') {
-      fetch(`${BASE_URL}/api/admin/stats`, {
+      fetch(`https://backend-m6u3.onrender.com/api/admin/stats`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
         .then(res => res.json())
