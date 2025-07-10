@@ -22,7 +22,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (isLoggedIn && loginData.role === 'super') {
-      fetch(${BASE_URL}/api/admin/stats, {
+      fetch(`${BASE_URL}/api/admin/stats`, {
         headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
       })
         .then(res => res.json())
@@ -61,7 +61,7 @@ const Admin = () => {
 
       // fetch('http://localhost:5051/api/admin/report', {
 
-      fetch(${BASE_URL}/api/admin/report, {
+      fetch(`${BASE_URL}/api/admin/report`, {
 
         headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
       })
@@ -80,7 +80,7 @@ const Admin = () => {
 
       // const res = await fetch('http://localhost:5051/api/auth/login', {
 
-      const res = await fetch(${BASE_URL}/api/auth/login, {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -111,7 +111,7 @@ const Admin = () => {
 
       // const res = await fetch(http://localhost:5051/api/admin/report/${id}, {
 
-      const res = await fetch(${BASE_URL}/api/admin/report/${id}, {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
 
         method: 'DELETE',
         headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
@@ -134,7 +134,7 @@ const Admin = () => {
 
       // const res = await fetch(http://localhost:5051/api/admin/report/${id}/status, {
 
-      const res = await fetch(${BASE_URL}/api/admin/report/${id}/status, {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
 
         method: 'PATCH',
         headers: {
@@ -162,7 +162,7 @@ const Admin = () => {
 
       // const res = await fetch('http://localhost:5051/api/auth/register', {
 
-      const res = await fetch(${BASE_URL}/api/auth/register, {
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
