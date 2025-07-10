@@ -3,8 +3,12 @@ import { FaComments, FaPlus, FaPaperPlane, FaRobot } from 'react-icons/fa';
 import { io } from 'socket.io-client';
 import '../components/styles/Dialogue.css';
 
-const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL); // You can use this later if real-time is needed
+const socket = io(import.meta.env.VITE_SOCKET_URL, {
+  transports: ['websocket'], // force websocket
+  withCredentials: true
+});
+
+const BASE_URL = import.meta.env.VITE_SOCKET_URL;
 
 const Dialogue = () => {
   const [activeTopic, setActiveTopic] = useState(null);
@@ -19,6 +23,7 @@ const Dialogue = () => {
     category: 'general'
   });
 
+  // Fetch topics
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
@@ -42,6 +47,20 @@ const Dialogue = () => {
     fetchDiscussions();
   }, []);
 
+  // Listen to messages via socket
+  useEffect(() => {
+    socket.on('message', ({ topicId, message }) => {
+      setMessages(prev => ({
+        ...prev,
+        [topicId]: [...(prev[topicId] || []), message]
+      }));
+    });
+
+    return () => {
+      socket.off('message');
+    };
+  }, []);
+
   const handleSendMessage = async (topicId) => {
     if (!message.trim()) return;
 
@@ -52,10 +71,16 @@ const Dialogue = () => {
       time: new Date().toLocaleTimeString()
     };
 
+    // Save in local state
     setMessages(prev => ({
       ...prev,
       [topicId]: [...(prev[topicId] || []), userMessage]
     }));
+
+    // Emit to server (real-time)
+    if (topicId !== 'ai-peacebot') {
+      socket.emit('message', { topicId, message: userMessage });
+    }
 
     setMessage('');
 
