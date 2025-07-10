@@ -59,7 +59,7 @@ const Admin = () => {
   useEffect(() => {
     if (selectedCard === 'incidents') {
 
-      fetch('http://localhost:5051/api/admin/report', {
+      // fetch('http://localhost:5051/api/admin/report', {
 
       fetch(${BASE_URL}/api/admin/report, {
 
@@ -78,7 +78,7 @@ const Admin = () => {
     e.preventDefault();
     try {
 
-      const res = await fetch('http://localhost:5051/api/auth/login', {
+      // const res = await fetch('http://localhost:5051/api/auth/login', {
 
       const res = await fetch(${BASE_URL}/api/auth/login, {
 
@@ -109,7 +109,7 @@ const Admin = () => {
     if (!confirm) return;
     try {
 
-      const res = await fetch(http://localhost:5051/api/admin/report/${id}, {
+      // const res = await fetch(http://localhost:5051/api/admin/report/${id}, {
 
       const res = await fetch(${BASE_URL}/api/admin/report/${id}, {
 
@@ -132,7 +132,7 @@ const Admin = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
 
-      const res = await fetch(http://localhost:5051/api/admin/report/${id}/status, {
+      // const res = await fetch(http://localhost:5051/api/admin/report/${id}/status, {
 
       const res = await fetch(${BASE_URL}/api/admin/report/${id}/status, {
 
@@ -160,7 +160,7 @@ const Admin = () => {
     e.preventDefault();
     try {
 
-      const res = await fetch('http://localhost:5051/api/auth/register', {
+      // const res = await fetch('http://localhost:5051/api/auth/register', {
 
       const res = await fetch(${BASE_URL}/api/auth/register, {
 
