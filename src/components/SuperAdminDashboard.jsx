@@ -6,7 +6,7 @@ const SuperAdminDashboard = () => {
 
   useEffect(() => {
     // Fetch dashboard stats (replace with your actual endpoint)
-    fetch('http://localhost:5000/api/admin/stats', {
+    fetch('http://localhost:5051/api/admin/stats', {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('admin_token')}`
       }

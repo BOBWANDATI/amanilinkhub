@@ -19,7 +19,7 @@ const Donation = () => {
       : phoneNumber;
 
     try {
-      const response = await fetch('http://localhost:5000/api/mpesa/stk', {
+      const response = await fetch('http://localhost:5051/api/mpesa/stk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

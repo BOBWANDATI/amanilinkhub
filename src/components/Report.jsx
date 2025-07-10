@@ -74,7 +74,7 @@ const Report = ({ setShowSuccessModal }) => {
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/report/submit', {
+      const response = await fetch('http://localhost:5051/api/report/submit', {
         method: 'POST',
         body: form,
       });

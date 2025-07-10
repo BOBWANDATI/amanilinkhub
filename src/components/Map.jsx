@@ -25,7 +25,7 @@ const Map = () => {
 
   const fetchMapData = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/report/map');
+      const res = await fetch('http://localhost:5051/api/report/map');
       const data = await res.json();
       setMapData(data);
     } catch (err) {
