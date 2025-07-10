@@ -31,7 +31,7 @@ const Contact = ({ setShowSuccessModal }) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5051/api/contact/send', {
+      const res = await fetch('https://backend-m6u3.onrender.com/api/contact/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -68,6 +68,7 @@ const Contact = ({ setShowSuccessModal }) => {
         <p className="page-subtitle">Get in touch with our team or partner organizations</p>
 
         <div className="contact-container">
+          {/* Contact Info */}
           <div className="contact-info">
             <div className="contact-card">
               <h3>Contact Information</h3>
@@ -132,6 +133,7 @@ const Contact = ({ setShowSuccessModal }) => {
             </div>
           </div>
 
+          {/* Contact Form */}
           <form id="contactForm" className="contact-form" onSubmit={handleSubmit}>
             <h3>Send us a Message</h3>
             <div className="form-row">
