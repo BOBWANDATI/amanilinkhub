@@ -8,7 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import '../components/styles/Map.css';
 
-const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000');
+// ✅ Use deployed backend (Render)
+const API_URL = 'https://backend-m6u3.onrender.com';
+const socket = io(API_URL);
 
 const statusColors = {
   pending: 'red',
@@ -25,7 +27,7 @@ const Map = () => {
 
   const fetchMapData = async () => {
     try {
-      const res = await fetch('http://localhost:5051/api/report/map');
+      const res = await fetch(`${API_URL}/api/report/map`);
       const data = await res.json();
       setMapData(data);
     } catch (err) {
@@ -53,14 +55,13 @@ const Map = () => {
   const renderMarkers = () => {
     const map = mapRef.current;
     if (!map || !mapData?.incidents) return;
-  
+
     if (markerLayerRef.current) {
       markerLayerRef.current.clearLayers();
     }
-  
+
     const markerCluster = L.markerClusterGroup({
       iconCreateFunction: (cluster) => {
-        // Count each marker's status
         const markers = cluster.getAllChildMarkers();
         const statusCount = {
           pending: 0,
@@ -68,16 +69,15 @@ const Map = () => {
           resolved: 0,
           escalated: 0,
         };
-  
+
         markers.forEach(marker => {
           const status = marker.options.status || 'pending';
           statusCount[status] = (statusCount[status] || 0) + 1;
         });
-  
-        // Dominant status (most common in cluster)
+
         const dominantStatus = Object.entries(statusCount).sort((a, b) => b[1] - a[1])[0][0];
         const dominantColor = statusColors[dominantStatus] || 'gray';
-  
+
         return L.divIcon({
           html: `<div style="background-color:${dominantColor}; color:white; border-radius:50%; padding:8px 12px; font-size:12px">${cluster.getChildCount()}</div>`,
           className: 'custom-cluster-icon',
@@ -85,36 +85,35 @@ const Map = () => {
         });
       }
     });
-  
+
     mapData.incidents.forEach(({ id, location, type, status, date }) => {
       const lat = location?.lat;
       const lng = location?.lng;
-  
+
       if (lat && lng) {
         const marker = L.circleMarker([lat, lng], {
           radius: 8,
           color: statusColors[status] || 'gray',
           fillColor: statusColors[status] || 'gray',
           fillOpacity: 0.8,
-          status: status // store status for cluster logic
+          status: status
         }).bindPopup(`
           <strong>Type:</strong> ${type}<br/>
           <strong>Status:</strong> <span style="color:${statusColors[status]}">${status}</span><br/>
           <strong>Date:</strong> ${new Date(date).toLocaleString()}
         `);
-  
+
         markerCluster.addLayer(marker);
       }
     });
-  
+
     markerCluster.addTo(map);
     markerLayerRef.current = markerCluster;
-  
+
     if (markerCluster.getLayers().length > 0) {
       map.fitBounds(markerCluster.getBounds(), { padding: [50, 50] });
     }
   };
-  
 
   useEffect(() => {
     fetchMapData();
@@ -142,7 +141,7 @@ const Map = () => {
     };
 
     const handleNewIncident = () => {
-      fetchMapData(); // Refresh full list
+      fetchMapData();
     };
 
     socket.on('incident_deleted', handleDeleted);
