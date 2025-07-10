@@ -1,4 +1,3 @@
-// Admin.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
@@ -6,7 +5,7 @@ import '../components/styles/SuperAdminDashboard.css';
 import { io } from "socket.io-client";
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL); // Socket connection to Render backend
+const socket = io(BASE_URL);
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,8 +21,8 @@ const Admin = () => {
 
   useEffect(() => {
     if (isLoggedIn && loginData.role === 'super') {
-      fetch(${BASE_URL}/api/admin/stats, {
-        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
+      fetch(`${BASE_URL}/api/admin/stats`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
         .then(res => res.json())
         .then(data => setStats(data))
@@ -37,7 +36,7 @@ const Admin = () => {
     const handleNewIncident = (incident) => {
       if (loginData.role === 'super' && selectedCard === 'incidents') {
         setIncidents(prev => [incident, ...prev]);
-        alert(🚨 New Incident: ${incident.title});
+        alert(`🚨 New Incident: ${incident.title}`);
       }
     };
 
@@ -58,12 +57,8 @@ const Admin = () => {
 
   useEffect(() => {
     if (selectedCard === 'incidents') {
-
-      fetch('http://localhost:5051/api/admin/report', {
-
-      fetch(${BASE_URL}/api/admin/report, {
-
-        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
+      fetch(`${BASE_URL}/api/admin/report`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
         .then(res => res.json())
         .then(data => setIncidents(data))
@@ -77,11 +72,7 @@ const Admin = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-
-      const res = await fetch('http://localhost:5051/api/auth/login', {
-
-      const res = await fetch(${BASE_URL}/api/auth/login, {
-
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
@@ -96,7 +87,7 @@ const Admin = () => {
         localStorage.setItem('admin_token', data.token);
         localStorage.setItem('admin_user', JSON.stringify(data.admin));
         setIsLoggedIn(true);
-        alert(✅ Welcome ${data.admin.username});
+        alert(`✅ Welcome ${data.admin.username}`);
       } else alert(data.msg || 'Login failed');
     } catch (err) {
       console.error(err);
@@ -105,17 +96,15 @@ const Admin = () => {
   };
 
   const handleDeleteIncident = async (id) => {
-    const confirm = window.confirm("❗ Are you sure you want to delete this incident?");
-    if (!confirm) return;
+    const confirmDelete = window.confirm("❗ Are you sure you want to delete this incident?");
+    if (!confirmDelete) return;
+
     try {
-
-      const res = await fetch(http://localhost:5051/api/admin/report/${id}, {
-
-      const res = await fetch(${BASE_URL}/api/admin/report/${id}, {
-
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: Bearer ${localStorage.getItem('admin_token')} }
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       });
+
       const data = await res.json();
       if (res.ok) {
         alert(data.msg);
@@ -131,20 +120,18 @@ const Admin = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-
-      const res = await fetch(http://localhost:5051/api/admin/report/${id}/status, {
-      const res = await fetch(${BASE_URL}/api/admin/report/${id}/status, {
-
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: Bearer ${localStorage.getItem('admin_token')}
+          Authorization: `Bearer ${localStorage.getItem('admin_token')}`
         },
         body: JSON.stringify({ status: newStatus })
       });
+
       const data = await res.json();
       if (res.ok) {
-        alert(✅ Status changed to ${newStatus});
+        alert(`✅ Status changed to ${newStatus}`);
         setIncidents(prev => prev.map(i => i._id === id ? { ...i, status: newStatus } : i));
       } else {
         alert(data.msg || '❌ Failed to update status');
@@ -158,10 +145,7 @@ const Admin = () => {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-
-      const res = await fetch('http://localhost:5051/api/auth/register', {
-      const res = await fetch(${BASE_URL}/api/auth/register, {
-
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registerData),
@@ -180,7 +164,7 @@ const Admin = () => {
   };
 
   const handleForgotPassword = () => {
-    alert(📧 Reset link would be sent to: ${resetEmail});
+    alert(`📧 Reset link would be sent to: ${resetEmail}`);
     setResetEmail('');
     setShowForgotPassword(false);
   };
@@ -224,7 +208,7 @@ const Admin = () => {
                     {["pending", "investigating", "resolved", "escalated"].map(status => (
                       <button
                         key={status}
-                        className={status-btn ${status} ${incident.status === status ? 'active' : ''}}
+                        className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
                         onClick={() => handleStatusChange(incident._id, status)}
                       >
                         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -321,4 +305,4 @@ const Admin = () => {
   );
 };
 
-export default Admin; 
+export default Admin;
