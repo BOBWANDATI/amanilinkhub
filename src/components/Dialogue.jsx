@@ -15,15 +15,11 @@ const Dialogue = () => {
     category: 'general'
   });
 
-  const BACKEND_URL = 'https://amanilink-backend.onrender.com'; // ✅ Use your actual Render backend URL
+  const BACKEND_URL = 'https://backend-m6u3.onrender.com';
 
   const fetchDiscussions = async () => {
     try {
-<<<<<<< HEAD
-      const res = await fetch('http://localhost:5051/api/discussions');
-=======
       const res = await fetch(`${BACKEND_URL}/api/discussions`);
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
       const data = await res.json();
 
       const aiBot = {
@@ -64,11 +60,7 @@ const Dialogue = () => {
     if (topicId === 'ai-peacebot') {
       setLoading(true);
       try {
-<<<<<<< HEAD
-        const response = await fetch('http://localhost:5051/api/ai/peacebot', {
-=======
         const response = await fetch(`${BACKEND_URL}/api/ai/peacebot`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: userMessage.text })
@@ -133,11 +125,7 @@ const Dialogue = () => {
     }
 
     try {
-<<<<<<< HEAD
-      const response = await fetch('http://localhost:5051/api/discussions/create', {
-=======
       const response = await fetch(`${BACKEND_URL}/api/discussions/create`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -174,7 +162,6 @@ const Dialogue = () => {
         <p className="page-subtitle">Join discussions or ask PeaceBot to resolve conflict-related questions</p>
 
         <div className="dialogue-container">
-          {/* Sidebar */}
           <div className="dialogue-sidebar">
             <div className="dialogue-card">
               <div className="dialogue-card-header">
@@ -240,7 +227,6 @@ const Dialogue = () => {
             </div>
           </div>
 
-          {/* Main Chat Area */}
           <div className="dialogue-main">
             {!activeTopic ? (
               <div className="dialogue-empty">
