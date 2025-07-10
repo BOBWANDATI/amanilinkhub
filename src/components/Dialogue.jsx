@@ -23,7 +23,7 @@ const socket = io(BASE_URL);
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/api/discussions`);
+        const res = await fetch(`${BASE_URL}/api/discussions`);
         const data = await res.json();
 
         const aiBot = {
@@ -63,7 +63,7 @@ const socket = io(BASE_URL);
     if (topicId === 'ai-peacebot') {
       setLoading(true);
       try {
-        const response = await fetch(`${BACKEND_URL}/api/ai/peacebot`, {
+        const response = await fetch(`${BASE_URL}/api/ai/peacebot`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: userMessage.text })
@@ -126,7 +126,7 @@ const socket = io(BASE_URL);
     }
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/discussions/create`, {
+      const response = await fetch(`${BASE_URL}/api/discussions/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
