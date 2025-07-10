@@ -13,13 +13,12 @@ const Donation = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // ✅ Format phone number: remove 0 and prepend 254
     const formattedPhone = phoneNumber.startsWith('0')
       ? '254' + phoneNumber.slice(1)
       : phoneNumber;
 
     try {
-      const response = await fetch('http://localhost:5051/api/mpesa/stk', {
+      const response = await fetch('https://backend-m6u3.onrender.com/api/mpesa/stk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
