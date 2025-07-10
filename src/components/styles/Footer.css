@@ -1,7 +1,7 @@
 .footer {
   background: #0c3765;
-  color: #ffffff; /* ✅ Set to white for readability */
   padding: 40px 20px 20px;
+  color: #ffffff; /* fallback for blue sections */
 }
 
 .footer .container {
@@ -15,17 +15,19 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
   margin-bottom: 40px;
+  color: #000000; /* black text */
 }
 
 .footer-section {
   margin-bottom: 1rem;
+  color: #000000; /* black text */
 }
 
 .footer-section h3,
 .footer-section h4 {
   margin-bottom: 12px;
   font-size: 1.1rem;
-  color: #ffffff;
+  color: #000000; /* black headings */
   margin-top: 30px;
 }
 
@@ -33,14 +35,14 @@
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   line-height: 1.6;
-  color: #f1f1f1;
+  color: #000000;
   word-wrap: break-word;
 }
 
 .footer-section a {
   display: inline-block;
-  background-color: #0c3765;
-  color: #ffffff;
+  background-color: #0c3765; /* blue background */
+  color: #ffffff; /* white text on blue */
   padding: 8px 14px;
   margin: 6px 6px 6px 0;
   font-size: 0.85rem;
@@ -64,7 +66,7 @@
 }
 
 .footer-social a {
-  color: #ffffff;
+  color: #ffffff; /* white on blue */
   font-size: 1.1rem;
   transition: color 0.3s ease;
 }
@@ -78,7 +80,7 @@
   padding-top: 30px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.75rem;
-  color: #ffffff;
+  color: #000000; /* black footer text */
 }
 
 /* Founder Image */
@@ -118,7 +120,7 @@
   }
 
   .footer-content {
-    grid-template-columns: 1fr; /* Stack all columns */
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
@@ -126,10 +128,12 @@
   .footer-section h4 {
     font-size: 1rem;
     margin-top: 20px;
+    color: #000000;
   }
 
   .footer-section p {
     font-size: 0.85rem;
+    color: #000000;
   }
 
   .footer-section a {
@@ -137,6 +141,7 @@
     padding: 7px 12px;
     display: block;
     width: fit-content;
+    color: #ffffff; /* still white on blue */
   }
 
   .footer-social {
@@ -151,5 +156,6 @@
   .footer-bottom {
     font-size: 0.7rem;
     line-height: 1.4;
+    color: #000000;
   }
 }
