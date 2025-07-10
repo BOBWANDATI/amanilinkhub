@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 import '../components/styles/Report.css';
 
+const BASE_URL = 'https://backend-m6u3.onrender.com';
+
 const Report = ({ setShowSuccessModal }) => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -73,20 +75,10 @@ const Report = ({ setShowSuccessModal }) => {
 
     try {
       setLoading(true);
-<<<<<<< HEAD
-      const response = await fetch('http://localhost:5051/api/report/submit', {
+      const response = await fetch(`${BASE_URL}/api/report/submit`, {
         method: 'POST',
         body: form,
       });
-=======
-      
-      //connection
-
-      const response = await fetch('https://backend-m6u3.onrender.com/api/report/submit', {
-  method: 'POST',
-  body: form,
-});
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
 
       const data = await response.json();
       setLoading(false);
@@ -126,8 +118,6 @@ const Report = ({ setShowSuccessModal }) => {
 
         <div className="report-form-container">
           <form className="report-form" onSubmit={handleSubmit}>
-
-            {/* Incident Type */}
             <div className="form-group">
               <label htmlFor="incidentType">Type of Incident *</label>
               <select
@@ -149,7 +139,6 @@ const Report = ({ setShowSuccessModal }) => {
               </select>
             </div>
 
-            {/* Location Inputs */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="locationName">Location *</label>
@@ -180,7 +169,6 @@ const Report = ({ setShowSuccessModal }) => {
               </div>
             </div>
 
-            {/* Description */}
             <div className="form-group">
               <label htmlFor="description">Description *</label>
               <textarea
@@ -194,7 +182,6 @@ const Report = ({ setShowSuccessModal }) => {
               ></textarea>
             </div>
 
-            {/* Upload Media */}
             <div className="form-group">
               <label htmlFor="media">Upload Media (Optional)</label>
               <input
@@ -213,7 +200,6 @@ const Report = ({ setShowSuccessModal }) => {
               )}
             </div>
 
-            {/* Urgency */}
             <div className="form-group">
               <label htmlFor="urgency">Urgency Level *</label>
               <select
@@ -231,7 +217,6 @@ const Report = ({ setShowSuccessModal }) => {
               </select>
             </div>
 
-            {/* Anonymous */}
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
                 <input
@@ -246,7 +231,6 @@ const Report = ({ setShowSuccessModal }) => {
               </label>
             </div>
 
-            {/* Follow-Up */}
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
                 <input
