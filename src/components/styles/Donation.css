@@ -9,6 +9,22 @@
   flex-direction: column;
 }
 
+
+
+.donation-video {
+  flex: 1;
+  min-width: 300px;
+  max-width: 480px;
+}
+
+.donation-content {
+  flex: 2;
+  min-width: 300px;
+}
+
+
+
+
 /* === Removed the overlay === */
 /* DO NOT include #donation::before or #donation * z-index rules */
 
