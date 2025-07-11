@@ -11,14 +11,52 @@ const Admin = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
+  const [loginData, setLoginData] = useState({ username: '', password: '', role: 'admin' });
+  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: 'admin' });
   const [resetEmail, setResetEmail] = useState('');
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
 
-  // Load stats when logged in
+  // Handle Login
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.msg || 'Login failed');
+      localStorage.setItem('admin_token', data.token);
+      setIsLoggedIn(true);
+    } catch (err) {
+      console.error(err);
+      alert('Login error');
+    }
+  };
+
+  // Handle Register
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData),
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.msg || 'Registration failed');
+      alert('Registered! You can now login.');
+      setShowRegister(false);
+    } catch (err) {
+      console.error(err);
+      alert('Registration error');
+    }
+  };
+
+  // Load stats
   useEffect(() => {
     if (isLoggedIn) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -26,19 +64,15 @@ const Admin = () => {
       })
         .then(res => res.json())
         .then(setStats)
-        .catch(err => console.error(err));
+        .catch(console.error);
     }
   }, [isLoggedIn]);
 
-  // Socket listeners for real-time updates
+  // Socket events
   useEffect(() => {
     if (selectedCard !== 'incidents') return;
-    const newIncHandler = data => {
-      setIncidents(prev => [data, ...prev]);
-    };
-    const updIncHandler = data => {
-      setIncidents(prev => prev.map(i => i._id === data._id ? data : i));
-    };
+    const newIncHandler = data => setIncidents(prev => [data, ...prev]);
+    const updIncHandler = data => setIncidents(prev => prev.map(i => i._id === data._id ? data : i));
     socket.on('new_incident_reported', newIncHandler);
     socket.on('incident_updated', updIncHandler);
     return () => {
@@ -47,26 +81,29 @@ const Admin = () => {
     };
   }, [selectedCard]);
 
-  // Fetch Incident or Discussion lists on card change
+  // Fetch incident/discussions
   useEffect(() => {
     if (!isLoggedIn) return;
-
     const token = localStorage.getItem('admin_token');
+
     if (selectedCard === 'incidents') {
-      fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${BASE_URL}/api/admin/report`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
         .then(res => res.json())
         .then(setIncidents)
         .catch(console.error);
     }
     if (selectedCard === 'discussions') {
-      fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${BASE_URL}/api/discussions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
         .then(res => res.json())
         .then(setDiscussions)
         .catch(console.error);
     }
   }, [selectedCard, isLoggedIn]);
 
-  // Delete funcs
   const deleteDiscussion = async id => {
     if (!confirm('Delete this discussion?')) return;
     const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
@@ -77,6 +114,7 @@ const Admin = () => {
     if (res.ok) setDiscussions(d => d.filter(x => x._id !== id));
     alert(msg);
   };
+
   const deleteIncident = async id => {
     if (!confirm('Delete this incident?')) return;
     const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
@@ -88,7 +126,6 @@ const Admin = () => {
     alert(msg);
   };
 
-  // Change status
   const changeStatus = async (id, status) => {
     const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
       method: 'PATCH',
@@ -140,8 +177,8 @@ const Admin = () => {
             <tbody>
               {incidents.map((inc, i) => (
                 <tr key={inc._id}>
-                  <td>{i+1}</td>
-                  <td>{inc._id.slice(0,6)}...</td>
+                  <td>{i + 1}</td>
+                  <td>{inc._id.slice(0, 6)}...</td>
                   <td>{inc.incidentType}</td>
                   <td>{inc.status}</td>
                   <td>
@@ -164,9 +201,9 @@ const Admin = () => {
               </tr>
             </thead>
             <tbody>
-              {discussions.map((d,i) => (
+              {discussions.map((d, i) => (
                 <tr key={d._id}>
-                  <td>{i+1}</td>
+                  <td>{i + 1}</td>
                   <td>{d.title}</td>
                   <td>{d.messages.length}</td>
                   <td>{new Date(d.createdAt).toLocaleDateString()}</td>
@@ -189,7 +226,7 @@ const Admin = () => {
             <h3>Reset Password</h3>
             <input placeholder="Email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} />
             <button className="btn" onClick={() => {
-              alert(`Reset link → ${resetEmail}`);
+              alert(`Reset link sent to ${resetEmail}`);
               setShowForgotPassword(false);
             }}>Send</button>
             <p onClick={() => setShowForgotPassword(false)}>← Back</p>
@@ -197,11 +234,13 @@ const Admin = () => {
         ) : showRegister ? (
           <div className="container">
             <h2>Register</h2>
-            <form onSubmit={e => { handleRegisterSubmit(e); }}>
-              {/* username, email, password, role */}
-              <select name="role" onChange={e => setRegisterData({...registerData, role:e.target.value})} required>
-                <option value="super">Super Admin</option>
+            <form onSubmit={handleRegisterSubmit}>
+              <input placeholder="Username" required onChange={e => setRegisterData({ ...registerData, username: e.target.value })} />
+              <input placeholder="Email" type="email" required onChange={e => setRegisterData({ ...registerData, email: e.target.value })} />
+              <input placeholder="Password" type="password" required onChange={e => setRegisterData({ ...registerData, password: e.target.value })} />
+              <select onChange={e => setRegisterData({ ...registerData, role: e.target.value })} required>
                 <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
               </select>
               <button type="submit" className="btn">Register</button>
             </form>
@@ -211,10 +250,11 @@ const Admin = () => {
           <div className="container">
             <h2>Login</h2>
             <form onSubmit={handleLoginSubmit}>
-              {/* username, password */}
-              <select name="role" onChange={e => setLoginData({...loginData, role:e.target.value})} required>
-                <option value="super">Super</option>
+              <input placeholder="Username" required onChange={e => setLoginData({ ...loginData, username: e.target.value })} />
+              <input placeholder="Password" type="password" required onChange={e => setLoginData({ ...loginData, password: e.target.value })} />
+              <select onChange={e => setLoginData({ ...loginData, role: e.target.value })} required>
                 <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
               </select>
               <button type="submit" className="btn">Login</button>
             </form>
