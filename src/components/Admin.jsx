@@ -175,32 +175,35 @@ const Admin = () => {
       );
     }
 
-    if (selectedCard === 'discussions') {
-      return (
-        <div className="super-admin-dashboard">
-          <h2>💬 Discussions</h2>
-          <table className="pretty-incident-table">
-            <thead>
-              <tr>
-                <th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {discussions.map((d, i) => (
-                <tr key={d._id}>
-                  <td>{i + 1}</td>
-                  <td>{d.title}</td>
-                  <td>{d.messages.length}</td>
-                  <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-                  <td><button className="btn btn-delete" onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button className="btn" onClick={handleBack}>← Back</button>
-        </div>
-      );
-    }
+ if (selectedCard === 'discussions') {
+  return (
+    <div className="super-admin-dashboard">
+      <h2>💬 Discussions</h2>
+      <table className="pretty-incident-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {discussions.map((d, i) => (
+            <tr key={d._id}>
+              <td>{i + 1}</td>
+              <td>{d.title}</td>
+              <td>{Array.isArray(d.messages) ? d.messages.length : 0}</td>
+              <td>{new Date(d.createdAt).toLocaleDateString()}</td>
+              <td>
+                <button className="btn btn-delete" onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button className="btn" onClick={handleBack}>← Back</button>
+    </div>
+  );
+}
+
 
     return (
       <div className="super-admin-dashboard">
