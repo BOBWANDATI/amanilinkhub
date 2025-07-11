@@ -95,24 +95,25 @@ const Admin = () => {
   };
 
   const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('❗ Confirm delete discussion?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert(data.msg);
-      } else {
-        alert(data.msg || '❌ Failed to delete discussion');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Delete discussion error');
+  if (!window.confirm('❗ Confirm delete discussion?')) return;
+  try {
+    const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setDiscussions((prev) => prev.filter((d) => d._id !== id));
+      alert(data.msg);
+    } else {
+      alert(data.msg || '❌ Failed to delete discussion');
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert('❌ Delete discussion error');
+  }
+};
+
 
   const handleStatusChange = async (id, newStatus) => {
     try {
