@@ -50,7 +50,6 @@ const Footer = () => {
                 alt="Founder Bob Wandati"
                 className="founder-image"
               />
-              <P>VISIT MY PORFOLIO <a href="https://www.canva.com/design/DAGTKVeHNv0/pNnTkwWEuZb9qF9LPBtOgg/view?utm_content=DAGTKVeHNv0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hf870916921"></a>></P>
             </div>
           </div>
         </div>
