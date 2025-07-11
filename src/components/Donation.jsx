@@ -60,11 +60,18 @@ const Donation = () => {
 
   return (
     <div id="donation" className="page">
+
+       <div className="donation-video">
+    <video width="100%" controls>
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
       <div className="container">
         <h2 className="page-title">Support Peace Building</h2>
         <p className="page-subtitle">Make a donation via M-Pesa to support our peace initiatives</p>
 
-        <div className="donation-content">
+        <div className="donation-container">
           {!transactionComplete ? (
             <>
               {step === 1 && (
@@ -157,3 +164,5 @@ const Donation = () => {
 };
 
 export default Donation;
+
+
