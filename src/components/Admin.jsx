@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
-import { io } from 'socket.io-client';
 import {
   LineChart,
   Line,
@@ -43,10 +42,12 @@ const Admin = () => {
     }
   }, [isLoggedIn]);
 
-  // 👇 Setup socket ONLY inside effect
+  // 👇 Dynamically import and setup socket.io-client
   useEffect(() => {
     let socket;
-    if (selectedCard === 'incidents') {
+
+    const setupSocket = async () => {
+      const { io } = await import('socket.io-client');
       socket = io(BASE_URL);
 
       const handleNewIncident = (incident) => {
@@ -62,33 +63,36 @@ const Admin = () => {
 
       socket.on('new_incident_reported', handleNewIncident);
       socket.on('incident_updated', handleIncidentUpdated);
+    };
 
-      return () => {
-        socket.disconnect();
-      };
+    if (selectedCard === 'incidents') {
+      setupSocket();
     }
+
+    return () => {
+      if (socket) socket.disconnect();
+    };
   }, [selectedCard]);
 
   // 👇 Fetch card-specific data
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) return;
+
+    const headers = { Authorization: `Bearer ${token}` };
+
     if (selectedCard === 'incidents') {
-      fetch(`${BASE_URL}/api/admin/report`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
+      fetch(`${BASE_URL}/api/admin/report`, { headers })
         .then((res) => res.json())
         .then((data) => setIncidents(data))
         .catch((err) => console.error('Failed to fetch incidents', err));
     } else if (selectedCard === 'discussions') {
-      fetch(`${BASE_URL}/api/discussions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
+      fetch(`${BASE_URL}/api/discussions`, { headers })
         .then((res) => res.json())
         .then((data) => setDiscussions(data))
         .catch((err) => console.error('Failed to fetch discussions', err));
     } else if (selectedCard === 'analytics') {
-      fetch(`${BASE_URL}/api/admin/analytics`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
+      fetch(`${BASE_URL}/api/admin/analytics`, { headers })
         .then((res) => res.json())
         .then((data) => setAnalyticsData(data))
         .catch((err) => console.error('Failed to fetch analytics', err));
