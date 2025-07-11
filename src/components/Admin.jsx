@@ -19,24 +19,19 @@ import {
 } from 'recharts';
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL);
-
 const COLORS = ['#FF8042', '#00C49F', '#FFBB28', '#0088FE'];
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
-  const [resetEmail, setResetEmail] = useState('');
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
   const [analyticsData, setAnalyticsData] = useState({ line: [], pie: [], bar: [] });
+
   const navigate = useNavigate();
 
+  // 👇 Fetch stats when logged in
   useEffect(() => {
     if (isLoggedIn) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -48,31 +43,33 @@ const Admin = () => {
     }
   }, [isLoggedIn]);
 
+  // 👇 Setup socket ONLY inside effect
   useEffect(() => {
-    if (!socket) return;
+    let socket;
+    if (selectedCard === 'incidents') {
+      socket = io(BASE_URL);
 
-    const handleNewIncident = (incident) => {
-      if (selectedCard === 'incidents') {
+      const handleNewIncident = (incident) => {
         setIncidents((prev) => [incident, ...prev]);
         alert(`🚨 New Incident: ${incident.title}`);
-      }
-    };
+      };
 
-    const handleIncidentUpdated = (updatedIncident) => {
-      setIncidents((prev) =>
-        prev.map((i) => (i._id === updatedIncident._id ? updatedIncident : i))
-      );
-    };
+      const handleIncidentUpdated = (updatedIncident) => {
+        setIncidents((prev) =>
+          prev.map((i) => (i._id === updatedIncident._id ? updatedIncident : i))
+        );
+      };
 
-    socket.on('new_incident_reported', handleNewIncident);
-    socket.on('incident_updated', handleIncidentUpdated);
+      socket.on('new_incident_reported', handleNewIncident);
+      socket.on('incident_updated', handleIncidentUpdated);
 
-    return () => {
-      socket.off('new_incident_reported', handleNewIncident);
-      socket.off('incident_updated', handleIncidentUpdated);
-    };
+      return () => {
+        socket.disconnect();
+      };
+    }
   }, [selectedCard]);
 
+  // 👇 Fetch card-specific data
   useEffect(() => {
     if (selectedCard === 'incidents') {
       fetch(`${BASE_URL}/api/admin/report`, {
@@ -97,6 +94,12 @@ const Admin = () => {
         .catch((err) => console.error('Failed to fetch analytics', err));
     }
   }, [selectedCard]);
+
+  const logout = () => {
+    localStorage.removeItem('admin_token');
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   const AnalyticsDashboard = () => (
     <div className="super-admin-dashboard">
@@ -145,30 +148,28 @@ const Admin = () => {
   );
 
   const Dashboard = () => {
-    const handleCardClick = (type) => setSelectedCard(type);
-    const handleBack = () => setSelectedCard(null);
-
     if (selectedCard === 'analytics') return <AnalyticsDashboard />;
-
-    // rest of your Dashboard component remains the same...
 
     return (
       <div className="super-admin-dashboard">
         <h2>🛡️ AmaniLink Hub Dashboard</h2>
         <div className="dashboard-cards">
-          <div className="dashboard-card" onClick={() => handleCardClick('incidents')}>
+          <div className="dashboard-card" onClick={() => setSelectedCard('incidents')}>
             <div className="card-icon">🔥</div>
             <div className="card-title">Incidents</div>
-            <div className="card-desc">🔴 {stats.pendingIncidents || 0} Pending<br/>✅ {stats.resolvedIncidents || 0} Resolved</div>
+            <div className="card-desc">
+              🔴 {stats.pendingIncidents || 0} Pending<br />
+              ✅ {stats.resolvedIncidents || 0} Resolved
+            </div>
             <div className="card-value">{stats.incidentsCount || 0} Total</div>
           </div>
-          <div className="dashboard-card" onClick={() => handleCardClick('discussions')}>
+          <div className="dashboard-card" onClick={() => setSelectedCard('discussions')}>
             <div className="card-icon">💬</div>
             <div className="card-title">Discussions</div>
             <div className="card-desc">📢 Total</div>
             <div className="card-value">{discussions.length}</div>
           </div>
-          <div className="dashboard-card" onClick={() => handleCardClick('analytics')}>
+          <div className="dashboard-card" onClick={() => setSelectedCard('analytics')}>
             <div className="card-icon">📊</div>
             <div className="card-title">Analytics</div>
             <div className="card-desc">📈 View Charts</div>
@@ -180,7 +181,17 @@ const Admin = () => {
     );
   };
 
-  // ... rest of your Admin component stays the same ...
+  return (
+    <div>
+      {isLoggedIn ? (
+        <Dashboard />
+      ) : (
+        <div className="auth-message">
+          <h3>🔐 Please log in as admin to view dashboard</h3>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Admin;
