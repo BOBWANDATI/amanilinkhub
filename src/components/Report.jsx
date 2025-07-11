@@ -113,7 +113,7 @@ const Report = ({ setShowSuccessModal }) => {
   return (
     <div id="report" className="page">
       <div className="container">
-        <h2 className="page-title">Report An Incident</h2>
+        <h2 className="page-title">REPORT AN INCIDET</h2>
         <p className="page-subtitle">Help build peace by reporting conflicts in your community</p>
 
         <div className="report-form-container">
