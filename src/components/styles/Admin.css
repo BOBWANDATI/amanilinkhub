@@ -10,12 +10,12 @@
 }
 
 .container {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 10px;
-  max-width: 480px;
+  background: #ffffffdd;
+  padding: 2.5rem;
+  border-radius: 12px;
+  max-width: 500px;
   width: 100%;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
 
@@ -27,31 +27,78 @@ form {
 }
 
 input, select {
-  padding: 0.6rem;
+  padding: 0.75rem;
   font-size: 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   width: 100%;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: #007bff;
 }
 
 label {
   text-align: left;
   font-weight: bold;
+  margin-bottom: 0.3rem;
+  color: #333;
 }
 
-.btn {
-  background-color: #007bff;
-  color: #fff;
-  padding: 0.75rem;
+/* ===== Buttons General Style ===== */
+.btn,
+.amount-option,
+.btn-secondary,
+.btn-delete {
+  padding: 0.75rem 1.2rem;
   border: none;
   border-radius: 6px;
   font-weight: bold;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-.btn:hover {
+.btn:hover,
+.amount-option:hover,
+.btn-secondary:hover,
+.btn-delete:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== Primary Button ===== */
+.btn-primary,
+.btn {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
   background-color: #0056b3;
+}
+
+/* ===== Secondary Button ===== */
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #495057;
+}
+
+/* ===== Amount Buttons ===== */
+.amount-option {
+  background-color: #20c997;
+  color: #fff;
+  margin: 5px;
+}
+
+.amount-option:hover {
+  background-color: #138d75;
 }
 
 /* ===== Incident Table ===== */
@@ -67,7 +114,7 @@ label {
 }
 
 .pretty-incident-table thead {
-  background-color: #f0f4f8;
+  background-color: #e9f0f5;
 }
 
 .pretty-incident-table th, .pretty-incident-table td {
@@ -77,10 +124,10 @@ label {
 }
 
 .pretty-incident-table tr:hover {
-  background-color: #f9fafb;
+  background-color: #f1faff;
 }
 
-/* ===== Status Buttons with Animation & Clear Colors ===== */
+/* ===== Status Buttons with Animation ===== */
 @keyframes pop {
   0% { transform: scale(1); }
   50% { transform: scale(1.08); }
@@ -88,8 +135,8 @@ label {
 }
 
 .status-btn {
-  padding: 6px 14px;
-  margin: 2px 3px;
+  padding: 8px 16px;
+  margin: 4px;
   font-size: 13px;
   font-weight: bold;
   border: none;
@@ -106,28 +153,27 @@ label {
 }
 
 .status-btn.pending {
-  background-color: #d32f2f; /* Bright Red */
+  background-color: #e74c3c;
 }
 
 .status-btn.investigating {
-  background-color: #388e3c; /* Green */
+  background-color: #27ae60;
 }
 
 .status-btn.resolved {
-  background-color: #1976d2; /* Blue */
+  background-color: #2980b9;
 }
 
 .status-btn.escalated {
-  background-color: #6d4c41; /* Brown */
+  background-color: #8e44ad;
 }
 
 .status-btn.active {
-  animation: pop 0.25s ease-in-out;
-  box-shadow: 0 0 0 2px #222;
+  box-shadow: 0 0 0 2px #000;
   transform: scale(1.05);
 }
 
-/* ===== Dashboard Card Styles ===== */
+/* ===== Dashboard Cards ===== */
 .dashboard-cards {
   display: flex;
   gap: 1rem;
@@ -137,7 +183,7 @@ label {
 }
 
 .dashboard-card {
-  background: #f9f9ff;
+  background: #f8f9fa;
   border-radius: 12px;
   padding: 1.5rem;
   min-width: 240px;
@@ -150,11 +196,13 @@ label {
 
 .dashboard-card:hover {
   transform: translateY(-4px);
+  background-color: #e9ecef;
 }
 
 .card-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  color: #007bff;
 }
 
 .card-title {
@@ -170,28 +218,22 @@ label {
 }
 
 .card-value {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   color: #007bff;
 }
 
 /* ===== Delete Button ===== */
 .btn-delete {
-  background-color: #ffdddd;
-  color: #b30000;
-  padding: 6px 10px;
-  border: none;
-  border-radius: 5px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.3s;
+  background-color: #f8d7da;
+  color: #a80000;
 }
 
 .btn-delete:hover {
-  background-color: #ffcccc;
+  background-color: #f1b0b7;
 }
 
-/* ===== Mobile ===== */
+/* ===== Mobile Styles ===== */
 @media (max-width: 768px) {
   .dashboard-cards {
     flex-direction: column;
@@ -213,6 +255,6 @@ label {
   }
 
   .container {
-    padding: 1rem;
+    padding: 1.2rem;
   }
 }
