@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
@@ -18,253 +17,169 @@ const Admin = () => {
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
-  const navigate = useNavigate();
 
+  // Load stats when logged in
   useEffect(() => {
     if (isLoggedIn) {
       fetch(`${BASE_URL}/api/admin/stats`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
-        .then((res) => res.json())
-        .then((data) => setStats(data))
-        .catch((err) => console.error('Failed to fetch stats', err));
+        .then(res => res.json())
+        .then(setStats)
+        .catch(err => console.error(err));
     }
   }, [isLoggedIn]);
 
+  // Socket listeners for real-time updates
   useEffect(() => {
-    if (!socket) return;
-
-    const handleNewIncident = (incident) => {
-      if (selectedCard === 'incidents') {
-        setIncidents((prev) => [incident, ...prev]);
-        alert(`🚨 New Incident: ${incident.title}`);
-      }
+    if (selectedCard !== 'incidents') return;
+    const newIncHandler = data => {
+      setIncidents(prev => [data, ...prev]);
     };
-
-    const handleIncidentUpdated = (updatedIncident) => {
-      setIncidents((prev) =>
-        prev.map((i) => (i._id === updatedIncident._id ? updatedIncident : i))
-      );
+    const updIncHandler = data => {
+      setIncidents(prev => prev.map(i => i._id === data._id ? data : i));
     };
-
-    socket.on('new_incident_reported', handleNewIncident);
-    socket.on('incident_updated', handleIncidentUpdated);
-
+    socket.on('new_incident_reported', newIncHandler);
+    socket.on('incident_updated', updIncHandler);
     return () => {
-      socket.off('new_incident_reported', handleNewIncident);
-      socket.off('incident_updated', handleIncidentUpdated);
+      socket.off('new_incident_reported', newIncHandler);
+      socket.off('incident_updated', updIncHandler);
     };
   }, [selectedCard]);
 
+  // Fetch Incident or Discussion lists on card change
   useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const token = localStorage.getItem('admin_token');
     if (selectedCard === 'incidents') {
-      fetch(`${BASE_URL}/api/admin/report`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setIncidents(data))
-        .catch((err) => console.error('Failed to fetch incidents', err));
+      fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => res.json())
+        .then(setIncidents)
+        .catch(console.error);
     }
     if (selectedCard === 'discussions') {
-      fetch(`${BASE_URL}/api/discussions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setDiscussions(data))
-        .catch((err) => console.error('Failed to fetch discussions', err));
+      fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => res.json())
+        .then(setDiscussions)
+        .catch(console.error);
     }
-  }, [selectedCard]);
+  }, [selectedCard, isLoggedIn]);
 
-  const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('🗑️ Confirm delete discussion?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert('✅ Discussion deleted');
-      } else {
-        alert(data.msg || '❌ Failed to delete discussion');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Error deleting discussion');
-    }
+  // Delete funcs
+  const deleteDiscussion = async id => {
+    if (!confirm('Delete this discussion?')) return;
+    const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
+    });
+    const { msg } = await res.json();
+    if (res.ok) setDiscussions(d => d.filter(x => x._id !== id));
+    alert(msg);
+  };
+  const deleteIncident = async id => {
+    if (!confirm('Delete this incident?')) return;
+    const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
+    });
+    const { msg } = await res.json();
+    if (res.ok) setIncidents(i => i.filter(x => x._id !== id));
+    alert(msg);
   };
 
-  const handleDeleteIncident = async (id) => {
-    if (!window.confirm('❗ Confirm delete?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIncidents((prev) => prev.filter((i) => i._id !== id));
-        alert(data.msg);
-      } else {
-        alert(data.msg || '❌ Failed to delete');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Delete error');
-    }
+  // Change status
+  const changeStatus = async (id, status) => {
+    const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('admin_token')}`
+      },
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setIncidents(i => i.map(x => x._id === id ? data : x));
+      alert(`Status set to ${status}`);
+    } else alert(data.msg);
   };
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(`✅ Status changed to ${newStatus}`);
-        setIncidents((prev) =>
-          prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
-        );
-      } else {
-        alert(data.msg || '❌ Failed to change status');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Status update error');
-    }
-  };
-
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-  const handleForgotPassword = () => {
-    alert(`📧 Password reset link sent to: ${resetEmail}`);
-    setResetEmail('');
-    setShowForgotPassword(false);
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        if (!data.admin.approved) {
-          alert('⛔ Your account is not approved yet.');
-          return;
-        }
-        localStorage.setItem('admin_token', data.token);
-        localStorage.setItem('admin_user', JSON.stringify(data.admin));
-        setIsLoggedIn(true);
-        alert(`✅ Welcome ${data.admin.username}`);
-      } else {
-        alert(data.msg || 'Login failed');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Login error');
-    }
-  };
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert('✅ Registered! Wait for approval.');
-        setRegisterData({ username: '', email: '', password: '', role: '' });
-        setShowRegister(false);
-      } else {
-        alert(data.msg || '❌ Registration failed');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Registration error');
-    }
-  };
-
-  const logout = () => {
-    localStorage.clear();
-    setIsLoggedIn(false);
-    setLoginData({ username: '', password: '', role: '' });
-    setSelectedCard(null);
-  };
-
-  const Dashboard = () => {
-    const handleCardClick = (type) => setSelectedCard(type);
-    const handleBack = () => setSelectedCard(null);
-
-    if (selectedCard === 'discussions') {
-      return (
-        <div className="super-admin-dashboard">
-          <h2>💬 All Discussions</h2>
+  const Dashboard = () => (
+    <div className="super-admin-dashboard">
+      {!selectedCard ? (
+        <>
+          <h2>🛡️ AmaniLink Hub Dashboard</h2>
+          <div className="dashboard-cards">
+            <div className="dashboard-card" onClick={() => setSelectedCard('incidents')}>
+              <div className="card-icon">🔥</div>
+              <div className="card-title">Incidents</div>
+              <div className="card-value">{stats.incidentsCount || 0}</div>
+            </div>
+            <div className="dashboard-card" onClick={() => setSelectedCard('discussions')}>
+              <div className="card-icon">💬</div>
+              <div className="card-title">Discussions</div>
+              <div className="card-value">{discussions.length || 0}</div>
+            </div>
+          </div>
+          <button className="btn" onClick={() => {
+            localStorage.clear();
+            setIsLoggedIn(false);
+            setSelectedCard(null);
+          }}>Logout</button>
+        </>
+      ) : selectedCard === 'incidents' ? (
+        <>
+          <h2>🔥 Incident Reports</h2>
           <table className="pretty-incident-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Messages</th>
-                <th>Created By</th>
-                <th>Date</th>
-                <th>Actions</th>
+                <th>#</th><th>ID</th><th>Type</th><th>Status</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {discussions.map((d, i) => (
-                <tr key={d._id}>
-                  <td>{i + 1}</td>
-                  <td>{d.title}</td>
-                  <td>{d.messages.length}</td>
-                  <td>{d.createdBy || 'N/A'}</td>
-                  <td>{new Date(d.createdAt).toLocaleDateString()}</td>
+              {incidents.map((inc, i) => (
+                <tr key={inc._id}>
+                  <td>{i+1}</td>
+                  <td>{inc._id.slice(0,6)}...</td>
+                  <td>{inc.incidentType}</td>
+                  <td>{inc.status}</td>
                   <td>
-                    <button className="btn btn-delete" onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button>
+                    <button onClick={() => changeStatus(inc._id, 'resolved')} className="btn">Resolve</button>
+                    <button onClick={() => deleteIncident(inc._id)} className="btn btn-delete">🗑️</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button className="btn" onClick={handleBack}>← Back</button>
-        </div>
-      );
-    }
-
-    // [keep your existing incidents view and dashboard cards here...]
-    return (
-      <div className="super-admin-dashboard">
-        <h2>🛡️ AmaniLink Hub Dashboard</h2>
-        <div className="dashboard-cards">
-          <div className="dashboard-card" onClick={() => handleCardClick('incidents')}>
-            <div className="card-icon">🔥</div>
-            <div className="card-title">Incidents</div>
-            <div className="card-value">{stats.incidentsCount || 0}</div>
-          </div>
-          <div className="dashboard-card" onClick={() => handleCardClick('discussions')}>
-            <div className="card-icon">💬</div>
-            <div className="card-title">Discussions</div>
-            <div className="card-value">{discussions.length || 0}</div>
-          </div>
-        </div>
-        <button className="btn" onClick={logout}>Logout</button>
-      </div>
-    );
-  };
+          <button className="btn" onClick={() => setSelectedCard(null)}>← Back</button>
+        </>
+      ) : (
+        <>
+          <h2>💬 All Discussions</h2>
+          <table className="pretty-incident-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {discussions.map((d,i) => (
+                <tr key={d._id}>
+                  <td>{i+1}</td>
+                  <td>{d.title}</td>
+                  <td>{d.messages.length}</td>
+                  <td>{new Date(d.createdAt).toLocaleDateString()}</td>
+                  <td><button onClick={() => deleteDiscussion(d._id)} className="btn btn-delete">🗑️</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button className="btn" onClick={() => setSelectedCard(null)}>← Back</button>
+        </>
+      )}
+    </div>
+  );
 
   return (
     <div className="admin-container">
@@ -272,45 +187,44 @@ const Admin = () => {
         showForgotPassword ? (
           <div className="container">
             <h3>Reset Password</h3>
-            <input type="email" placeholder="Enter your email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
-            <button className="btn" onClick={handleForgotPassword}>Send Reset Link</button>
-            <p onClick={() => setShowForgotPassword(false)}>← Back to Login</p>
+            <input placeholder="Email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} />
+            <button className="btn" onClick={() => {
+              alert(`Reset link → ${resetEmail}`);
+              setShowForgotPassword(false);
+            }}>Send</button>
+            <p onClick={() => setShowForgotPassword(false)}>← Back</p>
           </div>
         ) : showRegister ? (
           <div className="container">
             <h2>Register</h2>
-            <form onSubmit={handleRegisterSubmit}>
-              <input type="text" name="username" placeholder="Username" value={registerData.username} onChange={handleRegisterChange} required />
-              <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} required />
-              <input type="password" name="password" placeholder="Password" value={registerData.password} onChange={handleRegisterChange} required />
-              <select name="role" value={registerData.role} onChange={handleRegisterChange} required>
-                <option value="">Select Role</option>
+            <form onSubmit={e => { handleRegisterSubmit(e); }}>
+              {/* username, email, password, role */}
+              <select name="role" onChange={e => setRegisterData({...registerData, role:e.target.value})} required>
                 <option value="super">Super Admin</option>
                 <option value="admin">Admin</option>
               </select>
               <button type="submit" className="btn">Register</button>
             </form>
-            <p>Already have an account? <span onClick={() => setShowRegister(false)}>Login here</span></p>
+            <p><span onClick={() => setShowRegister(false)}>Login</span></p>
           </div>
         ) : (
           <div className="container">
-            <h2>Admin Login</h2>
+            <h2>Login</h2>
             <form onSubmit={handleLoginSubmit}>
-              <input type="text" name="username" placeholder="Username" value={loginData.username} onChange={handleLoginChange} required />
-              <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} required />
-              <select name="role" value={loginData.role} onChange={handleLoginChange} required>
-                <option value="">Select Role</option>
-                <option value="super">Super Admin</option>
+              {/* username, password */}
+              <select name="role" onChange={e => setLoginData({...loginData, role:e.target.value})} required>
+                <option value="super">Super</option>
                 <option value="admin">Admin</option>
               </select>
               <button type="submit" className="btn">Login</button>
             </form>
-            <p><span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> | <span onClick={() => setShowRegister(true)}>Register</span></p>
+            <p>
+              <span onClick={() => setShowForgotPassword(true)}>Forgot?</span> | 
+              <span onClick={() => setShowRegister(true)}>Register</span>
+            </p>
           </div>
         )
-      ) : (
-        <Dashboard />
-      )}
+      ) : <Dashboard />}
     </div>
   );
 };
