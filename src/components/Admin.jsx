@@ -5,7 +5,7 @@ import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL); // Connect to socket server
+const socket = io(BASE_URL);
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,9 +17,9 @@ const Admin = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
+  const [discussions, setDiscussions] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch dashboard stats for super admin
   useEffect(() => {
     if (isLoggedIn) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -31,7 +31,6 @@ const Admin = () => {
     }
   }, [isLoggedIn]);
 
-  // Real-time socket listeners
   useEffect(() => {
     if (!socket) return;
 
@@ -57,7 +56,6 @@ const Admin = () => {
     };
   }, [selectedCard]);
 
-  // Fetch incidents when card is clicked
   useEffect(() => {
     if (selectedCard === 'incidents') {
       fetch(`${BASE_URL}/api/admin/report`, {
@@ -67,12 +65,88 @@ const Admin = () => {
         .then((data) => setIncidents(data))
         .catch((err) => console.error('Failed to fetch incidents', err));
     }
+    if (selectedCard === 'discussions') {
+      fetch(`${BASE_URL}/api/discussions`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setDiscussions(data))
+        .catch((err) => console.error('Failed to fetch discussions', err));
+    }
   }, [selectedCard]);
 
-  // Auth form handlers
+  const handleDeleteDiscussion = async (id) => {
+    if (!window.confirm('🗑️ Confirm delete discussion?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDiscussions((prev) => prev.filter((d) => d._id !== id));
+        alert('✅ Discussion deleted');
+      } else {
+        alert(data.msg || '❌ Failed to delete discussion');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Error deleting discussion');
+    }
+  };
+
+  const handleDeleteIncident = async (id) => {
+    if (!window.confirm('❗ Confirm delete?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIncidents((prev) => prev.filter((i) => i._id !== id));
+        alert(data.msg);
+      } else {
+        alert(data.msg || '❌ Failed to delete');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Delete error');
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`✅ Status changed to ${newStatus}`);
+        setIncidents((prev) =>
+          prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
+        );
+      } else {
+        alert(data.msg || '❌ Failed to change status');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Status update error');
+    }
+  };
+
   const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) =>
-    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  const handleForgotPassword = () => {
+    alert(`📧 Password reset link sent to: ${resetEmail}`);
+    setResetEmail('');
+    setShowForgotPassword(false);
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -125,57 +199,6 @@ const Admin = () => {
     }
   };
 
-  const handleDeleteIncident = async (id) => {
-    if (!window.confirm('❗ Confirm delete?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIncidents((prev) => prev.filter((i) => i._id !== id));
-        alert(data.msg);
-      } else {
-        alert(data.msg || '❌ Failed to delete');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Delete error');
-    }
-  };
-
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(`✅ Status changed to ${newStatus}`);
-        setIncidents((prev) =>
-          prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
-        );
-      } else {
-        alert(data.msg || '❌ Failed to change status');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Status update error');
-    }
-  };
-
-  const handleForgotPassword = () => {
-    alert(`📧 Password reset link sent to: ${resetEmail}`);
-    setResetEmail('');
-    setShowForgotPassword(false);
-  };
-
   const logout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
@@ -187,45 +210,31 @@ const Admin = () => {
     const handleCardClick = (type) => setSelectedCard(type);
     const handleBack = () => setSelectedCard(null);
 
-    if (selectedCard === 'incidents') {
+    if (selectedCard === 'discussions') {
       return (
         <div className="super-admin-dashboard">
-          <h2>🔥 Incident Reports</h2>
+          <h2>💬 All Discussions</h2>
           <table className="pretty-incident-table">
             <thead>
               <tr>
                 <th>#</th>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Urgency</th>
-                <th>Reporter</th>
+                <th>Title</th>
+                <th>Messages</th>
+                <th>Created By</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {incidents.map((incident, i) => (
-                <tr key={incident._id}>
+              {discussions.map((d, i) => (
+                <tr key={d._id}>
                   <td>{i + 1}</td>
-                  <td>{incident._id.slice(0, 6)}...</td>
-                  <td>{incident.incidentType || 'N/A'}</td>
+                  <td>{d.title}</td>
+                  <td>{d.messages.length}</td>
+                  <td>{d.createdBy || 'N/A'}</td>
+                  <td>{new Date(d.createdAt).toLocaleDateString()}</td>
                   <td>
-                    {['pending', 'investigating', 'resolved', 'escalated'].map((status) => (
-                      <button
-                        key={status}
-                        className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
-                        onClick={() => handleStatusChange(incident._id, status)}
-                      >
-                        {status}
-                      </button>
-                    ))}
-                  </td>
-                  <td>{incident.urgency || 'Normal'}</td>
-                  <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
-                  <td>{new Date(incident.date).toLocaleDateString()}</td>
-                  <td>
-                    <button className="btn btn-delete" onClick={() => handleDeleteIncident(incident._id)}>🗑️</button>
+                    <button className="btn btn-delete" onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button>
                   </td>
                 </tr>
               ))}
@@ -236,6 +245,7 @@ const Admin = () => {
       );
     }
 
+    // [keep your existing incidents view and dashboard cards here...]
     return (
       <div className="super-admin-dashboard">
         <h2>🛡️ AmaniLink Hub Dashboard</h2>
@@ -243,11 +253,12 @@ const Admin = () => {
           <div className="dashboard-card" onClick={() => handleCardClick('incidents')}>
             <div className="card-icon">🔥</div>
             <div className="card-title">Incidents</div>
-            <div className="card-desc">
-              🔴 {stats.pendingIncidents || 0} Pending<br />
-              ✅ {stats.resolvedIncidents || 0} Resolved
-            </div>
-            <div className="card-value">{stats.incidentsCount || 0} Total</div>
+            <div className="card-value">{stats.incidentsCount || 0}</div>
+          </div>
+          <div className="dashboard-card" onClick={() => handleCardClick('discussions')}>
+            <div className="card-icon">💬</div>
+            <div className="card-title">Discussions</div>
+            <div className="card-value">{discussions.length || 0}</div>
           </div>
         </div>
         <button className="btn" onClick={logout}>Logout</button>
@@ -261,12 +272,7 @@ const Admin = () => {
         showForgotPassword ? (
           <div className="container">
             <h3>Reset Password</h3>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-            />
+            <input type="email" placeholder="Enter your email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
             <button className="btn" onClick={handleForgotPassword}>Send Reset Link</button>
             <p onClick={() => setShowForgotPassword(false)}>← Back to Login</p>
           </div>
