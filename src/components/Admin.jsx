@@ -12,12 +12,12 @@ const Admin = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [selectedIncident, setSelectedIncident] = useState(null);
   const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
   const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
   const [resetEmail, setResetEmail] = useState('');
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
-  const [selectedIncident, setSelectedIncident] = useState(null);
   const [discussions, setDiscussions] = useState([]);
   const navigate = useNavigate();
 
@@ -148,29 +148,25 @@ const Admin = () => {
     };
 
     if (selectedCard === 'incidents') {
-      if (selectedIncident) {
-        return (
-          <div className="super-admin-dashboard">
-            <h2>📝 Incident Details</h2>
-            <div className="incident-detail">
-              <p><strong>ID:</strong> {selectedIncident._id}</p>
-              <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
-              <p><strong>Status:</strong> {selectedIncident.status}</p>
-              <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
-              <p><strong>Reporter:</strong> {selectedIncident.anonymous ? 'Anonymous' : selectedIncident.reportedBy}</p>
-              <p><strong>Date:</strong> {new Date(selectedIncident.date).toLocaleString()}</p>
-              <p><strong>Description:</strong> {selectedIncident.description}</p>
-              <p><strong>Location:</strong> {selectedIncident.locationName}</p>
-              <p><strong>Coordinates:</strong> {selectedIncident.latitude}, {selectedIncident.longitude}</p>
-            </div>
-            <button className="btn" onClick={() => setSelectedIncident(null)}>← Back to List</button>
-          </div>
-        );
-      }
-
       return (
         <div className="super-admin-dashboard">
           <h2>🔥 Incident Reports</h2>
+
+          {selectedIncident && (
+            <div className="incident-details">
+              <h4>📍 Incident Details</h4>
+              <p><strong>ID:</strong> {selectedIncident._id}</p>
+              <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+              <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+              <p><strong>Status:</strong> {selectedIncident.status}</p>
+              <p><strong>Reporter:</strong> {selectedIncident.anonymous ? 'Anonymous' : selectedIncident.reportedBy}</p>
+              <p><strong>Location:</strong> {selectedIncident.locationName}</p>
+              <p><strong>Coordinates:</strong> {selectedIncident.coordinates?.lat}, {selectedIncident.coordinates?.lng}</p>
+              <p><strong>Description:</strong> {selectedIncident.description}</p>
+              <button className="btn" onClick={() => setSelectedIncident(null)}>Close Details</button>
+            </div>
+          )}
+
           <table className="pretty-incident-table">
             <thead>
               <tr>
@@ -199,16 +195,17 @@ const Admin = () => {
       );
     }
 
-    // (Discussions view remains unchanged...)
-    // (Other parts of the component remain unchanged...)
+    // discussions section stays unchanged...
+    // other code remains unchanged...
   };
 
-  // (The rest of the component code remains unchanged)
+  // other unchanged functions remain here...
 
   return (
     <div className="admin-container">
       {!isLoggedIn ? (
-        // (Login/Register UI remains unchanged...)
+        // login/register UI unchanged...
+        <></>
       ) : <Dashboard />}
     </div>
   );
