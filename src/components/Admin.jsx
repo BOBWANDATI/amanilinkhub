@@ -5,21 +5,24 @@ import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL); // Connect to socket server
+const socket = io(BASE_URL);
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [selectedCard, setSelectedCard] = useState('incidents');
   const [selectedIncident, setSelectedIncident] = useState(null);
-  const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
-  const [resetEmail, setResetEmail] = useState('');
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
   const navigate = useNavigate();
+
+  // Simulate login state (you should replace this with real login check)
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -95,26 +98,6 @@ const Admin = () => {
     }
   };
 
-  const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('❗ Confirm delete discussion?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert(data.msg);
-      } else {
-        alert(data.msg || '❌ Failed to delete discussion');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Delete discussion error');
-    }
-  };
-
   const handleStatusChange = async (id, newStatus) => {
     try {
       const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
@@ -141,72 +124,89 @@ const Admin = () => {
   };
 
   const Dashboard = () => {
-    const handleCardClick = (type) => setSelectedCard(type);
     const handleBack = () => {
-      setSelectedCard(null);
       setSelectedIncident(null);
     };
 
-    if (selectedCard === 'incidents') {
-      return (
-        <div className="super-admin-dashboard">
-          <h2>🔥 Incident Reports</h2>
+    return (
+      <div className="super-admin-dashboard">
+        <h2>🔥 Incident Reports</h2>
 
-          {selectedIncident && (
-            <div className="incident-details">
-              <h4>📍 Incident Details</h4>
-              <p><strong>ID:</strong> {selectedIncident._id}</p>
-              <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
-              <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
-              <p><strong>Status:</strong> {selectedIncident.status}</p>
-              <p><strong>Reporter:</strong> {selectedIncident.anonymous ? 'Anonymous' : selectedIncident.reportedBy}</p>
-              <p><strong>Location:</strong> {selectedIncident.locationName}</p>
-              <p><strong>Coordinates:</strong> {selectedIncident.coordinates?.lat}, {selectedIncident.coordinates?.lng}</p>
-              <p><strong>Description:</strong> {selectedIncident.description}</p>
-              <button className="btn" onClick={() => setSelectedIncident(null)}>Close Details</button>
-            </div>
-          )}
+        {selectedIncident && (
+          <div className="incident-details">
+            <h4>📍 Incident Details</h4>
+            <p><strong>ID:</strong> {selectedIncident._id}</p>
+            <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+            <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+            <p><strong>Status:</strong> {selectedIncident.status}</p>
+            <p><strong>Reporter:</strong> {selectedIncident.anonymous ? 'Anonymous' : selectedIncident.reportedBy}</p>
+            <p><strong>Location:</strong> {selectedIncident.locationName}</p>
+            <p><strong>Coordinates:</strong> {selectedIncident.coordinates?.lat}, {selectedIncident.coordinates?.lng}</p>
+            <p><strong>Description:</strong> {selectedIncident.description}</p>
+            <button className="btn" onClick={() => setSelectedIncident(null)}>Close Details</button>
+          </div>
+        )}
 
-          <table className="pretty-incident-table">
-            <thead>
-              <tr>
-                <th>#</th><th>ID</th><th>Type</th><th>Status</th><th>Urgency</th><th>Reporter</th><th>Date</th><th>Actions</th>
+        <table className="pretty-incident-table">
+          <thead>
+            <tr>
+              <th>#</th><th>ID</th><th>Type</th><th>Status</th><th>Urgency</th><th>Reporter</th><th>Date</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {incidents.map((incident, i) => (
+              <tr
+                key={incident._id}
+                onClick={() => {
+                  console.log("Clicked incident:", incident);
+                  setSelectedIncident(incident);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <td>{i + 1}</td>
+                <td>{incident._id.slice(0, 6)}...</td>
+                <td>{incident.incidentType || 'N/A'}</td>
+                <td>
+                  {['pending', 'investigating', 'resolved', 'escalated'].map((status) => (
+                    <button
+                      key={status}
+                      className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStatusChange(incident._id, status);
+                      }}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </td>
+                <td>{incident.urgency || 'Normal'}</td>
+                <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
+                <td>{new Date(incident.date).toLocaleDateString()}</td>
+                <td>
+                  <button
+                    className="btn btn-delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteIncident(incident._id);
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {incidents.map((incident, i) => (
-                <tr key={incident._id} onClick={() => setSelectedIncident(incident)}>
-                  <td>{i + 1}</td>
-                  <td>{incident._id.slice(0, 6)}...</td>
-                  <td>{incident.incidentType || 'N/A'}</td>
-                  <td>{['pending','investigating','resolved','escalated'].map((status) => (
-                    <button key={status} className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); handleStatusChange(incident._id, status); }}>{status}</button>
-                  ))}</td>
-                  <td>{incident.urgency || 'Normal'}</td>
-                  <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
-                  <td>{new Date(incident.date).toLocaleDateString()}</td>
-                  <td><button className="btn btn-delete" onClick={(e) => { e.stopPropagation(); handleDeleteIncident(incident._id); }}>🗑️</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button className="btn" onClick={handleBack}>← Back</button>
-        </div>
-      );
-    }
+            ))}
+          </tbody>
+        </table>
 
-    // discussions section stays unchanged...
-    // other code remains unchanged...
+        <button className="btn" onClick={handleBack}>← Back</button>
+      </div>
+    );
   };
-
-  // other unchanged functions remain here...
 
   return (
     <div className="admin-container">
-      {!isLoggedIn ? (
-        // login/register UI unchanged...
-        <></>
-      ) : <Dashboard />}
+      {isLoggedIn ? <Dashboard /> : <p>Please log in</p>}
     </div>
   );
 };
