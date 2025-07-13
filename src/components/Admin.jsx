@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
+import Dashboard from '../components/Dashboard'; // Make sure this file exists
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
 const socket = io(BASE_URL);
@@ -12,7 +13,6 @@ const Admin = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [selectedIncident, setSelectedIncident] = useState(null);
   const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
   const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
   const [resetEmail, setResetEmail] = useState('');
@@ -62,19 +62,20 @@ const Admin = () => {
 
     const fetchData = async () => {
       try {
-        if (selectedCard === 'incidents') {
-          const res = await fetch(`${BASE_URL}/api/admin/report`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await res.json();
-          setIncidents(data);
-        } else if (selectedCard === 'discussions') {
-          const res = await fetch(`${BASE_URL}/api/discussions`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await res.json();
-          setDiscussions(data);
-        }
+        const endpoint = selectedCard === 'incidents'
+          ? '/api/admin/report'
+          : selectedCard === 'discussions'
+          ? '/api/discussions'
+          : null;
+        if (!endpoint) return;
+
+        const res = await fetch(`${BASE_URL}${endpoint}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (selectedCard === 'incidents') setIncidents(data);
+        if (selectedCard === 'discussions') setDiscussions(data);
       } catch (err) {
         console.error(`Error fetching ${selectedCard}`, err);
       }
@@ -83,77 +84,8 @@ const Admin = () => {
     fetchData();
   }, [selectedCard]);
 
-  const handleDeleteIncident = async (id) => {
-    if (!window.confirm('❗ Confirm delete?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIncidents((prev) => prev.filter((i) => i._id !== id));
-        alert(data.msg);
-      } else {
-        alert(data.msg || '❌ Failed to delete');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Delete error');
-    }
-  };
-
-  const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('❗ Confirm delete discussion?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert(data.msg);
-      } else {
-        alert(data.msg || '❌ Failed to delete discussion');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Delete discussion error');
-    }
-  };
-
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(`✅ Status changed to ${newStatus}`);
-        setIncidents((prev) =>
-          prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
-        );
-      } else {
-        alert(data.msg || '❌ Failed to change status');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Status update error');
-    }
-  };
-
-  const logout = () => {
-    localStorage.clear();
-    setIsLoggedIn(false);
-    setSelectedCard(null);
-    setLoginData({ username: '', password: '', role: '' });
-  };
+  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -208,51 +140,71 @@ const Admin = () => {
     setShowForgotPassword(false);
   };
 
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  const logout = () => {
+    localStorage.clear();
+    setIsLoggedIn(false);
+    setSelectedCard(null);
+    setLoginData({ username: '', password: '', role: '' });
+  };
 
   return (
     <div className="admin-container">
-      {isLoggedIn ? <Dashboard /> : (
-        showForgotPassword ? (
-          <div className="container">
-            <h3>Reset Password</h3>
-            <input type="email" placeholder="Enter your email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
-            <button className="btn" onClick={handleForgotPassword}>Send Reset Link</button>
-            <p onClick={() => setShowForgotPassword(false)}>← Back to Login</p>
-          </div>
-        ) : showRegister ? (
-          <div className="container">
-            <h2>Register</h2>
-            <form onSubmit={handleRegisterSubmit}>
-              <input type="text" name="username" placeholder="Username" value={registerData.username} onChange={handleRegisterChange} required />
-              <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} required />
-              <input type="password" name="password" placeholder="Password" value={registerData.password} onChange={handleRegisterChange} required />
-              <select name="role" value={registerData.role} onChange={handleRegisterChange} required>
-                <option value="">Select Role</option>
-                <option value="super">Super Admin</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button type="submit" className="btn">Register</button>
-            </form>
-            <p>Already have an account? <span onClick={() => setShowRegister(false)}>Login here</span></p>
-          </div>
-        ) : (
-          <div className="container">
-            <h2>Admin Login</h2>
-            <form onSubmit={handleLoginSubmit}>
-              <input type="text" name="username" placeholder="Username" value={loginData.username} onChange={handleLoginChange} required />
-              <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} required />
-              <select name="role" value={loginData.role} onChange={handleLoginChange} required>
-                <option value="">Select Role</option>
-                <option value="super">Super Admin</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button type="submit" className="btn">Login</button>
-            </form>
-            <p><span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> | <span onClick={() => setShowRegister(true)}>Register</span></p>
-          </div>
-        )
+      {isLoggedIn ? (
+        <Dashboard
+          token={token}
+          stats={stats}
+          incidents={incidents}
+          discussions={discussions}
+          setSelectedCard={setSelectedCard}
+          selectedCard={selectedCard}
+          setIncidents={setIncidents}
+          setDiscussions={setDiscussions}
+          handleStatusChange={handleStatusChange}
+          handleDeleteIncident={handleDeleteIncident}
+          handleDeleteDiscussion={handleDeleteDiscussion}
+          logout={logout}
+        />
+      ) : showForgotPassword ? (
+        <div className="container">
+          <h3>Reset Password</h3>
+          <input type="email" placeholder="Enter your email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
+          <button className="btn" onClick={handleForgotPassword}>Send Reset Link</button>
+          <p onClick={() => setShowForgotPassword(false)}>← Back to Login</p>
+        </div>
+      ) : showRegister ? (
+        <div className="container">
+          <h2>Register</h2>
+          <form onSubmit={handleRegisterSubmit}>
+            <input type="text" name="username" placeholder="Username" value={registerData.username} onChange={handleRegisterChange} required />
+            <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} required />
+            <input type="password" name="password" placeholder="Password" value={registerData.password} onChange={handleRegisterChange} required />
+            <select name="role" value={registerData.role} onChange={handleRegisterChange} required>
+              <option value="">Select Role</option>
+              <option value="super">Super Admin</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button type="submit" className="btn">Register</button>
+          </form>
+          <p>Already have an account? <span onClick={() => setShowRegister(false)}>Login here</span></p>
+        </div>
+      ) : (
+        <div className="container">
+          <h2>Admin Login</h2>
+          <form onSubmit={handleLoginSubmit}>
+            <input type="text" name="username" placeholder="Username" value={loginData.username} onChange={handleLoginChange} required />
+            <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} required />
+            <select name="role" value={loginData.role} onChange={handleLoginChange} required>
+              <option value="">Select Role</option>
+              <option value="super">Super Admin</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button type="submit" className="btn">Login</button>
+          </form>
+          <p>
+            <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> |
+            <span onClick={() => setShowRegister(true)}> Register</span>
+          </p>
+        </div>
       )}
     </div>
   );
