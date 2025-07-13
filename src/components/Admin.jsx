@@ -5,7 +5,7 @@ import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL); // Connect to socket server
+const socket = io(BASE_URL);
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,13 +21,15 @@ const Admin = () => {
   const [discussions, setDiscussions] = useState([]);
   const navigate = useNavigate();
 
+  const token = localStorage.getItem('admin_token');
+
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && token) {
       fetch(`${BASE_URL}/api/admin/stats`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
-        .then((data) => setStats(data))
+        .then(setStats)
         .catch((err) => console.error('Failed to fetch stats', err));
     }
   }, [isLoggedIn]);
@@ -58,21 +60,29 @@ const Admin = () => {
   }, [selectedCard]);
 
   useEffect(() => {
-    if (selectedCard === 'incidents') {
-      fetch(`${BASE_URL}/api/admin/report`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setIncidents(data))
-        .catch((err) => console.error('Failed to fetch incidents', err));
-    } else if (selectedCard === 'discussions') {
-      fetch(`${BASE_URL}/api/discussions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setDiscussions(data))
-        .catch((err) => console.error('Failed to fetch discussions', err));
-    }
+    if (!token) return;
+
+    const fetchData = async () => {
+      try {
+        if (selectedCard === 'incidents') {
+          const res = await fetch(`${BASE_URL}/api/admin/report`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          setIncidents(data);
+        } else if (selectedCard === 'discussions') {
+          const res = await fetch(`${BASE_URL}/api/discussions`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          setDiscussions(data);
+        }
+      } catch (err) {
+        console.error(`Error fetching ${selectedCard}`, err);
+      }
+    };
+
+    fetchData();
   }, [selectedCard]);
 
   const handleDeleteIncident = async (id) => {
@@ -80,7 +90,7 @@ const Admin = () => {
     try {
       const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
@@ -100,7 +110,7 @@ const Admin = () => {
     try {
       const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
@@ -121,7 +131,7 @@ const Admin = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -140,15 +150,72 @@ const Admin = () => {
     }
   };
 
+  const logout = () => {
+    localStorage.clear();
+    setIsLoggedIn(false);
+    setSelectedCard(null);
+    setLoginData({ username: '', password: '', role: '' });
+  };
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (!data.admin?.approved) return alert('⛔ Your account is not approved yet.');
+        localStorage.setItem('admin_token', data.token);
+        localStorage.setItem('admin_user', JSON.stringify(data.admin));
+        setIsLoggedIn(true);
+        alert(`✅ Welcome ${data.admin.username}`);
+      } else {
+        alert(data.msg || '❌ Login failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Login error');
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('✅ Registered! Wait for approval.');
+        setRegisterData({ username: '', email: '', password: '', role: '' });
+        setShowRegister(false);
+      } else {
+        alert(data.msg || '❌ Registration failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Registration error');
+    }
+  };
+
+  const handleForgotPassword = () => {
+    if (!resetEmail) return alert('⚠️ Please enter a valid email.');
+    alert(`📧 Password reset link sent to: ${resetEmail}`);
+    setResetEmail('');
+    setShowForgotPassword(false);
+  };
+
+  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+
   const Dashboard = () => {
     const handleCardClick = (type) => setSelectedCard(type);
-    const handleBack = () => {
-      if (selectedIncident) {
-        setSelectedIncident(null);
-      } else {
-        setSelectedCard(null);
-      }
-    };
+    const handleBack = () => setSelectedIncident(null) || setSelectedCard(null);
 
     if (selectedCard === 'incidents') {
       return (
@@ -167,13 +234,29 @@ const Admin = () => {
                     <td>{i + 1}</td>
                     <td>{incident._id.slice(0, 6)}...</td>
                     <td>{incident.incidentType || 'N/A'}</td>
-                    <td>{['pending','investigating','resolved','escalated'].map((status) => (
-                      <button key={status} className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); handleStatusChange(incident._id, status); }}>{status}</button>
-                    ))}</td>
+                    <td>
+                      {['pending', 'investigating', 'resolved', 'escalated'].map((status) => (
+                        <button
+                          key={status}
+                          className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(incident._id, status);
+                          }}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </td>
                     <td>{incident.urgency || 'Normal'}</td>
                     <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
                     <td>{new Date(incident.date).toLocaleDateString()}</td>
-                    <td><button className="btn btn-delete" onClick={(e) => { e.stopPropagation(); handleDeleteIncident(incident._id); }}>🗑️</button></td>
+                    <td>
+                      <button className="btn btn-delete" onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteIncident(incident._id);
+                      }}>🗑️</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -202,9 +285,7 @@ const Admin = () => {
           <h2>💬 Discussions</h2>
           <table className="pretty-incident-table">
             <thead>
-              <tr>
-                <th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Actions</th>
-              </tr>
+              <tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {discussions.map((d, i) => (
@@ -245,64 +326,6 @@ const Admin = () => {
         <button className="btn" onClick={logout}>Logout</button>
       </div>
     );
-  };
-
-  const handleForgotPassword = () => {
-    alert(`📧 Password reset link sent to: ${resetEmail}`);
-    setResetEmail('');
-    setShowForgotPassword(false);
-  };
-
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-
-  const logout = () => {
-    localStorage.clear();
-    setIsLoggedIn(false);
-    setLoginData({ username: '', password: '', role: '' });
-    setSelectedCard(null);
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        if (!data.admin.approved) return alert('⛔ Your account is not approved yet.');
-        localStorage.setItem('admin_token', data.token);
-        localStorage.setItem('admin_user', JSON.stringify(data.admin));
-        setIsLoggedIn(true);
-        alert(`✅ Welcome ${data.admin.username}`);
-      } else alert(data.msg || 'Login failed');
-    } catch (err) {
-      console.error(err);
-      alert('❌ Login error');
-    }
-  };
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert('✅ Registered! Wait for approval.');
-        setRegisterData({ username: '', email: '', password: '', role: '' });
-        setShowRegister(false);
-      } else alert(data.msg || '❌ Registration failed');
-    } catch (err) {
-      console.error(err);
-      alert('❌ Registration error');
-    }
   };
 
   return (
