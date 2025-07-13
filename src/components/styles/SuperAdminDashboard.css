@@ -130,3 +130,40 @@
 .btn:hover {
   background-color: #0056b3;
 }
+
+
+
+@media (max-width: 768px) {
+  .pretty-incident-table,
+  .pretty-incident-table thead,
+  .pretty-incident-table tbody,
+  .pretty-incident-table th,
+  .pretty-incident-table td,
+  .pretty-incident-table tr {
+    display: block;
+  }
+
+  .pretty-incident-table tr {
+    margin-bottom: 15px;
+  }
+
+  .pretty-incident-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .pretty-incident-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    top: 12px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .pretty-incident-table th {
+    display: none;
+  }
+}
+
