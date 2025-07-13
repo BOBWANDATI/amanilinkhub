@@ -123,62 +123,60 @@ const Admin = () => {
     }
   };
 
-  const Dashboard = () => {
+const Dashboard = () => {
   return (
     <div className="super-admin-dashboard">
       <h2>🔥 Incident Reports</h2>
 
       {!selectedIncident ? (
-        <>
-          <table className="pretty-incident-table">
-            <thead>
-              <tr>
-                <th>#</th><th>ID</th><th>Type</th><th>Status</th><th>Urgency</th><th>Reporter</th><th>Date</th><th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {incidents.map((incident, i) => (
-                <tr
-                  key={incident._id}
-                  onClick={() => setSelectedIncident(incident)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <td>{i + 1}</td>
-                  <td>{incident._id.slice(0, 6)}...</td>
-                  <td>{incident.incidentType || 'N/A'}</td>
-                  <td>
-                    {['pending', 'investigating', 'resolved', 'escalated'].map((status) => (
-                      <button
-                        key={status}
-                        className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStatusChange(incident._id, status);
-                        }}
-                      >
-                        {status}
-                      </button>
-                    ))}
-                  </td>
-                  <td>{incident.urgency || 'Normal'}</td>
-                  <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
-                  <td>{new Date(incident.date).toLocaleDateString()}</td>
-                  <td>
+        <table className="pretty-incident-table">
+          <thead>
+            <tr>
+              <th>#</th><th>ID</th><th>Type</th><th>Status</th><th>Urgency</th><th>Reporter</th><th>Date</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {incidents.map((incident, i) => (
+              <tr
+                key={incident._id}
+                className="clickable-row"
+                onClick={() => setSelectedIncident(incident)}
+              >
+                <td>{i + 1}</td>
+                <td>{incident._id.slice(0, 6)}...</td>
+                <td>{incident.incidentType || 'N/A'}</td>
+                <td>
+                  {['pending', 'investigating', 'resolved', 'escalated'].map((status) => (
                     <button
-                      className="btn btn-delete"
+                      key={status}
+                      className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteIncident(incident._id);
+                        e.stopPropagation(); // Prevent triggering row click
+                        handleStatusChange(incident._id, status);
                       }}
                     >
-                      🗑️
+                      {status}
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+                  ))}
+                </td>
+                <td>{incident.urgency || 'Normal'}</td>
+                <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
+                <td>{new Date(incident.date).toLocaleDateString()}</td>
+                <td>
+                  <button
+                    className="btn btn-delete"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering row click
+                      handleDeleteIncident(incident._id);
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <div className="incident-details">
           <h4>📍 Incident Details</h4>
@@ -196,6 +194,7 @@ const Admin = () => {
     </div>
   );
 };
+
 
 
   return (
