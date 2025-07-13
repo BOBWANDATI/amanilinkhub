@@ -66,9 +66,7 @@ const Report = ({ setShowSuccessModal }) => {
 
     const form = new FormData();
     Object.entries(formData).forEach(([key, val]) => {
-      if (key !== 'locationName') {
-        form.append(key, typeof val === 'boolean' ? val.toString() : val);
-      }
+      form.append(key, typeof val === 'boolean' ? val.toString() : val);
     });
 
     files.forEach((file) => form.append('files', file));
@@ -148,9 +146,14 @@ const Report = ({ setShowSuccessModal }) => {
                   name="locationName"
                   value={formData.locationName}
                   onChange={handleInputChange}
-                  placeholder="Place name (optional)"
+                  placeholder="Place name or coordinates"
+                  required
                 />
-                <input type="hidden" name="location" value={formData.location} />
+                <input
+                  type="hidden"
+                  name="location"
+                  value={formData.location}
+                />
                 <button type="button" className="btn btn-secondary" onClick={getCurrentLocation}>
                   <FaMapMarkerAlt /> Use Current Location
                 </button>
