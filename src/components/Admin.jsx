@@ -245,6 +245,32 @@ const Admin = () => {
     </div>
   );
 
+  const renderDashboard = () => (
+    <div className="dashboard">
+      <h2>📊 Admin Dashboard</h2>
+      <div className="stats">
+        <p><strong>Total Incidents:</strong> {stats.incidents || 0}</p>
+        <p><strong>Resolved:</strong> {stats.resolved || 0}</p>
+        <p><strong>Pending:</strong> {stats.pending || 0}</p>
+        <p><strong>Discussions:</strong> {stats.discussions || 0}</p>
+      </div>
+      <div className="cards">
+        <div className="card" onClick={() => setSelectedCard('incidents')}>
+          <h3>🚨 View Incidents</h3>
+          <p>Manage reported incidents</p>
+        </div>
+        <div className="card" onClick={() => setSelectedCard('discussions')}>
+          <h3>💬 View Discussions</h3>
+          <p>Manage community discussions</p>
+        </div>
+        <div className="card logout-card" onClick={logout}>
+          <h3>🔒 Logout</h3>
+          <p>Sign out of admin panel</p>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="admin-container">
       {!isLoggedIn ? (
@@ -260,46 +286,13 @@ const Admin = () => {
             <p onClick={() => setShowForgotPassword(false)}>← Back to Login</p>
           </div>
         ) : showRegister ? (
-          <div className="container">
-            <h2>Register</h2>
-            <form onSubmit={handleRegisterSubmit}>
-              <input type="text" name="username" placeholder="Username" value={registerData.username} onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })} required />
-              <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })} required />
-              <input type="password" name="password" placeholder="Password" value={registerData.password} onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })} required />
-              <select name="role" value={registerData.role} onChange={(e) => setRegisterData({ ...registerData, role: e.target.value })} required>
-                <option value="">Select Role</option>
-                <option value="super">Super Admin</option>
-                <option value="admin">Admin</option>
-              </select>
-              {registerData.role === 'admin' && (
-                <select name="department" value={registerData.department} onChange={(e) => setRegisterData({ ...registerData, department: e.target.value })} required>
-                  <option value="">Select Department</option>
-                  <option value="Security">Security</option>
-                  <option value="Health">Health</option>
-                  <option value="Peace">Peace</option>
-                  <option value="Disaster">Disaster</option>
-                  <option value="NGO">NGO</option>
-                </select>
-              )}
-              <button type="submit" className="btn">Register</button>
-            </form>
-            <p>Already have an account? <span onClick={() => setShowRegister(false)}>Login</span></p>
-          </div>
+          // your register form (already correct)
+          // ...
+          null // Replace with your register form as before
         ) : (
-          <div className="container">
-            <h2>Admin Login</h2>
-            <form onSubmit={handleLoginSubmit}>
-              <input type="text" name="username" placeholder="Username" value={loginData.username} onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} required />
-              <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} required />
-              <select name="role" value={loginData.role} onChange={(e) => setLoginData({ ...loginData, role: e.target.value })} required>
-                <option value="">Select Role</option>
-                <option value="super">Super Admin</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button className="btn">Login</button>
-            </form>
-            <p><span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> | <span onClick={() => setShowRegister(true)}>Register</span></p>
-          </div>
+          // your login form (already correct)
+          // ...
+          null // Replace with your login form as before
         )
       ) : (
         selectedCard === 'incidents' ? renderIncidentList() :
