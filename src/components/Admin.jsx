@@ -66,8 +66,7 @@ const Admin = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
-          const filtered =
-            user?.role === 'super' ? data : data.filter((i) => i.department === department);
+          const filtered = user?.role === 'super' ? data : data.filter((i) => i.department === department);
           setIncidents(filtered);
         } else if (selectedCard === 'discussions') {
           const res = await fetch(`${BASE_URL}/api/discussions`, {
@@ -104,7 +103,6 @@ const Admin = () => {
       }
     } catch (err) {
       alert('❌ Status update error');
-      console.error(err);
     }
   };
 
@@ -124,7 +122,6 @@ const Admin = () => {
       }
     } catch (err) {
       alert('❌ Delete error');
-      console.error(err);
     }
   };
 
@@ -143,7 +140,6 @@ const Admin = () => {
         alert(data.msg || '❌ Failed to delete discussion');
       }
     } catch (err) {
-      console.error(err);
       alert('❌ Delete discussion error');
     }
   };
@@ -204,17 +200,6 @@ const Admin = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    if (!resetEmail) return alert('⚠️ Please enter a valid email.');
-    alert(`📧 Password reset sent to: ${resetEmail}`);
-    setResetEmail('');
-    setShowForgotPassword(false);
-  };
-
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-
-  // === Dashboard UI ===
   const renderDashboard = () => (
     <div className="super-admin-dashboard">
       <h2>🛡️ AmaniLink Hub Dashboard</h2>
@@ -245,7 +230,7 @@ const Admin = () => {
           <div className="container">
             <h3>Reset Password</h3>
             <input type="email" placeholder="Enter your email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
-            <button className="btn" onClick={handleForgotPassword}>Send Reset Link</button>
+            <button className="btn" onClick={() => alert(`📧 Password reset sent to: ${resetEmail}`)}>Send Reset Link</button>
             <p onClick={() => setShowForgotPassword(false)}>← Back to Login</p>
           </div>
         ) : showRegister ? (
@@ -291,10 +276,53 @@ const Admin = () => {
           </div>
         )
       ) : (
-        selectedCard === null ? renderDashboard() : selectedCard === 'incidents' ? (
-          <div className="incident-list">{/* same as before */}</div>
+        selectedCard === null ? renderDashboard() :
+        selectedCard === 'incidents' ? (
+          <div className="incident-list">
+            <h3>📍 Incident Reports</h3>
+            {incidents.length === 0 ? (
+              <p>No incidents available.</p>
+            ) : (
+              incidents.map((incident) => (
+                <div key={incident._id} className="incident-card">
+                  <h4>{incident.title}</h4>
+                  <p><strong>Description:</strong> {incident.description}</p>
+                  <p><strong>Location:</strong> {incident.locationName || 'N/A'} ({incident.location?.lat}, {incident.location?.lng})</p>
+                  <p><strong>Status:</strong> <span className={`status ${incident.status}`}>{incident.status}</span></p>
+                  <p><strong>Department:</strong> {incident.department}</p>
+                  {incident.image && (
+                    <img src={incident.image} alt="Incident" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
+                  )}
+                  <div className="incident-actions">
+                    <button onClick={() => handleStatusChange(incident._id, incident.status === 'pending' ? 'resolved' : 'pending')}>
+                      Mark as {incident.status === 'pending' ? 'Resolved' : 'Pending'}
+                    </button>
+                    <button onClick={() => handleDeleteIncident(incident._id)} className="delete-btn">🗑️ Delete</button>
+                  </div>
+                </div>
+              ))
+            )}
+            <button className="btn" onClick={() => setSelectedCard(null)}>← Back to Dashboard</button>
+          </div>
         ) : (
-          <div className="discussion-list">{/* same as before */}</div>
+          <div className="discussion-list">
+            <h3>💬 Community Discussions</h3>
+            {discussions.length === 0 ? (
+              <p>No discussions available.</p>
+            ) : (
+              discussions.map((discussion) => (
+                <div key={discussion._id} className="discussion-card">
+                  <h4>{discussion.title}</h4>
+                  <p><strong>Topic:</strong> {discussion.topic}</p>
+                  <p><strong>Messages:</strong> {discussion.messages.length}</p>
+                  <div className="discussion-actions">
+                    <button onClick={() => handleDeleteDiscussion(discussion._id)} className="delete-btn">🗑️ Delete</button>
+                  </div>
+                </div>
+              ))
+            )}
+            <button className="btn" onClick={() => setSelectedCard(null)}>← Back to Dashboard</button>
+          </div>
         )
       )}
     </div>
