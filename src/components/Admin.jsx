@@ -14,7 +14,13 @@ const Admin = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [selectedIncident, setSelectedIncident] = useState(null);
   const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '' });
+  const [registerData, setRegisterData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: '',
+    department: ''
+  });
   const [resetEmail, setResetEmail] = useState('');
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
@@ -192,7 +198,7 @@ const Admin = () => {
       const data = await res.json();
       if (res.ok) {
         alert('✅ Registered! Wait for approval.');
-        setRegisterData({ username: '', email: '', password: '', role: '' });
+        setRegisterData({ username: '', email: '', password: '', role: '', department: '' });
         setShowRegister(false);
       } else {
         alert(data.msg || '❌ Registration failed');
@@ -212,121 +218,6 @@ const Admin = () => {
 
   const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
   const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-
-  const Dashboard = () => {
-    const handleCardClick = (type) => setSelectedCard(type);
-    const handleBack = () => setSelectedIncident(null) || setSelectedCard(null);
-
-    if (selectedCard === 'incidents') {
-      return (
-        <div className="super-admin-dashboard">
-          <h2>🔥 Incident Reports</h2>
-          {!selectedIncident ? (
-            <table className="pretty-incident-table">
-              <thead>
-                <tr>
-                  <th>#</th><th>ID</th><th>Type</th><th>Status</th><th>Urgency</th><th>Reporter</th><th>Date</th><th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {incidents.map((incident, i) => (
-                  <tr key={incident._id} className="clickable-row" onClick={() => setSelectedIncident(incident)}>
-                    <td>{i + 1}</td>
-                    <td>{incident._id.slice(0, 6)}...</td>
-                    <td>{incident.incidentType || 'N/A'}</td>
-                    <td>
-                      {['pending', 'investigating', 'resolved', 'escalated'].map((status) => (
-                        <button
-                          key={status}
-                          className={`status-btn ${status} ${incident.status === status ? 'active' : ''}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStatusChange(incident._id, status);
-                          }}
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </td>
-                    <td>{incident.urgency || 'Normal'}</td>
-                    <td>{incident.anonymous ? 'Anonymous' : incident.reportedBy || 'User'}</td>
-                    <td>{new Date(incident.date).toLocaleDateString()}</td>
-                    <td>
-                      <button className="btn btn-delete" onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteIncident(incident._id);
-                      }}>🗑️</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="incident-details">
-              <h4>📍 Incident Details</h4>
-              <p><strong>ID:</strong> {selectedIncident._id}</p>
-              <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
-              <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
-              <p><strong>Status:</strong> {selectedIncident.status}</p>
-              <p><strong>Reporter:</strong> {selectedIncident.anonymous ? 'Anonymous' : selectedIncident.reportedBy}</p>
-              <p><strong>Location:</strong> {selectedIncident.locationName}</p>
-              <p><strong>Coordinates:</strong> {selectedIncident.coordinates?.lat}, {selectedIncident.coordinates?.lng}</p>
-              <p><strong>Description:</strong> {selectedIncident.description}</p>
-            </div>
-          )}
-          <button className="btn" onClick={handleBack}>← Back</button>
-        </div>
-      );
-    }
-
-    if (selectedCard === 'discussions') {
-      return (
-        <div className="super-admin-dashboard">
-          <h2>💬 Discussions</h2>
-          <table className="pretty-incident-table">
-            <thead>
-              <tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Actions</th></tr>
-            </thead>
-            <tbody>
-              {discussions.map((d, i) => (
-                <tr key={d._id}>
-                  <td>{i + 1}</td>
-                  <td>{d.title}</td>
-                  <td>{Array.isArray(d.messages) ? d.messages.length : 0}</td>
-                  <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    <button className="btn btn-delete" onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button className="btn" onClick={handleBack}>← Back</button>
-        </div>
-      );
-    }
-
-    return (
-      <div className="super-admin-dashboard">
-        <h2>🛡️ AmaniLink Hub Dashboard</h2>
-        <div className="dashboard-cards">
-          <div className="dashboard-card" onClick={() => handleCardClick('incidents')}>
-            <div className="card-icon">🔥</div>
-            <div className="card-title">Incidents</div>
-            <div className="card-desc">🔴 {stats.pendingIncidents || 0} Pending<br/>✅ {stats.resolvedIncidents || 0} Resolved</div>
-            <div className="card-value">{stats.incidentsCount || 0} Total</div>
-          </div>
-          <div className="dashboard-card" onClick={() => handleCardClick('discussions')}>
-            <div className="card-icon">💬</div>
-            <div className="card-title">Discussions</div>
-            <div className="card-desc">📢 Total</div>
-            <div className="card-value">{discussions.length}</div>
-          </div>
-        </div>
-        <button className="btn" onClick={logout}>Logout</button>
-      </div>
-    );
-  };
 
   return (
     <div className="admin-container">
@@ -350,6 +241,18 @@ const Admin = () => {
                 <option value="super">Super Admin</option>
                 <option value="admin">Admin</option>
               </select>
+              <select name="department" value={registerData.department} onChange={handleRegisterChange} required>
+                <option value="">Select Department</option>
+                <option value="Security">Security</option>
+                <option value="Health">Health</option>
+                <option value="Peace">Peace</option>
+                <option value="Disaster">Disaster</option>
+                <option value="NGO">NGO</option>
+                <option value="Police">Police</option>
+                <option value="Education">Education</option>
+                <option value="Community">Community</option>
+                <option value="Other">Other</option>
+              </select>
               <button type="submit" className="btn">Register</button>
             </form>
             <p>Already have an account? <span onClick={() => setShowRegister(false)}>Login here</span></p>
@@ -370,7 +273,9 @@ const Admin = () => {
             <p><span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> | <span onClick={() => setShowRegister(true)}>Register</span></p>
           </div>
         )
-      ) : <Dashboard />}
+      ) : (
+        <Dashboard />
+      )}
     </div>
   );
 };
