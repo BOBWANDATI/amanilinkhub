@@ -23,6 +23,13 @@ const Admin = () => {
 
   const token = localStorage.getItem('admin_token');
 
+  const toProperCase = (text) => {
+    if (!text) return '';
+    return text
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   useEffect(() => {
     if (isLoggedIn && token) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -191,11 +198,18 @@ const Admin = () => {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ Fix department casing
+    const formattedData = {
+      ...registerData,
+      department: toProperCase(registerData.department)
+    };
+
     try {
       const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
+        body: JSON.stringify(formattedData),
       });
       const data = await res.json();
       if (res.ok) {
@@ -247,9 +261,12 @@ const Admin = () => {
               {registerData.role === 'admin' && (
                 <select name="department" value={registerData.department} onChange={handleRegisterChange} required>
                   <option value="">Select Department</option>
-                  <option value="police">Police</option>
-                  <option value="ngo">NGO</option>
-                  <option value="government">Government</option>
+                  <option value="Security">Security</option>
+                  <option value="Health">Health</option>
+                  <option value="Peace">Peace</option>
+                  <option value="Disaster">Disaster</option>
+                  <option value="NGO">NGO</option>
+                  <option value="Other">Other</option>
                 </select>
               )}
 
@@ -273,7 +290,12 @@ const Admin = () => {
             <p><span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> | <span onClick={() => setShowRegister(true)}>Register</span></p>
           </div>
         )
-      ) : <Dashboard />}
+      ) : (
+        <div className="dashboard-container"> {/* Placeholder until you load real Dashboard */}
+          <h2>Welcome Admin</h2>
+          <button onClick={logout} className="btn">Logout</button>
+        </div>
+      )}
     </div>
   );
 };
