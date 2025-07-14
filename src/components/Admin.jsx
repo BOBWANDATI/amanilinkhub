@@ -12,7 +12,6 @@ const Admin = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [selectedIncident, setSelectedIncident] = useState(null);
   const [loginData, setLoginData] = useState({ username: '', password: '', role: '' });
   const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', role: '', department: '' });
   const [resetEmail, setResetEmail] = useState('');
@@ -198,13 +197,10 @@ const Admin = () => {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-
-    // ✅ Fix department casing
     const formattedData = {
       ...registerData,
       department: toProperCase(registerData.department)
     };
-
     try {
       const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method: 'POST',
@@ -291,9 +287,52 @@ const Admin = () => {
           </div>
         )
       ) : (
-        <div className="dashboard-container"> {/* Placeholder until you load real Dashboard */}
+        <div className="dashboard-container">
           <h2>Welcome Admin</h2>
-          <button onClick={logout} className="btn">Logout</button>
+          <div className="dashboard-buttons">
+            <button onClick={() => setSelectedCard('incidents')} className="btn">View Incidents</button>
+            <button onClick={() => setSelectedCard('discussions')} className="btn">View Discussions</button>
+            <button onClick={logout} className="btn logout">Logout</button>
+          </div>
+
+          {selectedCard === 'incidents' && (
+            <div className="incidents-list">
+              <h3>Incident Reports</h3>
+              {incidents.length === 0 ? (
+                <p>No incidents available</p>
+              ) : (
+                incidents.map((i) => (
+                  <div key={i._id} className="incident-card">
+                    <h4>{i.title}</h4>
+                    <p>{i.description}</p>
+                    <p><strong>Status:</strong> {i.status}</p>
+                    <p><strong>Department:</strong> {i.department}</p>
+                    <button onClick={() => handleDeleteIncident(i._id)} className="btn delete">Delete</button>
+                    <button onClick={() => handleStatusChange(i._id, i.status === 'Resolved' ? 'Pending' : 'Resolved')} className="btn update">
+                      Mark as {i.status === 'Resolved' ? 'Pending' : 'Resolved'}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {selectedCard === 'discussions' && (
+            <div className="discussions-list">
+              <h3>Discussions</h3>
+              {discussions.length === 0 ? (
+                <p>No discussions available</p>
+              ) : (
+                discussions.map((d) => (
+                  <div key={d._id} className="discussion-card">
+                    <h4>{d.title}</h4>
+                    <p>{d.messages.length} messages</p>
+                    <button onClick={() => handleDeleteDiscussion(d._id)} className="btn delete">Delete Discussion</button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
