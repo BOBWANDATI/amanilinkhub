@@ -5,7 +5,7 @@ import '../components/styles/Dialogue.css';
 
 const socket = io(import.meta.env.VITE_SOCKET_URL, {
   transports: ['websocket'],
-  withCredentials: true
+  withCredentials: true,
 });
 
 const BASE_URL = import.meta.env.VITE_SOCKET_URL;
@@ -20,7 +20,7 @@ const Dialogue = () => {
   const [newDiscussion, setNewDiscussion] = useState({
     title: '',
     location: '',
-    category: 'general'
+    category: 'general',
   });
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const Dialogue = () => {
           title: 'Ask PeaceBot (AI)',
           category: 'ai',
           location: 'Virtual',
-          participants: 1
+          participants: 1,
         };
 
         setTopics([...data, aiBot]);
@@ -50,7 +50,7 @@ const Dialogue = () => {
     socket.on('message', ({ topicId, message }) => {
       setMessages(prev => ({
         ...prev,
-        [topicId]: [...(prev[topicId] || []), message]
+        [topicId]: [...(prev[topicId] || []), message],
       }));
     });
 
@@ -66,12 +66,12 @@ const Dialogue = () => {
       id: Date.now(),
       text: message,
       sender: 'You',
-      time: new Date().toLocaleTimeString()
+      time: new Date().toLocaleTimeString(),
     };
 
     setMessages(prev => ({
       ...prev,
-      [topicId]: [...(prev[topicId] || []), userMessage]
+      [topicId]: [...(prev[topicId] || []), userMessage],
     }));
 
     if (topicId !== 'ai-peacebot') {
@@ -86,7 +86,7 @@ const Dialogue = () => {
         const response = await fetch(`${BASE_URL}/api/ai/peacebot`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: userMessage.text })
+          body: JSON.stringify({ prompt: userMessage.text }),
         });
 
         const data = await response.json();
@@ -95,23 +95,23 @@ const Dialogue = () => {
           id: Date.now() + 1,
           text: data.text || '🤖 PeaceBot has no answer right now.',
           sender: 'PeaceBot',
-          time: new Date().toLocaleTimeString()
+          time: new Date().toLocaleTimeString(),
         };
 
         setMessages(prev => ({
           ...prev,
-          [topicId]: [...(prev[topicId] || []), aiReply]
+          [topicId]: [...(prev[topicId] || []), aiReply],
         }));
       } catch (error) {
         const failMsg = {
           id: Date.now() + 2,
           text: '⚠️ AI service is currently unavailable.',
           sender: 'PeaceBot',
-          time: new Date().toLocaleTimeString()
+          time: new Date().toLocaleTimeString(),
         };
         setMessages(prev => ({
           ...prev,
-          [topicId]: [...(prev[topicId] || []), failMsg]
+          [topicId]: [...(prev[topicId] || []), failMsg],
         }));
       } finally {
         setLoading(false);
@@ -122,18 +122,21 @@ const Dialogue = () => {
   const selectTopic = (topic) => {
     setActiveTopic(topic);
     if (!messages[topic._id]) {
-      const welcomeText = topic._id === 'ai-peacebot'
-        ? "🤖 Welcome! I'm AmaniLinkBot. Ask any question about conflict resolution, peacebuilding, or mediation."
-        : `Welcome to the discussion about "${topic.title}"`;
+      const welcomeText =
+        topic._id === 'ai-peacebot'
+          ? "🤖 Welcome! I'm AmaniLinkBot. Ask any question about conflict resolution, peacebuilding, or mediation."
+          : `Welcome to the discussion about "${topic.title}"`;
 
       setMessages(prev => ({
         ...prev,
-        [topic._id]: [{
-          id: 1,
-          text: welcomeText,
-          sender: topic._id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
-          time: new Date().toLocaleTimeString()
-        }]
+        [topic._id]: [
+          {
+            id: 1,
+            text: welcomeText,
+            sender: topic._id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
+            time: new Date().toLocaleTimeString(),
+          },
+        ],
       }));
     }
   };
@@ -148,16 +151,25 @@ const Dialogue = () => {
     try {
       const response = await fetch(`${BASE_URL}/api/discussions/create`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, location, category }) // ✅ only required fields
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, location, category }),
       });
 
       const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(data.msg || 'Failed to create discussion');
+      }
+
+      // ✅ Emit to Admin via socket
+      socket.emit('new_discussion_created', data);
+
       const updatedTopics = [
         ...topics.filter(t => t._id !== 'ai-peacebot'),
         data,
-        topics.find(t => t._id === 'ai-peacebot')
+        topics.find(t => t._id === 'ai-peacebot'),
       ];
 
       setTopics(updatedTopics);
@@ -174,13 +186,17 @@ const Dialogue = () => {
     <div id="dialogue" className="page">
       <div className="container">
         <h2 className="page-title">Community Dialogue Platform</h2>
-        <p className="page-subtitle">Join discussions or ask PeaceBot to resolve conflict-related questions</p>
+        <p className="page-subtitle">
+          Join discussions or ask PeaceBot to resolve conflict-related questions
+        </p>
 
         <div className="dialogue-container">
           <div className="dialogue-sidebar">
             <div className="dialogue-card">
               <div className="dialogue-card-header">
-                <h3><FaComments /> Active Discussions</h3>
+                <h3>
+                  <FaComments /> Active Discussions
+                </h3>
                 <p>Tap any topic to join or ask PeaceBot directly</p>
               </div>
 
@@ -189,11 +205,15 @@ const Dialogue = () => {
                   {topics.map(topic => (
                     <div
                       key={topic._id}
-                      className={`topic-item ${activeTopic?._id === topic._id ? 'active' : ''}`}
+                      className={`topic-item ${
+                        activeTopic?._id === topic._id ? 'active' : ''
+                      }`}
                       onClick={() => selectTopic(topic)}
                     >
                       <h4>{topic.title}</h4>
-                      <p>{topic.location} • {topic.participants || 1} participants</p>
+                      <p>
+                        {topic.location} • {topic.participants || 1} participants
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -204,17 +224,32 @@ const Dialogue = () => {
                       type="text"
                       placeholder="Discussion Title"
                       value={newDiscussion.title}
-                      onChange={e => setNewDiscussion({ ...newDiscussion, title: e.target.value })}
+                      onChange={e =>
+                        setNewDiscussion({
+                          ...newDiscussion,
+                          title: e.target.value,
+                        })
+                      }
                     />
                     <input
                       type="text"
                       placeholder="Location"
                       value={newDiscussion.location}
-                      onChange={e => setNewDiscussion({ ...newDiscussion, location: e.target.value })}
+                      onChange={e =>
+                        setNewDiscussion({
+                          ...newDiscussion,
+                          location: e.target.value,
+                        })
+                      }
                     />
                     <select
                       value={newDiscussion.category}
-                      onChange={e => setNewDiscussion({ ...newDiscussion, category: e.target.value })}
+                      onChange={e =>
+                        setNewDiscussion({
+                          ...newDiscussion,
+                          category: e.target.value,
+                        })
+                      }
                     >
                       <option value="general">General</option>
                       <option value="land">Land</option>
@@ -222,18 +257,26 @@ const Dialogue = () => {
                       <option value="youth">Youth</option>
                       <option value="conflict">Conflict</option>
                     </select>
-                    <button className="btn btn-primary" onClick={handleCreateDiscussion}>
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleCreateDiscussion}
+                    >
                       Start Discussion
                     </button>
                   </div>
                 ) : (
                   <>
-                    <button className="btn btn-secondary dialogue-new-btn" onClick={() => setShowForm(true)}>
+                    <button
+                      className="btn btn-secondary dialogue-new-btn"
+                      onClick={() => setShowForm(true)}
+                    >
                       <FaPlus /> Start New Discussion
                     </button>
                     <button
                       className="btn btn-secondary dialogue-peacebot-btn pop"
-                      onClick={() => selectTopic(topics.find(t => t._id === 'ai-peacebot'))}
+                      onClick={() =>
+                        selectTopic(topics.find(t => t._id === 'ai-peacebot'))
+                      }
                     >
                       <FaRobot /> Ask PeaceBot
                     </button>
@@ -254,28 +297,44 @@ const Dialogue = () => {
               <div className="dialogue-chat">
                 <div className="chat-header">
                   <h3>{activeTopic.title}</h3>
-                  <p>{activeTopic.participants || 1} participants • {activeTopic._id === 'ai-peacebot' ? 'AI PeaceBot Chat' : 'Community Discussion'}</p>
+                  <p>
+                    {activeTopic.participants || 1} participants •{' '}
+                    {activeTopic._id === 'ai-peacebot'
+                      ? 'AI PeaceBot Chat'
+                      : 'Community Discussion'}
+                  </p>
                 </div>
 
                 <div className="chat-messages">
                   {messages[activeTopic._id]?.map(msg => (
-                    <div key={msg.id} className={`message ${msg.sender === 'PeaceBot' ? 'peacebot-message' : ''}`}>
+                    <div
+                      key={msg.id}
+                      className={`message ${
+                        msg.sender === 'PeaceBot' ? 'peacebot-message' : ''
+                      }`}
+                    >
                       <strong>{msg.sender}:</strong> {msg.text}
                       <span className="message-time">{msg.time}</span>
                     </div>
                   ))}
                   {loading && activeTopic._id === 'ai-peacebot' && (
-                    <div className="message"><FaRobot /> PeaceBot is thinking...</div>
+                    <div className="message">
+                      <FaRobot /> PeaceBot is thinking...
+                    </div>
                   )}
                 </div>
 
                 <div className="chat-input">
                   <input
                     type="text"
-                    placeholder={activeTopic._id === 'ai-peacebot' ? 'Ask your question to PeaceBot...' : 'Share your thoughts...'}
+                    placeholder={
+                      activeTopic._id === 'ai-peacebot'
+                        ? 'Ask your question to PeaceBot...'
+                        : 'Share your thoughts...'
+                    }
                     value={message}
                     maxLength="500"
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={e => setMessage(e.target.value)}
                   />
                   <span className="character-count">{message.length}/500</span>
                   <button
