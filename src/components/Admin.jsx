@@ -1,12 +1,11 @@
-// Admin.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
 import { io } from "socket.io-client";
 
-const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL); // Socket connection to Render backend
+const BASE_URL = 'https://backend-m6u3.onrender.com'; // ✅ Production backend URL
+const socket = io(BASE_URL); // ✅ Real-time connection
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -58,11 +57,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (selectedCard === 'incidents') {
-<<<<<<< HEAD
-      fetch('http://localhost:5051/api/admin/report', {
-=======
       fetch(`${BASE_URL}/api/admin/report`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       })
         .then(res => res.json())
@@ -77,11 +72,7 @@ const Admin = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      const res = await fetch('http://localhost:5051/api/auth/login', {
-=======
       const res = await fetch(`${BASE_URL}/api/auth/login`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
@@ -105,14 +96,10 @@ const Admin = () => {
   };
 
   const handleDeleteIncident = async (id) => {
-    const confirm = window.confirm("❗ Are you sure you want to delete this incident?");
-    if (!confirm) return;
+    const confirmDelete = window.confirm("❗ Are you sure you want to delete this incident?");
+    if (!confirmDelete) return;
     try {
-<<<<<<< HEAD
-      const res = await fetch(`http://localhost:5051/api/admin/report/${id}`, {
-=======
       const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         method: 'DELETE',
         headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
       });
@@ -131,11 +118,7 @@ const Admin = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-<<<<<<< HEAD
-      const res = await fetch(`http://localhost:5051/api/admin/report/${id}/status`, {
-=======
       const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -159,11 +142,7 @@ const Admin = () => {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      const res = await fetch('http://localhost:5051/api/auth/register', {
-=======
       const res = await fetch(`${BASE_URL}/api/auth/register`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registerData),

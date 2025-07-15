@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import './styles/stories.css';
 
@@ -13,117 +14,77 @@ const Stories = () => {
     location: ''
   });
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Sample data - in a real app, you would fetch this from an API
+  // ✅ Final backend URL (no need for .env)
+  const API_BASE_URL = 'http://localhost:5000/api/stories';
+
+  // 🔁 Fetch stories from backend
+  const fetchStories = async () => {
+    try {
+      const res = await axios.get(API_BASE_URL);
+      setStories(res.data.reverse()); // Show newest stories first
+    } catch (err) {
+      console.error('❌ Failed to fetch stories:', err.message);
+    }
+  };
+
   useEffect(() => {
-    const sampleStories = [
-      {
-        id: 1,
-        title: "From Conflict to Harmony in Kibera",
-        category: "reconciliation",
-        content: "After years of ethnic tensions in our neighborhood, we came together through community dialogues facilitated by Peace Hub. Today, we celebrate our diversity as strength.",
-        author: "Jane Muthoni",
-        location: "Nairobi, Kenya",
-        date: "2023-05-15",
-        likes: 24,
-        comments: 8
-      },
-      {
-        id: 2,
-        title: "Water Brings Us Together",
-        category: "community",
-        content: "The water crisis in our village used to cause daily fights. Now we have a fair distribution system and peace committees to resolve any issues that arise.",
-        author: "Mohamed Abdi",
-        location: "Garissa, Kenya",
-        date: "2023-04-28",
-        likes: 42,
-        comments: 15
-      },
-      {
-        id: 3,
-        title: "Healing After the Elections",
-        category: "healing",
-        content: "The 2022 elections left our community divided. Through trauma healing circles, we've been able to forgive and rebuild relationships with our neighbors.",
-        author: "",
-        location: "Nakuru, Kenya",
-        date: "2023-03-10",
-        likes: 37,
-        comments: 12
-      }
-    ];
-    setStories(sampleStories);
+    fetchStories();
   }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewStory({
-      ...newStory,
+    setNewStory((prev) => ({
+      ...prev,
       [name]: value
-    });
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const submittedStory = {
-      ...newStory,
-      id: stories.length + 1,
-      date: new Date().toISOString().split('T')[0],
-      likes: 0,
-      comments: 0
-    };
-    setStories([submittedStory, ...stories]);
-    setNewStory({
-      title: '',
-      category: 'reconciliation',
-      content: '',
-      author: '',
-      location: ''
-    });
-    setShowForm(false);
+    try {
+      setLoading(true);
+      await axios.post(API_BASE_URL, newStory);
+      setNewStory({
+        title: '',
+        category: 'reconciliation',
+        content: '',
+        author: '',
+        location: ''
+      });
+      setShowForm(false);
+      fetchStories();
+    } catch (err) {
+      console.error('❌ Error submitting story:', err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filteredStories = activeCategory === 'all' 
-    ? stories 
-    : stories.filter(story => story.category === activeCategory);
+  const filteredStories = activeCategory === 'all'
+    ? stories
+    : stories.filter((story) => story.category === activeCategory);
 
   return (
     <div id="stories" className="page">
       <div className="container">
         <h2 className="page-title">Peace Stories</h2>
         <p className="page-subtitle">Read inspiring stories of reconciliation and healing from communities across Kenya</p>
-        
+
         <div className="stories-actions">
           <div className="category-filter">
-            <button 
-              className={activeCategory === 'all' ? 'active' : ''}
-              onClick={() => setActiveCategory('all')}
-            >
-              All Stories
-            </button>
-            <button 
-              className={activeCategory === 'reconciliation' ? 'active' : ''}
-              onClick={() => setActiveCategory('reconciliation')}
-            >
-              Reconciliation
-            </button>
-            <button 
-              className={activeCategory === 'healing' ? 'active' : ''}
-              onClick={() => setActiveCategory('healing')}
-            >
-              Healing
-            </button>
-            <button 
-              className={activeCategory === 'community' ? 'active' : ''}
-              onClick={() => setActiveCategory('community')}
-            >
-              Community
-            </button>
+            {['all', 'reconciliation', 'healing', 'community'].map((cat) => (
+              <button
+                key={cat}
+                className={activeCategory === cat ? 'active' : ''}
+                onClick={() => setActiveCategory(cat)}
+              >
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </button>
+            ))}
           </div>
-          
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowForm(!showForm)}
-          >
+          <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
             {showForm ? 'Cancel' : 'Share Your Story'}
           </button>
         </div>
@@ -131,7 +92,7 @@ const Stories = () => {
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
             <h3>Share Your Peace Story</h3>
-            
+
             <div className="form-group">
               <label htmlFor="title">Story Title *</label>
               <input
@@ -144,7 +105,7 @@ const Stories = () => {
                 placeholder="Give your story a title"
               />
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="category">Category *</label>
@@ -160,7 +121,7 @@ const Stories = () => {
                   <option value="community">Community Building</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="location">Location</label>
                 <input
@@ -173,7 +134,7 @@ const Stories = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="content">Your Story *</label>
               <textarea
@@ -186,7 +147,7 @@ const Stories = () => {
                 placeholder="Tell your story of peace, reconciliation, or healing..."
               ></textarea>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="author">Your Name (optional)</label>
               <input
@@ -198,10 +159,10 @@ const Stories = () => {
                 placeholder="Leave blank to remain anonymous"
               />
             </div>
-            
+
             <div className="form-actions">
-              <button type="submit" className="btn btn-primary">
-                Submit Story
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Submitting...' : 'Submit Story'}
               </button>
             </div>
           </form>
@@ -209,38 +170,26 @@ const Stories = () => {
 
         <div className="stories-grid">
           {filteredStories.length > 0 ? (
-            filteredStories.map(story => (
-              <div key={story.id} className="story-card">
+            filteredStories.map((story) => (
+              <div key={story._id} className="story-card">
                 <div className="story-header">
                   <h3>{story.title}</h3>
                   <div className="story-meta">
-                    {story.author ? (
-                      <span><FaUser /> {story.author}</span>
-                    ) : (
-                      <span><FaUser /> Anonymous</span>
-                    )}
+                    <span><FaUser /> {story.author || 'Anonymous'}</span>
                     <span>{story.location}</span>
-                    <span>{story.date}</span>
+                    <span>{new Date(story.date).toLocaleDateString()}</span>
                   </div>
                   <div className="story-category">
                     {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
                   </div>
                 </div>
-                
                 <div className="story-content">
                   <p>{story.content}</p>
                 </div>
-                
                 <div className="story-footer">
-                  <button className="story-action">
-                    <FaHeart /> {story.likes}
-                  </button>
-                  <button className="story-action">
-                    <FaComment /> {story.comments}
-                  </button>
-                  <button className="story-action">
-                    <FaShare /> Share
-                  </button>
+                  <button className="story-action"><FaHeart /> {story.likes || 0}</button>
+                  <button className="story-action"><FaComment /> {story.comments || 0}</button>
+                  <button className="story-action"><FaShare /> Share</button>
                 </div>
               </div>
             ))

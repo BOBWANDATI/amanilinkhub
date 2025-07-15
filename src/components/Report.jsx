@@ -16,6 +16,9 @@ const Report = ({ setShowSuccessModal }) => {
     followUp: false,
   });
 
+  // Backend URL
+  const BACKEND_URL = 'https://backend-m6u3.onrender.com'; // 🌐 Use your actual Render URL
+
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
@@ -73,20 +76,11 @@ const Report = ({ setShowSuccessModal }) => {
 
     try {
       setLoading(true);
-<<<<<<< HEAD
-      const response = await fetch('http://localhost:5051/api/report/submit', {
+
+      const response = await fetch(`${BACKEND_URL}/api/report/submit`, {
         method: 'POST',
         body: form,
       });
-=======
-      
-      //connection
-
-      const response = await fetch('https://backend-m6u3.onrender.com/api/report/submit', {
-  method: 'POST',
-  body: form,
-});
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
 
       const data = await response.json();
       setLoading(false);

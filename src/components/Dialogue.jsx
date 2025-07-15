@@ -19,11 +19,7 @@ const Dialogue = () => {
 
   const fetchDiscussions = async () => {
     try {
-<<<<<<< HEAD
-      const res = await fetch('http://localhost:5051/api/discussions');
-=======
       const res = await fetch(`${BACKEND_URL}/api/discussions`);
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
       const data = await res.json();
 
       const aiBot = {
@@ -64,11 +60,7 @@ const Dialogue = () => {
     if (topicId === 'ai-peacebot') {
       setLoading(true);
       try {
-<<<<<<< HEAD
-        const response = await fetch('http://localhost:5051/api/ai/peacebot', {
-=======
         const response = await fetch(`${BACKEND_URL}/api/ai/peacebot`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: userMessage.text })
@@ -133,11 +125,7 @@ const Dialogue = () => {
     }
 
     try {
-<<<<<<< HEAD
-      const response = await fetch('http://localhost:5051/api/discussions/create', {
-=======
       const response = await fetch(`${BACKEND_URL}/api/discussions/create`, {
->>>>>>> 1342c69ed9a316a945a6168d486c15366545d58a
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
