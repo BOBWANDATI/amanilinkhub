@@ -1,5 +1,3 @@
-// Updated Admin.jsx with modals for incident, discussion, and story details
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
@@ -194,7 +192,99 @@ const Admin = () => {
     </div>
   );
 
-   return (
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('admin_token', data.token);
+        setIsLoggedIn(true);
+      } else {
+        alert('Login failed');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData),
+      });
+      const data = await res.json();
+      alert(data.message || 'Registered');
+      setShowRegister(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status: newStatus }),
+      });
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    }
+  };
+
+  const handleDeleteIncident = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIncidents(incidents.filter(i => i._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const handleDeleteDiscussion = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/api/discussions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDiscussions(discussions.filter(d => d._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const handleDeleteStory = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/api/stories/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStories(stories.filter(s => s._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('admin_token');
+    setIsLoggedIn(false);
+  };
+
+  return (
     <div className="admin-container">
       {!isLoggedIn ? (
         showForgotPassword ? (
