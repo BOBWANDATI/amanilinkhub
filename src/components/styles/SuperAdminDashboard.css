@@ -6,6 +6,7 @@
   padding: 20px;
   background-color: #f5f7fa;
   min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Dashboard Cards */
@@ -22,10 +23,15 @@
   flex: 1;
   min-width: 250px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
 }
 
 .dashboard-card .card-icon {
@@ -51,7 +57,7 @@
   color: #007bff;
 }
 
-/* Table */
+/* Incident Table */
 .pretty-incident-table {
   width: 100%;
   border-collapse: collapse;
@@ -59,7 +65,7 @@
   background-color: #fff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .pretty-incident-table th,
@@ -134,14 +140,16 @@
   cursor: pointer;
 }
 
-/* Detail Modal */
+/* ================================
+   Modal and Detail Grid Styling
+   ================================ */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -150,30 +158,81 @@
 
 .modal-content {
   background-color: white;
-  padding: 25px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 600px;
+  padding: 30px;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .modal-content h3 {
-  margin-bottom: 15px;
-  color: #333;
+  font-size: 22px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
 }
 
-.modal-content pre {
-  font-size: 14px;
+/* Detail Grid */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px 20px;
+  font-size: 15px;
   color: #444;
-  background: #f9f9f9;
-  padding: 15px;
-  border-radius: 6px;
-  overflow-x: auto;
+  line-height: 1.6;
+  margin-top: 20px;
 }
 
-/* Back Button / General Button */
+.detail-grid .label {
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: right;
+  padding-top: 5px;
+}
+
+.detail-grid .value {
+  background-color: #f4f8ff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: #222;
+  word-break: break-word;
+}
+
+.detail-grid .value code {
+  display: block;
+  background: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.detail-grid .value ul {
+  padding-left: 18px;
+  margin: 5px 0;
+}
+
+.detail-grid .value li {
+  margin-bottom: 4px;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* General Button */
 .btn {
   margin-top: 20px;
   padding: 8px 16px;
@@ -189,7 +248,9 @@
   background-color: #0056b3;
 }
 
-/* Mobile Responsive */
+/* ===============================
+   Mobile Responsive
+   =============================== */
 @media (max-width: 768px) {
   .pretty-incident-table,
   .pretty-incident-table thead,
@@ -225,5 +286,16 @@
 
   .dashboard-cards {
     flex-direction: column;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-grid .label {
+    text-align: left;
+    padding-top: 0;
+    font-weight: bold;
+    color: #007bff;
   }
 }
