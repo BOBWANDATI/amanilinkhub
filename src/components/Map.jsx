@@ -24,11 +24,21 @@ const Map = () => {
   const navigate = useNavigate();
   const [mapData, setMapData] = useState({ incidents: [], stats: {} });
 
+  const normalizeIncidents = (incidents) =>
+    incidents.map((i) => ({
+      ...i,
+      id: i.id || i._id,
+    }));
+
   const fetchMapData = async () => {
     try {
       const res = await fetch(`${API_URL}/api/report/map`);
       const data = await res.json();
-      setMapData(data);
+      const normalized = {
+        ...data,
+        incidents: normalizeIncidents(data.incidents || []),
+      };
+      setMapData(normalized);
     } catch (err) {
       console.error('❌ Failed to fetch map data:', err);
     }
@@ -38,7 +48,7 @@ const Map = () => {
     if (!mapRef.current) {
       const map = L.map('mapDisplay').setView([1.2921, 36.8219], 6);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
       mapRef.current = map;
     }
@@ -70,20 +80,22 @@ const Map = () => {
           escalated: 0,
         };
 
-        markers.forEach(marker => {
+        markers.forEach((marker) => {
           const status = marker.options.customStatus || 'pending';
           statusCount[status] = (statusCount[status] || 0) + 1;
         });
 
-        const dominantStatus = Object.entries(statusCount).sort((a, b) => b[1] - a[1])[0][0];
+        const dominantStatus = Object.entries(statusCount).sort(
+          (a, b) => b[1] - a[1]
+        )[0][0];
         const dominantColor = statusColors[dominantStatus] || 'gray';
 
         return L.divIcon({
           html: `<div style="background-color:${dominantColor}; color:white; border-radius:50%; padding:8px 12px; font-size:12px">${cluster.getChildCount()}</div>`,
           className: 'custom-cluster-icon',
-          iconSize: [30, 30]
+          iconSize: [30, 30],
         });
-      }
+      },
     });
 
     data.incidents.forEach(({ id, location, type, status, date }) => {
@@ -95,7 +107,7 @@ const Map = () => {
           radius: 8,
           color: statusColors[status] || 'gray',
           fillColor: statusColors[status] || 'gray',
-          fillOpacity: 0.8
+          fillOpacity: 0.8,
         });
 
         marker.options.customStatus = status;
@@ -128,10 +140,10 @@ const Map = () => {
 
   useEffect(() => {
     const handleDeleted = ({ id }) => {
-      setMapData(prev => {
+      setMapData((prev) => {
         const updated = {
           ...prev,
-          incidents: prev.incidents.filter(i => i.id !== id)
+          incidents: prev.incidents.filter((i) => i.id !== id),
         };
         setTimeout(() => renderMarkers(updated), 0);
         return updated;
@@ -139,12 +151,15 @@ const Map = () => {
     };
 
     const handleUpdated = (updatedIncident) => {
-      setMapData(prev => {
+      const id = updatedIncident.id || updatedIncident._id;
+      const incidentWithId = { ...updatedIncident, id };
+
+      setMapData((prev) => {
         const updated = {
           ...prev,
-          incidents: prev.incidents.map(i =>
-            i.id === updatedIncident.id ? { ...updatedIncident } : i
-          )
+          incidents: prev.incidents.map((i) =>
+            i.id === id ? incidentWithId : i
+          ),
         };
         setTimeout(() => renderMarkers(updated), 0);
         return updated;
@@ -152,7 +167,7 @@ const Map = () => {
     };
 
     const handleNewIncident = () => {
-      fetchMapData(); // fresh full reload
+      fetchMapData(); // reload fresh data
     };
 
     socket.on('incident_deleted', handleDeleted);
@@ -170,8 +185,12 @@ const Map = () => {
     <div id="map" className="page">
       <div className="container">
         <h2 className="page-title">Conflict Map</h2>
-        <button onClick={() => navigate('/')} className="btn btn-secondary">Go To Home</button>
-        <p className="page-subtitle">Interactive map showing reported incidents and their status</p>
+        <button onClick={() => navigate('/')} className="btn btn-secondary">
+          Go To Home
+        </button>
+        <p className="page-subtitle">
+          Interactive map showing reported incidents and their status
+        </p>
 
         <div className="map-container">
           <div className="map-controls">
@@ -197,23 +216,42 @@ const Map = () => {
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
             </select>
-            <button className="btn-secondary" onClick={fetchMapData}><FaSyncAlt /> Refresh</button>
+            <button className="btn-secondary" onClick={fetchMapData}>
+              <FaSyncAlt /> Refresh
+            </button>
           </div>
 
           <div id="mapDisplay" className="map-display"></div>
 
           <div className="map-legend">
             <h4>Legend</h4>
-            <div className="legend-item"><span className="legend-color red"></span> Pending</div>
-            <div className="legend-item"><span className="legend-color orange"></span> Investigating</div>
-            <div className="legend-item"><span className="legend-color green"></span> Resolved</div>
-            <div className="legend-item"><span className="legend-color brown"></span> Escalated</div>
+            <div className="legend-item">
+              <span className="legend-color red"></span> Pending
+            </div>
+            <div className="legend-item">
+              <span className="legend-color orange"></span> Investigating
+            </div>
+            <div className="legend-item">
+              <span className="legend-color green"></span> Resolved
+            </div>
+            <div className="legend-item">
+              <span className="legend-color brown"></span> Escalated
+            </div>
           </div>
 
           <div className="map-stats">
-            <div className="stat-item"><strong>{mapData.stats?.pending || 0}</strong><span>Pending</span></div>
-            <div className="stat-item"><strong>{mapData.stats?.resolved || 0}</strong><span>Resolved</span></div>
-            <div className="stat-item"><strong>{mapData.stats?.total || 0}</strong><span>Total</span></div>
+            <div className="stat-item">
+              <strong>{mapData.stats?.pending || 0}</strong>
+              <span>Pending</span>
+            </div>
+            <div className="stat-item">
+              <strong>{mapData.stats?.resolved || 0}</strong>
+              <span>Resolved</span>
+            </div>
+            <div className="stat-item">
+              <strong>{mapData.stats?.total || 0}</strong>
+              <span>Total</span>
+            </div>
           </div>
         </div>
       </div>
