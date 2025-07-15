@@ -117,7 +117,7 @@ const Admin = () => {
       prev.map((i) => (i._id === id ? updatedIncident : i))
     );
 
-    socket.emit("incident_updated", updatedIncident); // 🛰️ Emit to map/others
+    //socket.emit("incident_updated", updatedIncident); // 🛰️ Emit to map/others
 
   } catch (err) {
     console.error('Failed to update status:', err);
