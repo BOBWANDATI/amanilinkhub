@@ -18,6 +18,7 @@ const Admin = () => {
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
   const [stories, setStories] = useState([]);
+  const [selectedDetail, setSelectedDetail] = useState(null);
   const navigate = useNavigate();
 
   const token = localStorage.getItem('admin_token');
@@ -35,19 +36,15 @@ const Admin = () => {
 
   useEffect(() => {
     if (!socket) return;
-
     const handleNewIncident = (incident) => {
       setIncidents((prev) => [incident, ...prev]);
       alert(`🚨 New Incident: ${incident.title}`);
     };
-
     const handleIncidentUpdated = (updated) => {
       setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
     };
-
     socket.on("new_incident_reported", handleNewIncident);
     socket.on("incident_updated", handleIncidentUpdated);
-
     return () => {
       socket.off("new_incident_reported", handleNewIncident);
       socket.off("incident_updated", handleIncidentUpdated);
@@ -56,33 +53,20 @@ const Admin = () => {
 
   useEffect(() => {
     if (!token || !isLoggedIn) return;
-
     const fetchData = async () => {
       try {
         const [incRes, disRes, storyRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/admin/report`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${BASE_URL}/api/discussions`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${BASE_URL}/api/stories`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } })
         ]);
-
-        const incData = await incRes.json();
-        const disData = await disRes.json();
-        const storyData = await storyRes.json();
-
-        setIncidents(incData);
-        setDiscussions(disData);
-        setStories(storyData);
+        setIncidents(await incRes.json());
+        setDiscussions(await disRes.json());
+        setStories(await storyRes.json());
       } catch (err) {
         console.error('Fetch error:', err);
       }
     };
-
     fetchData();
   }, [isLoggedIn]);
 
@@ -130,103 +114,41 @@ const Admin = () => {
     }
   };
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(`✅ Status updated to ${newStatus}`);
-        setIncidents((prev) => prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i)));
-      } else alert(data.msg || '❌ Status update failed');
-    } catch (err) {
-      console.error(err);
-      alert('❌ Status error');
-    }
-  };
-
-  const handleDeleteIncident = async (id) => {
-    if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
-
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIncidents((prev) => prev.filter((i) => i._id !== id));
-        alert('✅ Deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('Delete discussion?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert('✅ Discussion deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDeleteStory = async (id) => {
-    if (!window.confirm('Delete story?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/stories/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setStories((prev) => prev.filter((s) => s._id !== id));
-        alert('✅ Story deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const logout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
     setLoginData({ username: '', password: '', role: '' });
   };
 
+  const DetailModal = () => (
+    selectedDetail ? (
+      <div className="modal-backdrop" onClick={() => setSelectedDetail(null)}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <h3>{selectedDetail.title || 'Details'}</h3>
+          <pre>{JSON.stringify(selectedDetail, null, 2)}</pre>
+          <button className="btn" onClick={() => setSelectedDetail(null)}>Close</button>
+        </div>
+      </div>
+    ) : null
+  );
+
   const Dashboard = () => (
     <div className="super-admin-dashboard">
       <h2>🛡️ AmaniLink Admin Dashboard</h2>
-
       <div className="dashboard-cards">
-        <div className="dashboard-card">
+        <div className="dashboard-card" onClick={() => setSelectedDetail(stats)}>
           <div className="card-icon">🔥</div>
           <div className="card-title">Incidents</div>
           <div className="card-desc">Pending: {stats.pendingIncidents || 0} | Resolved: {stats.resolvedIncidents || 0}</div>
           <div className="card-value">{stats.incidentsCount || incidents.length}</div>
         </div>
-        <div className="dashboard-card">
+        <div className="dashboard-card" onClick={() => setSelectedDetail({ discussions })}>
           <div className="card-icon">💬</div>
           <div className="card-title">Discussions</div>
           <div className="card-desc">Active threads</div>
           <div className="card-value">{discussions.length}</div>
         </div>
-        <div className="dashboard-card">
+        <div className="dashboard-card" onClick={() => setSelectedDetail({ stories })}>
           <div className="card-icon">📚</div>
           <div className="card-title">Stories</div>
           <div className="card-desc">Shared stories</div>
@@ -237,24 +159,16 @@ const Admin = () => {
 
       <h3>📍 Incident Reports</h3>
       <table className="pretty-incident-table">
-        <thead>
-          <tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr>
-        </thead>
+        <thead><tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr></thead>
         <tbody>
           {incidents.map((i, idx) => (
-            <tr key={i._id}>
+            <tr key={i._id} onClick={() => setSelectedDetail(i)}>
               <td>{idx + 1}</td>
               <td>{i.incidentType}</td>
-              <td>
-                {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
-                  <button key={s} className={`status-btn ${s} ${i.status === s ? 'active' : ''}`} onClick={() => handleStatusChange(i._id, s)}>
-                    {s}
-                  </button>
-                ))}
-              </td>
+              <td>{i.status}</td>
               <td>{i.urgency}</td>
               <td>{new Date(i.date).toLocaleDateString()}</td>
-              <td><button onClick={() => handleDeleteIncident(i._id)}>🗑️</button></td>
+              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteIncident(i._id); }}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
@@ -265,12 +179,12 @@ const Admin = () => {
         <thead><tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Action</th></tr></thead>
         <tbody>
           {discussions.map((d, idx) => (
-            <tr key={d._id}>
+            <tr key={d._id} onClick={() => setSelectedDetail(d)}>
               <td>{idx + 1}</td>
               <td>{d.title}</td>
               <td>{d.messages?.length || 0}</td>
               <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-              <td><button onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button></td>
+              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteDiscussion(d._id); }}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
@@ -281,15 +195,16 @@ const Admin = () => {
         <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
         <tbody>
           {stories.map((s, idx) => (
-            <tr key={s._id}>
+            <tr key={s._id} onClick={() => setSelectedDetail(s)}>
               <td>{idx + 1}</td>
               <td>{s.title || 'Untitled'}</td>
               <td>{new Date(s.date).toLocaleDateString()}</td>
-              <td><button onClick={() => handleDeleteStory(s._id)}>🗑️</button></td>
+              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteStory(s._id); }}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
       </table>
+      <DetailModal />
     </div>
   );
 
@@ -309,12 +224,16 @@ const Admin = () => {
             <form onSubmit={handleRegisterSubmit}>
               <input name="username" placeholder="Username" value={registerData.username} onChange={handleRegisterChange} required />
               <input name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} required />
-              <input name="password" placeholder="Password" type="password" value={registerData.password} onChange={handleRegisterChange} required />
+              <input name="password" type="password" placeholder="Password" value={registerData.password} onChange={handleRegisterChange} required />
               <select name="role" value={registerData.role} onChange={handleRegisterChange} required>
-                <option value="">Role</option><option value="admin">Admin</option><option value="super">Super Admin</option>
+                <option value="">Role</option>
+                <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
               </select>
               <select name="department" value={registerData.department} onChange={handleRegisterChange} required>
-                <option value="">Department</option><option value="Health">Health</option><option value="Police">Police</option>
+                <option value="">Department</option>
+                <option value="Health">Health</option>
+                <option value="Police">Police</option>
               </select>
               <button className="btn" type="submit">Register</button>
             </form>
@@ -325,9 +244,11 @@ const Admin = () => {
             <h2>Admin Login</h2>
             <form onSubmit={handleLoginSubmit}>
               <input name="username" placeholder="Username" value={loginData.username} onChange={handleLoginChange} required />
-              <input name="password" placeholder="Password" type="password" value={loginData.password} onChange={handleLoginChange} required />
+              <input name="password" type="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} required />
               <select name="role" value={loginData.role} onChange={handleLoginChange} required>
-                <option value="">Role</option><option value="admin">Admin</option><option value="super">Super Admin</option>
+                <option value="">Role</option>
+                <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
               </select>
               <button className="btn" type="submit">Login</button>
             </form>
