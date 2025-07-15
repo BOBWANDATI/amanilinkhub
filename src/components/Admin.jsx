@@ -27,6 +27,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
 
+  // Fetch stats when logged in
   useEffect(() => {
     if (isLoggedIn && token) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -38,6 +39,7 @@ const Admin = () => {
     }
   }, [isLoggedIn, token]);
 
+  // Socket.io event listeners for real-time incident updates
   useEffect(() => {
     if (!socket) return;
 
@@ -59,6 +61,7 @@ const Admin = () => {
     };
   }, []);
 
+  // Fetch incidents, discussions, stories after login
   useEffect(() => {
     if (!token || !isLoggedIn) return;
 
@@ -91,6 +94,7 @@ const Admin = () => {
     fetchData();
   }, [isLoggedIn, token]);
 
+  // Show modal details
   const showModal = (type, item) => {
     setModalType(type);
     setSelectedItem(item);
@@ -101,6 +105,7 @@ const Admin = () => {
     setModalType('');
   };
 
+  // Update incident status
   const handleStatusChange = async (id, newStatus) => {
     try {
       const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
@@ -122,13 +127,14 @@ const Admin = () => {
     }
   };
 
+  // Delete handlers
   const handleDeleteIncident = async (id) => {
     try {
       await fetch(`${BASE_URL}/api/admin/report/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      setIncidents(incidents.filter((i) => i._id !== id));
+      setIncidents((prev) => prev.filter((i) => i._id !== id));
     } catch (err) {
       console.error('Delete error:', err);
     }
@@ -140,7 +146,7 @@ const Admin = () => {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      setDiscussions(discussions.filter((d) => d._id !== id));
+      setDiscussions((prev) => prev.filter((d) => d._id !== id));
     } catch (err) {
       console.error('Delete error:', err);
     }
@@ -152,12 +158,13 @@ const Admin = () => {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      setStories(stories.filter((s) => s._id !== id));
+      setStories((prev) => prev.filter((s) => s._id !== id));
     } catch (err) {
       console.error('Delete error:', err);
     }
   };
 
+  // Modal component for details
   const DetailModal = () => {
     if (!selectedItem) return null;
     const item = selectedItem;
@@ -178,11 +185,13 @@ const Admin = () => {
     );
   };
 
+  // Logout
   const logout = () => {
     localStorage.removeItem('admin_token');
     setIsLoggedIn(false);
   };
 
+  // Dashboard view
   const Dashboard = () => (
     <div className="super-admin-dashboard">
       <h2>🛡️ AmaniLink Admin Dashboard</h2>
@@ -191,8 +200,7 @@ const Admin = () => {
           <div className="card-icon">🔥</div>
           <div className="card-title">Incidents</div>
           <div className="card-desc">
-            Pending: {stats.pendingIncidents || 0} | Resolved:{' '}
-            {stats.resolvedIncidents || 0}
+            Pending: {stats.pendingIncidents || 0} | Resolved: {stats.resolvedIncidents || 0}
           </div>
           <div className="card-value">{stats.incidentsCount || incidents.length}</div>
         </div>
@@ -231,22 +239,18 @@ const Admin = () => {
               <td>{idx + 1}</td>
               <td>{i.incidentType}</td>
               <td>
-                {['pending', 'investigating', 'resolved', 'escalated'].map(
-                  (s) => (
-                    <button
-                      key={s}
-                      className={`status-btn ${s} ${
-                        i.status === s ? 'active' : ''
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleStatusChange(i._id, s);
-                      }}
-                    >
-                      {s}
-                    </button>
-                  )
-                )}
+                {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
+                  <button
+                    key={s}
+                    className={`status-btn ${s} ${i.status === s ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusChange(i._id, s);
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
               </td>
               <td>{i.urgency}</td>
               <td>{new Date(i.date).toLocaleDateString()}</td>
@@ -328,10 +332,12 @@ const Admin = () => {
           ))}
         </tbody>
       </table>
+
       <DetailModal />
     </div>
   );
 
+  // Handle login submission
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoginError('');
@@ -347,10 +353,10 @@ const Admin = () => {
       if (data.token) {
         localStorage.setItem('admin_token', data.token);
         setIsLoggedIn(true);
-      } else if (data.error === 'Account not approved') {
+      } else if (data.msg && data.msg.toLowerCase().includes('pending approval')) {
         setLoginError('Your account is not approved yet. Please wait for approval.');
       } else {
-        setLoginError('Login failed. Please check your credentials.');
+        setLoginError(data.msg || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
       setLoginError('Login failed due to a server error.');
@@ -359,6 +365,7 @@ const Admin = () => {
     setLoading(false);
   };
 
+  // Handle registration submission
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setRegisterMessage('');
@@ -370,11 +377,15 @@ const Admin = () => {
         body: JSON.stringify(registerData),
       });
       const data = await res.json();
-      if (data.success) {
-        setRegisterMessage('Registration successful! Please wait for approval via email.');
-        setShowRegister(false);
+
+      if (data.msg) {
+        setRegisterMessage(data.msg);
+        // Close register form if registration is successful message contains 'registered'
+        if (data.msg.toLowerCase().includes('registered')) {
+          setShowRegister(false);
+        }
       } else {
-        setRegisterMessage(data.message || 'Registration failed.');
+        setRegisterMessage('Registration failed.');
       }
     } catch (err) {
       setRegisterMessage('Registration failed due to a server error.');
@@ -383,8 +394,12 @@ const Admin = () => {
     setLoading(false);
   };
 
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  // Controlled input handlers
+  const handleLoginChange = (e) =>
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+
+  const handleRegisterChange = (e) =>
+    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
 
   return (
     <div className="admin-container">
