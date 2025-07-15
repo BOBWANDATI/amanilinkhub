@@ -98,9 +98,59 @@ const Admin = () => {
     setModalType('');
   };
 
-  //DETAIL MODAL
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status: newStatus }),
+      });
 
-const DetailModal = () => {
+      const updatedIncident = await res.json();
+      setIncidents((prev) => prev.map((i) => (i._id === id ? updatedIncident : i)));
+      socket.emit("incident_updated", updatedIncident); // Notify others (map or admins)
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    }
+  };
+
+  const handleDeleteIncident = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setIncidents(incidents.filter(i => i._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const handleDeleteDiscussion = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/api/discussions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDiscussions(discussions.filter(d => d._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const handleDeleteStory = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/api/stories/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStories(stories.filter(s => s._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
+  const DetailModal = () => {
     if (!selectedItem) return null;
     const item = selectedItem;
     return (
@@ -114,6 +164,10 @@ const DetailModal = () => {
     );
   };
 
+  const logout = () => {
+    localStorage.removeItem('admin_token');
+    setIsLoggedIn(false);
+  };
 
   const Dashboard = () => (
     <div className="super-admin-dashboard">
@@ -233,59 +287,6 @@ const DetailModal = () => {
 
   const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
   const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status: newStatus }),
-      });
-    } catch (err) {
-      console.error('Failed to update status:', err);
-    }
-  };
-
-  const handleDeleteIncident = async (id) => {
-    try {
-      await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setIncidents(incidents.filter(i => i._id !== id));
-    } catch (err) {
-      console.error('Delete error:', err);
-    }
-  };
-
-  const handleDeleteDiscussion = async (id) => {
-    try {
-      await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setDiscussions(discussions.filter(d => d._id !== id));
-    } catch (err) {
-      console.error('Delete error:', err);
-    }
-  };
-
-  const handleDeleteStory = async (id) => {
-    try {
-      await fetch(`${BASE_URL}/api/stories/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setStories(stories.filter(s => s._id !== id));
-    } catch (err) {
-      console.error('Delete error:', err);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('admin_token');
-    setIsLoggedIn(false);
-  };
 
   return (
     <div className="admin-container">
