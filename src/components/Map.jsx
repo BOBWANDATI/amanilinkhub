@@ -25,10 +25,7 @@ const Map = () => {
   const [mapData, setMapData] = useState({ incidents: [], stats: {} });
 
   const normalizeIncidents = (incidents) =>
-    incidents.map((i) => ({
-      ...i,
-      id: i.id || i._id,
-    }));
+    incidents.map((i) => ({ ...i, id: i.id || i._id }));
 
   const fetchMapData = async () => {
     try {
@@ -67,7 +64,7 @@ const Map = () => {
     if (!map || !data?.incidents) return;
 
     if (markerLayerRef.current) {
-      markerLayerRef.current.clearLayers();
+      map.removeLayer(markerLayerRef.current);
     }
 
     const markerCluster = L.markerClusterGroup({
@@ -85,9 +82,7 @@ const Map = () => {
           statusCount[status] = (statusCount[status] || 0) + 1;
         });
 
-        const dominantStatus = Object.entries(statusCount).sort(
-          (a, b) => b[1] - a[1]
-        )[0][0];
+        const dominantStatus = Object.entries(statusCount).sort((a, b) => b[1] - a[1])[0][0];
         const dominantColor = statusColors[dominantStatus] || 'gray';
 
         return L.divIcon({
@@ -98,7 +93,8 @@ const Map = () => {
       },
     });
 
-    data.incidents.forEach(({ id, location, type, status, date }) => {
+    data.incidents.forEach((incident) => {
+      const { id, incidentType, status, location, date } = incident;
       const lat = location?.lat;
       const lng = location?.lng;
 
@@ -107,14 +103,14 @@ const Map = () => {
           radius: 8,
           color: statusColors[status] || 'gray',
           fillColor: statusColors[status] || 'gray',
-          fillOpacity: 0.8,
+          fillOpacity: 0.9,
         });
 
         marker.options.customStatus = status;
-        marker._incidentId = id; // 🆕 Unique ID per marker
+        marker.options.incidentId = id;
 
         marker.bindPopup(`
-          <strong>Type:</strong> ${type}<br/>
+          <strong>Type:</strong> ${incidentType}<br/>
           <strong>Status:</strong> <span style="color:${statusColors[status]}">${status}</span><br/>
           <strong>Date:</strong> ${new Date(date).toLocaleString()}
         `);
@@ -152,7 +148,7 @@ const Map = () => {
     };
 
     const handleUpdated = (updatedIncident) => {
-      const id = updatedIncident.id || updatedIncident._id;
+      const id = updatedIncident._id || updatedIncident.id;
       const incidentWithId = { ...updatedIncident, id };
 
       setMapData((prev) => {
@@ -168,7 +164,7 @@ const Map = () => {
     };
 
     const handleNewIncident = () => {
-      fetchMapData(); // reload fresh data
+      fetchMapData(); // refresh data from backend
     };
 
     socket.on('incident_deleted', handleDeleted);
