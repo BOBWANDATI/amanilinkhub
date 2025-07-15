@@ -8,16 +8,50 @@
   min-height: 100vh;
 }
 
-/* Table Wrapper */
-.incident-table-wrapper {
-  transition: all 0.3s ease-in-out;
+/* Dashboard Cards */
+.dashboard-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
 }
 
-.incident-table-wrapper.hidden {
-  display: none;
+.dashboard-card {
+  background-color: #fff;
+  padding: 20px;
+  flex: 1;
+  min-width: 250px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Incident Table */
+.dashboard-card .card-icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.dashboard-card .card-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+}
+
+.dashboard-card .card-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.dashboard-card .card-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Table */
 .pretty-incident-table {
   width: 100%;
   border-collapse: collapse;
@@ -41,6 +75,11 @@
   font-weight: 600;
 }
 
+.pretty-incident-table td button {
+  margin-right: 5px;
+}
+
+/* Clickable Table Row */
 .clickable-row {
   cursor: pointer;
   transition: background-color 0.2s;
@@ -95,27 +134,46 @@
   cursor: pointer;
 }
 
-/* Incident Details */
-.incident-details {
-  margin-top: 30px;
-  padding: 25px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+/* Detail Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
-.incident-details h4 {
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.modal-content h3 {
   margin-bottom: 15px;
   color: #333;
 }
 
-.incident-details p {
-  margin: 6px 0;
-  font-size: 15px;
-  color: #555;
+.modal-content pre {
+  font-size: 14px;
+  color: #444;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
 }
 
-/* Back Button */
+/* Back Button / General Button */
 .btn {
   margin-top: 20px;
   padding: 8px 16px;
@@ -131,8 +189,7 @@
   background-color: #0056b3;
 }
 
-
-
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .pretty-incident-table,
   .pretty-incident-table thead,
@@ -165,5 +222,8 @@
   .pretty-incident-table th {
     display: none;
   }
-}
 
+  .dashboard-cards {
+    flex-direction: column;
+  }
+}
