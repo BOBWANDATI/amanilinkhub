@@ -51,9 +51,10 @@ const Map = () => {
     };
   }, []);
 
-  const renderMarkers = () => {
+  const renderMarkers = (dataOverride = null) => {
     const map = mapRef.current;
-    if (!map || !mapData?.incidents) return;
+    const data = dataOverride || mapData;
+    if (!map || !data?.incidents) return;
 
     if (markerLayerRef.current) {
       markerLayerRef.current.clearLayers();
@@ -85,7 +86,7 @@ const Map = () => {
       }
     });
 
-    mapData.incidents.forEach(({ id, location, type, status, date }) => {
+    data.incidents.forEach(({ id, location, type, status, date }) => {
       const lat = location?.lat;
       const lng = location?.lng;
 
@@ -97,7 +98,6 @@ const Map = () => {
           fillOpacity: 0.8
         });
 
-        // ✅ Attach status safely
         marker.options.customStatus = status;
 
         marker.bindPopup(`
@@ -128,23 +128,31 @@ const Map = () => {
 
   useEffect(() => {
     const handleDeleted = ({ id }) => {
-      setMapData(prev => ({
-        ...prev,
-        incidents: prev.incidents.filter(i => i.id !== id)
-      }));
+      setMapData(prev => {
+        const updated = {
+          ...prev,
+          incidents: prev.incidents.filter(i => i.id !== id)
+        };
+        setTimeout(() => renderMarkers(updated), 0);
+        return updated;
+      });
     };
 
     const handleUpdated = (updatedIncident) => {
-      setMapData(prev => ({
-        ...prev,
-        incidents: prev.incidents.map(i =>
-          i.id === updatedIncident.id ? { ...updatedIncident } : i
-        )
-      }));
+      setMapData(prev => {
+        const updated = {
+          ...prev,
+          incidents: prev.incidents.map(i =>
+            i.id === updatedIncident.id ? { ...updatedIncident } : i
+          )
+        };
+        setTimeout(() => renderMarkers(updated), 0);
+        return updated;
+      });
     };
 
     const handleNewIncident = () => {
-      fetchMapData();
+      fetchMapData(); // fresh full reload
     };
 
     socket.on('incident_deleted', handleDeleted);
