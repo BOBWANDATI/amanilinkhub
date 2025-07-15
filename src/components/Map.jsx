@@ -5,11 +5,10 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/leaflet.markercluster.js';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import socket from '../utils/socket'; // ✅ use shared socket instance
 import '../components/styles/Map.css';
 
 const API_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(API_URL);
 
 const statusColors = {
   pending: 'red',
@@ -152,6 +151,8 @@ const Map = () => {
 
     const handleUpdated = (updatedIncident) => {
       const id = updatedIncident.id || updatedIncident._id;
+      console.log('📡 Socket received incident_updated:', updatedIncident);
+
       const incidentWithId = { ...updatedIncident, id };
 
       setMapData((prev) => {
@@ -167,7 +168,7 @@ const Map = () => {
     };
 
     const handleNewIncident = () => {
-      fetchMapData(); // reload fresh data
+      fetchMapData(); // fresh fetch
     };
 
     socket.on('incident_deleted', handleDeleted);
