@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 import '../components/styles/Report.css';
 
+const BASE_URL = 'https://backend-m6u3.onrender.com';
+
 const Report = ({ setShowSuccessModal }) => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -67,17 +69,19 @@ const Report = ({ setShowSuccessModal }) => {
 
     const form = new FormData();
     Object.entries(formData).forEach(([key, val]) => {
-      if (key !== 'locationName') {
-        form.append(key, typeof val === 'boolean' ? val.toString() : val);
-      }
+      form.append(key, typeof val === 'boolean' ? val.toString() : val);
     });
 
     files.forEach((file) => form.append('files', file));
 
     try {
       setLoading(true);
+<<<<<<< HEAD
 
       const response = await fetch(`${BACKEND_URL}/api/report/submit`, {
+=======
+      const response = await fetch(`${BASE_URL}/api/report/submit`, {
+>>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
         method: 'POST',
         body: form,
       });
@@ -115,13 +119,11 @@ const Report = ({ setShowSuccessModal }) => {
   return (
     <div id="report" className="page">
       <div className="container">
-        <h2 className="page-title">Report An Incident</h2>
+        <h2 className="page-title">REPORT AN INCIDENT HERE</h2>
         <p className="page-subtitle">Help build peace by reporting conflicts in your community</p>
 
         <div className="report-form-container">
           <form className="report-form" onSubmit={handleSubmit}>
-
-            {/* Incident Type */}
             <div className="form-group">
               <label htmlFor="incidentType">Type of Incident *</label>
               <select
@@ -143,7 +145,6 @@ const Report = ({ setShowSuccessModal }) => {
               </select>
             </div>
 
-            {/* Location Inputs */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="locationName">Location *</label>
@@ -153,9 +154,14 @@ const Report = ({ setShowSuccessModal }) => {
                   name="locationName"
                   value={formData.locationName}
                   onChange={handleInputChange}
-                  placeholder="Place name (optional)"
+                  placeholder="Place name or coordinates"
+                  required
                 />
-                <input type="hidden" name="location" value={formData.location} />
+                <input
+                  type="hidden"
+                  name="location"
+                  value={formData.location}
+                />
                 <button type="button" className="btn btn-secondary" onClick={getCurrentLocation}>
                   <FaMapMarkerAlt /> Use Current Location
                 </button>
@@ -174,7 +180,6 @@ const Report = ({ setShowSuccessModal }) => {
               </div>
             </div>
 
-            {/* Description */}
             <div className="form-group">
               <label htmlFor="description">Description *</label>
               <textarea
@@ -188,7 +193,6 @@ const Report = ({ setShowSuccessModal }) => {
               ></textarea>
             </div>
 
-            {/* Upload Media */}
             <div className="form-group">
               <label htmlFor="media">Upload Media (Optional)</label>
               <input
@@ -207,7 +211,6 @@ const Report = ({ setShowSuccessModal }) => {
               )}
             </div>
 
-            {/* Urgency */}
             <div className="form-group">
               <label htmlFor="urgency">Urgency Level *</label>
               <select
@@ -225,7 +228,6 @@ const Report = ({ setShowSuccessModal }) => {
               </select>
             </div>
 
-            {/* Anonymous */}
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
                 <input
@@ -240,7 +242,6 @@ const Report = ({ setShowSuccessModal }) => {
               </label>
             </div>
 
-            {/* Follow-Up */}
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
                 <input

@@ -16,6 +16,7 @@ const Stories = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
+<<<<<<< HEAD
   // ✅ Final backend URL (no need for .env)
   const API_BASE_URL = 'http://localhost:5000/api/stories';
 
@@ -26,6 +27,18 @@ const Stories = () => {
       setStories(res.data.reverse()); // Show newest stories first
     } catch (err) {
       console.error('❌ Failed to fetch stories:', err.message);
+=======
+  // 🌐 Render backend URL
+  const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
+
+  // 🔁 Fetch all verified stories
+  const fetchStories = async () => {
+    try {
+      const res = await axios.get(API_BASE_URL);
+      setStories(res.data.reverse()); // newest first
+    } catch (error) {
+      console.error('Error fetching stories:', error.message);
+>>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
     }
   };
 
@@ -54,9 +67,14 @@ const Stories = () => {
         location: ''
       });
       setShowForm(false);
+<<<<<<< HEAD
       fetchStories();
     } catch (err) {
-      console.error('❌ Error submitting story:', err.message);
+      console.error('❌ Error submitting story:', err.message
+      fetchStories(); // Refresh
+    } catch (err) {
+      console.error('Error submitting story:', err.message);
+
     } finally {
       setLoading(false);
     }
@@ -64,7 +82,11 @@ const Stories = () => {
 
   const filteredStories = activeCategory === 'all'
     ? stories
+<<<<<<< HEAD
     : stories.filter((story) => story.category === activeCategory);
+=======
+    : stories.filter(story => story.category === activeCategory);
+>>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
 
   return (
     <div id="stories" className="page">
@@ -102,7 +124,6 @@ const Stories = () => {
                 value={newStory.title}
                 onChange={handleInputChange}
                 required
-                placeholder="Give your story a title"
               />
             </div>
 
@@ -130,7 +151,6 @@ const Stories = () => {
                   name="location"
                   value={newStory.location}
                   onChange={handleInputChange}
-                  placeholder="City, County"
                 />
               </div>
             </div>
@@ -144,7 +164,6 @@ const Stories = () => {
                 onChange={handleInputChange}
                 required
                 rows="6"
-                placeholder="Tell your story of peace, reconciliation, or healing..."
               ></textarea>
             </div>
 
@@ -156,7 +175,6 @@ const Stories = () => {
                 name="author"
                 value={newStory.author}
                 onChange={handleInputChange}
-                placeholder="Leave blank to remain anonymous"
               />
             </div>
 
@@ -183,12 +201,23 @@ const Stories = () => {
                     {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
                   </div>
                 </div>
+<<<<<<< HEAD
                 <div className="story-content">
                   <p>{story.content}</p>
                 </div>
                 <div className="story-footer">
                   <button className="story-action"><FaHeart /> {story.likes || 0}</button>
                   <button className="story-action"><FaComment /> {story.comments || 0}</button>
+=======
+
+                <div className="story-content">
+                  <p>{story.content}</p>
+                </div>
+
+                <div className="story-footer">
+                  <button className="story-action"><FaHeart /> {story.likes}</button>
+                  <button className="story-action"><FaComment /> {story.comments}</button>
+>>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
                   <button className="story-action"><FaShare /> Share</button>
                 </div>
               </div>
