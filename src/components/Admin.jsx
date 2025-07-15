@@ -17,7 +17,7 @@ const Admin = () => {
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
-  const [selectedIncident, setSelectedIncident] = useState(null);
+  const [stories, setStories] = useState([]);
   const navigate = useNavigate();
 
   const token = localStorage.getItem('admin_token');
@@ -59,20 +59,25 @@ const Admin = () => {
 
     const fetchData = async () => {
       try {
-        const [incRes, disRes] = await Promise.all([
+        const [incRes, disRes, storyRes] = await Promise.all([
           fetch(`${BASE_URL}/api/admin/report`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${BASE_URL}/api/discussions`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          fetch(`${BASE_URL}/api/stories`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
         ]);
 
         const incData = await incRes.json();
         const disData = await disRes.json();
+        const storyData = await storyRes.json();
 
         setIncidents(incData);
         setDiscussions(disData);
+        setStories(storyData);
       } catch (err) {
         console.error('Fetch error:', err);
       }
@@ -181,6 +186,23 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteStory = async (id) => {
+    if (!window.confirm('Delete story?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/stories/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStories((prev) => prev.filter((s) => s._id !== id));
+        alert('✅ Story deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const logout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
@@ -203,6 +225,12 @@ const Admin = () => {
           <div className="card-title">Discussions</div>
           <div className="card-desc">Active threads</div>
           <div className="card-value">{discussions.length}</div>
+        </div>
+        <div className="dashboard-card">
+          <div className="card-icon">📚</div>
+          <div className="card-title">Stories</div>
+          <div className="card-desc">Shared stories</div>
+          <div className="card-value">{stories.length}</div>
         </div>
         <button className="btn" onClick={logout}>Logout</button>
       </div>
@@ -243,6 +271,21 @@ const Admin = () => {
               <td>{d.messages?.length || 0}</td>
               <td>{new Date(d.createdAt).toLocaleDateString()}</td>
               <td><button onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>📚 Stories</h3>
+      <table className="pretty-incident-table">
+        <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+          {stories.map((s, idx) => (
+            <tr key={s._id}>
+              <td>{idx + 1}</td>
+              <td>{s.title || 'Untitled'}</td>
+              <td>{new Date(s.date).toLocaleDateString()}</td>
+              <td><button onClick={() => handleDeleteStory(s._id)}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
