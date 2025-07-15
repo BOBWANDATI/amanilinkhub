@@ -99,20 +99,31 @@ const Admin = () => {
   };
 
   const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status: newStatus }),
-      });
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
 
-      const updatedIncident = await res.json();
-      setIncidents((prev) => prev.map((i) => (i._id === id ? updatedIncident : i)));
-      socket.emit("incident_updated", updatedIncident); // Notify others (map or admins)
-    } catch (err) {
-      console.error('Failed to update status:', err);
-    }
-  };
+    const updatedIncident = await res.json();
+
+    console.log('Updated Incident:', updatedIncident); // 🔍 Debugging
+
+    setIncidents((prev) =>
+      prev.map((i) => (i._id === id ? updatedIncident : i))
+    );
+
+    socket.emit("incident_updated", updatedIncident); // 🛰️ Emit to map/others
+
+  } catch (err) {
+    console.error('Failed to update status:', err);
+  }
+};
+
 
   const handleDeleteIncident = async (id) => {
     try {
