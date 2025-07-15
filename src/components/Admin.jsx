@@ -5,7 +5,6 @@ import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL);
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,11 +22,28 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [registerMessage, setRegisterMessage] = useState('');
+  const [socket, setSocket] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
 
-  // Fetch stats when logged in
+  // Initialize Socket once logged in
+  useEffect(() => {
+    if (isLoggedIn && !socket) {
+      const newSocket = io(BASE_URL, {
+        auth: { token },
+        transports: ['websocket'],
+      });
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.disconnect();
+        setSocket(null);
+      };
+    }
+  }, [isLoggedIn, token]);
+
+  // Fetch stats after login
   useEffect(() => {
     if (isLoggedIn && token) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -35,79 +51,21 @@ const Admin = () => {
       })
         .then((res) => res.json())
         .then(setStats)
-        .catch((err) => console.error('Failed to fetch stats', err));
+        .catch(console.error);
     }
   }, [isLoggedIn, token]);
 
-  // Socket.io event listeners for real-time updates on incidents, discussions, stories
+  // Fetch initial data after login
   useEffect(() => {
-    if (!socket) return;
+    if (!isLoggedIn || !token) return;
 
-    // Incidents
-    const handleNewIncident = (incident) => {
-      setIncidents((prev) => [incident, ...prev]);
-      alert(`🚨 New Incident: ${incident.title || incident.incidentType || 'Unknown'}`);
-    };
-
-    const handleIncidentUpdated = (updated) => {
-      setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
-    };
-
-    // Discussions
-    const handleNewDiscussion = (discussion) => {
-      setDiscussions((prev) => [discussion, ...prev]);
-      alert(`💬 New Discussion: ${discussion.title || 'Untitled'}`);
-    };
-
-    const handleDiscussionUpdated = (updated) => {
-      setDiscussions((prev) => prev.map((d) => (d._id === updated._id ? updated : d)));
-    };
-
-    // Stories
-    const handleNewStory = (story) => {
-      setStories((prev) => [story, ...prev]);
-      alert(`📚 New Story: ${story.title || 'Untitled'}`);
-    };
-
-    const handleStoryUpdated = (updated) => {
-      setStories((prev) => prev.map((s) => (s._id === updated._id ? updated : s)));
-    };
-
-    socket.on('new_incident_reported', handleNewIncident);
-    socket.on('incident_updated', handleIncidentUpdated);
-    socket.on('new_discussion_created', handleNewDiscussion);
-    socket.on('discussion_updated', handleDiscussionUpdated);
-    socket.on('new_story_created', handleNewStory);
-    socket.on('story_updated', handleStoryUpdated);
-
-    return () => {
-      socket.off('new_incident_reported', handleNewIncident);
-      socket.off('incident_updated', handleIncidentUpdated);
-      socket.off('new_discussion_created', handleNewDiscussion);
-      socket.off('discussion_updated', handleDiscussionUpdated);
-      socket.off('new_story_created', handleNewStory);
-      socket.off('story_updated', handleStoryUpdated);
-    };
-  }, []);
-
-  // Fetch incidents, discussions, stories after login
-  useEffect(() => {
-    if (!token || !isLoggedIn) return;
-
-    const fetchData = async () => {
+    async function fetchData() {
       try {
         const [incRes, disRes, storyRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/admin/report`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${BASE_URL}/api/discussions`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${BASE_URL}/api/stories`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
-
         const incData = await incRes.json();
         const disData = await disRes.json();
         const storyData = await storyRes.json();
@@ -115,15 +73,59 @@ const Admin = () => {
         setIncidents(incData);
         setDiscussions(disData);
         setStories(storyData);
-      } catch (err) {
-        console.error('Fetch error:', err);
+      } catch (e) {
+        console.error(e);
       }
-    };
-
+    }
     fetchData();
   }, [isLoggedIn, token]);
 
-  // Show modal details
+  // Socket event listeners for real-time updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const onNewIncident = (incident) => {
+      setIncidents((prev) => [incident, ...prev]);
+      alert(`🚨 New Incident: ${incident.incidentType || 'Unknown'}`);
+    };
+    const onIncidentUpdated = (updated) => {
+      setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
+    };
+
+    const onNewDiscussion = (discussion) => {
+      setDiscussions((prev) => [discussion, ...prev]);
+      alert(`💬 New Discussion: ${discussion.title || 'Untitled'}`);
+    };
+    const onDiscussionUpdated = (updated) => {
+      setDiscussions((prev) => prev.map((d) => (d._id === updated._id ? updated : d)));
+    };
+
+    const onNewStory = (story) => {
+      setStories((prev) => [story, ...prev]);
+      alert(`📚 New Story: ${story.title || 'Untitled'}`);
+    };
+    const onStoryUpdated = (updated) => {
+      setStories((prev) => prev.map((s) => (s._id === updated._id ? updated : s)));
+    };
+
+    socket.on('new_incident_reported', onNewIncident);
+    socket.on('incident_updated', onIncidentUpdated);
+    socket.on('new_discussion_created', onNewDiscussion);
+    socket.on('discussion_updated', onDiscussionUpdated);
+    socket.on('new_story_created', onNewStory);
+    socket.on('story_updated', onStoryUpdated);
+
+    return () => {
+      socket.off('new_incident_reported', onNewIncident);
+      socket.off('incident_updated', onIncidentUpdated);
+      socket.off('new_discussion_created', onNewDiscussion);
+      socket.off('discussion_updated', onDiscussionUpdated);
+      socket.off('new_story_created', onNewStory);
+      socket.off('story_updated', onStoryUpdated);
+    };
+  }, [socket]);
+
+  // Show modal detail
   const showModal = (type, item) => {
     setModalType(type);
     setSelectedItem(item);
@@ -139,20 +141,13 @@ const Admin = () => {
     try {
       const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus }),
       });
-
-      const updatedIncident = await res.json();
-
-      setIncidents((prev) =>
-        prev.map((i) => (i._id === id ? updatedIncident : i))
-      );
-    } catch (err) {
-      console.error('Failed to update status:', err);
+      const updated = await res.json();
+      setIncidents((prev) => prev.map((i) => (i._id === id ? updated : i)));
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -164,11 +159,10 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIncidents((prev) => prev.filter((i) => i._id !== id));
-    } catch (err) {
-      console.error('Delete error:', err);
+    } catch (e) {
+      console.error(e);
     }
   };
-
   const handleDeleteDiscussion = async (id) => {
     try {
       await fetch(`${BASE_URL}/api/discussions/${id}`, {
@@ -176,11 +170,10 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDiscussions((prev) => prev.filter((d) => d._id !== id));
-    } catch (err) {
-      console.error('Delete error:', err);
+    } catch (e) {
+      console.error(e);
     }
   };
-
   const handleDeleteStory = async (id) => {
     try {
       await fetch(`${BASE_URL}/api/stories/${id}`, {
@@ -188,39 +181,92 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStories((prev) => prev.filter((s) => s._id !== id));
-    } catch (err) {
-      console.error('Delete error:', err);
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  // Modal component for details
+  // Login handler
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('admin_token', data.token);
+        setIsLoggedIn(true);
+      } else if (data.msg?.toLowerCase().includes('pending approval')) {
+        setLoginError('Your account is not approved yet. Please wait for approval.');
+      } else {
+        setLoginError(data.msg || 'Login failed. Check credentials.');
+      }
+    } catch (err) {
+      setLoginError('Login failed due to server error.');
+    }
+    setLoading(false);
+  };
+
+  // Registration handler
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setRegisterMessage('');
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registerData),
+      });
+      const data = await res.json();
+      setRegisterMessage(data.msg || 'Registration failed.');
+      if (data.msg?.toLowerCase().includes('registered')) {
+        setShowRegister(false);
+      }
+    } catch (err) {
+      setRegisterMessage('Registration failed due to server error.');
+    }
+    setLoading(false);
+  };
+
+  // Controlled inputs
+  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+
+  // Logout
+  const logout = () => {
+    localStorage.removeItem('admin_token');
+    setIsLoggedIn(false);
+    if (socket) socket.disconnect();
+    setSocket(null);
+  };
+
+  // Modal component
   const DetailModal = () => {
     if (!selectedItem) return null;
-    const item = selectedItem;
     return (
       <div className="modal-overlay" onClick={closeModal}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <h3>
             {modalType === 'incident'
-              ? 'Incident Detail'
+              ? 'Incident Details'
               : modalType === 'discussion'
-              ? 'Discussion Detail'
-              : 'Story Detail'}
+              ? 'Discussion Details'
+              : 'Story Details'}
           </h3>
-          <pre>{JSON.stringify(item, null, 2)}</pre>
+          <pre>{JSON.stringify(selectedItem, null, 2)}</pre>
           <button onClick={closeModal}>Close</button>
         </div>
       </div>
     );
   };
 
-  // Logout
-  const logout = () => {
-    localStorage.removeItem('admin_token');
-    setIsLoggedIn(false);
-  };
-
-  // Dashboard view
+  // Dashboard component
   const Dashboard = () => (
     <div className="super-admin-dashboard">
       <h2>🛡️ AmaniLink Admin Dashboard</h2>
@@ -346,7 +392,7 @@ const Admin = () => {
             <tr key={s._id} onClick={() => showModal('story', s)}>
               <td>{idx + 1}</td>
               <td>{s.title || 'Untitled'}</td>
-              <td>{new Date(s.date).toLocaleDateString()}</td>
+              <td>{new Date(s.date || s.createdAt).toLocaleDateString()}</td>
               <td>
                 <button
                   onClick={(e) => {
@@ -366,69 +412,7 @@ const Admin = () => {
     </div>
   );
 
-  // Handle login submission
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    setLoginError('');
-    setLoading(true);
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
-      });
-      const data = await res.json();
-
-      if (data.token) {
-        localStorage.setItem('admin_token', data.token);
-        setIsLoggedIn(true);
-      } else if (data.msg && data.msg.toLowerCase().includes('pending approval')) {
-        setLoginError('Your account is not approved yet. Please wait for approval.');
-      } else {
-        setLoginError(data.msg || 'Login failed. Please check your credentials.');
-      }
-    } catch (err) {
-      setLoginError('Login failed due to a server error.');
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
-  // Handle registration submission
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    setRegisterMessage('');
-    setLoading(true);
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
-      });
-      const data = await res.json();
-
-      if (data.msg) {
-        setRegisterMessage(data.msg);
-        if (data.msg.toLowerCase().includes('registered')) {
-          setShowRegister(false);
-        }
-      } else {
-        setRegisterMessage('Registration failed.');
-      }
-    } catch (err) {
-      setRegisterMessage('Registration failed due to a server error.');
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
-  // Controlled input handlers
-  const handleLoginChange = (e) =>
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
-
-  const handleRegisterChange = (e) =>
-    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-
+  // Main render
   return (
     <div className="admin-container">
       {!isLoggedIn ? (
