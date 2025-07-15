@@ -4,13 +4,8 @@ import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
 
-<<<<<<< HEAD
-const BASE_URL = 'https://backend-m6u3.onrender.com'; // ✅ Production backend URL
-const socket = io(BASE_URL); // ✅ Real-time connection
-=======
 const BASE_URL = 'https://backend-m6u3.onrender.com';
 const socket = io(BASE_URL);
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,7 +22,6 @@ const Admin = () => {
 
   const token = localStorage.getItem('admin_token');
 
-  // Fetch stats after login
   useEffect(() => {
     if (isLoggedIn && token) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -39,28 +33,27 @@ const Admin = () => {
     }
   }, [isLoggedIn]);
 
-  // Real-time socket updates
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('new_incident_reported', (incident) => {
+    const handleNewIncident = (incident) => {
       setIncidents((prev) => [incident, ...prev]);
       alert(`🚨 New Incident: ${incident.title}`);
-    });
+    };
 
-    socket.on('incident_updated', (updated) => {
-      setIncidents((prev) =>
-        prev.map((i) => (i._id === updated._id ? updated : i))
-      );
-    });
+    const handleIncidentUpdated = (updated) => {
+      setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
+    };
+
+    socket.on("new_incident_reported", handleNewIncident);
+    socket.on("incident_updated", handleIncidentUpdated);
 
     return () => {
-      socket.off('new_incident_reported');
-      socket.off('incident_updated');
+      socket.off("new_incident_reported", handleNewIncident);
+      socket.off("incident_updated", handleIncidentUpdated);
     };
   }, []);
 
-  // Fetch incidents & discussions when logged in
   useEffect(() => {
     if (!token || !isLoggedIn) return;
 
@@ -88,108 +81,8 @@ const Admin = () => {
     fetchData();
   }, [isLoggedIn]);
 
-<<<<<<< HEAD
-    socket.on("new_incident_reported", handleNewIncident);
-    socket.on("incident_updated", handleIncidentUpdated);
-
-    return () => {
-      socket.off("new_incident_reported", handleNewIncident);
-      socket.off("incident_updated", handleIncidentUpdated);
-    };
-  }, [loginData.role, selectedCard]);
-
-  useEffect(() => {
-    if (selectedCard === 'incidents') {
-      fetch(`${BASE_URL}/api/admin/report`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
-      })
-        .then(res => res.json())
-        .then(data => setIncidents(data))
-        .catch(err => console.error('Failed to fetch incidents', err));
-    }
-  }, [selectedCard]);
-
   const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
   const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
-=======
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(`✅ Status updated to ${newStatus}`);
-        setIncidents((prev) => prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i)));
-      } else alert(data.msg || '❌ Status update failed');
-    } catch (err) {
-      console.error(err);
-      alert('❌ Status error');
-    }
-  };
-
-  const handleDeleteIncident = async (id) => {
-<<<<<<< HEAD
-    const confirmDelete = window.confirm("❗ Are you sure you want to delete this incident?");
-    if (!confirmDelete) return;
-=======
-    if (!window.confirm('Delete incident?')) return;
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIncidents((prev) => prev.filter((i) => i._id !== id));
-        alert('✅ Deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('Delete discussion?')) return;
-    try {
-<<<<<<< HEAD
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('admin_token')}`
-        },
-        body: JSON.stringify({ status: newStatus })
-=======
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert('✅ Discussion deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -232,14 +125,67 @@ const Admin = () => {
     }
   };
 
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`✅ Status updated to ${newStatus}`);
+        setIncidents((prev) => prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i)));
+      } else alert(data.msg || '❌ Status update failed');
+    } catch (err) {
+      console.error(err);
+      alert('❌ Status error');
+    }
+  };
+
+  const handleDeleteIncident = async (id) => {
+    if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIncidents((prev) => prev.filter((i) => i._id !== id));
+        alert('✅ Deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteDiscussion = async (id) => {
+    if (!window.confirm('Delete discussion?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDiscussions((prev) => prev.filter((d) => d._id !== id));
+        alert('✅ Discussion deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const logout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
     setLoginData({ username: '', password: '', role: '' });
   };
-
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
 
   const Dashboard = () => (
     <div className="super-admin-dashboard">

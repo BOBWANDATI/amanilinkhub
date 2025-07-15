@@ -18,9 +18,6 @@ const Report = ({ setShowSuccessModal }) => {
     followUp: false,
   });
 
-  // Backend URL
-  const BACKEND_URL = 'https://backend-m6u3.onrender.com'; // 🌐 Use your actual Render URL
-
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
@@ -62,26 +59,24 @@ const Report = ({ setShowSuccessModal }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.location || !formData.incidentType || !formData.date || !formData.description || !formData.urgency) {
-      alert('⚠️ Please fill all required fields and use your current location.');
-      return;
+    const requiredFields = ['incidentType', 'location', 'date', 'description', 'urgency'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        alert('⚠️ Please fill all required fields and use your current location.');
+        return;
+      }
     }
 
     const form = new FormData();
     Object.entries(formData).forEach(([key, val]) => {
       form.append(key, typeof val === 'boolean' ? val.toString() : val);
     });
-
     files.forEach((file) => form.append('files', file));
 
     try {
       setLoading(true);
-<<<<<<< HEAD
 
-      const response = await fetch(`${BACKEND_URL}/api/report/submit`, {
-=======
       const response = await fetch(`${BASE_URL}/api/report/submit`, {
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
         method: 'POST',
         body: form,
       });
@@ -91,9 +86,7 @@ const Report = ({ setShowSuccessModal }) => {
 
       if (response.ok) {
         alert('✅ Report submitted successfully!');
-        if (typeof setShowSuccessModal === 'function') {
-          setShowSuccessModal(true);
-        }
+        setShowSuccessModal?.(true);
         setFormData({
           incidentType: '',
           location: '',
@@ -157,11 +150,7 @@ const Report = ({ setShowSuccessModal }) => {
                   placeholder="Place name or coordinates"
                   required
                 />
-                <input
-                  type="hidden"
-                  name="location"
-                  value={formData.location}
-                />
+                <input type="hidden" name="location" value={formData.location} />
                 <button type="button" className="btn btn-secondary" onClick={getCurrentLocation}>
                   <FaMapMarkerAlt /> Use Current Location
                 </button>

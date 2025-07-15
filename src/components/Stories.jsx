@@ -3,6 +3,10 @@ import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import './styles/stories.css';
 
+// 🟢 Use your actual backend URL here
+const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
+// For local testing: 'http://localhost:5000/api/stories';
+
 const Stories = () => {
   const [stories, setStories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -16,29 +20,12 @@ const Stories = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-<<<<<<< HEAD
-  // ✅ Final backend URL (no need for .env)
-  const API_BASE_URL = 'http://localhost:5000/api/stories';
-
-  // 🔁 Fetch stories from backend
   const fetchStories = async () => {
     try {
       const res = await axios.get(API_BASE_URL);
       setStories(res.data.reverse()); // Show newest stories first
     } catch (err) {
-      console.error('❌ Failed to fetch stories:', err.message);
-=======
-  // 🌐 Render backend URL
-  const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
-
-  // 🔁 Fetch all verified stories
-  const fetchStories = async () => {
-    try {
-      const res = await axios.get(API_BASE_URL);
-      setStories(res.data.reverse()); // newest first
-    } catch (error) {
-      console.error('Error fetching stories:', error.message);
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
+      console.error('Failed to fetch stories:', err.message);
     }
   };
 
@@ -67,32 +54,26 @@ const Stories = () => {
         location: ''
       });
       setShowForm(false);
-<<<<<<< HEAD
-      fetchStories();
-    } catch (err) {
-      console.error('❌ Error submitting story:', err.message
-      fetchStories(); // Refresh
+      fetchStories(); // Refresh after submission
     } catch (err) {
       console.error('Error submitting story:', err.message);
-
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredStories = activeCategory === 'all'
-    ? stories
-<<<<<<< HEAD
-    : stories.filter((story) => story.category === activeCategory);
-=======
-    : stories.filter(story => story.category === activeCategory);
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
+  const filteredStories =
+    activeCategory === 'all'
+      ? stories
+      : stories.filter((story) => story.category === activeCategory);
 
   return (
     <div id="stories" className="page">
       <div className="container">
         <h2 className="page-title">Peace Stories</h2>
-        <p className="page-subtitle">Read inspiring stories of reconciliation and healing from communities across Kenya</p>
+        <p className="page-subtitle">
+          Read inspiring stories of reconciliation and healing from communities across Kenya
+        </p>
 
         <div className="stories-actions">
           <div className="category-filter">
@@ -201,23 +182,14 @@ const Stories = () => {
                     {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
                   </div>
                 </div>
-<<<<<<< HEAD
+
                 <div className="story-content">
                   <p>{story.content}</p>
                 </div>
+
                 <div className="story-footer">
                   <button className="story-action"><FaHeart /> {story.likes || 0}</button>
                   <button className="story-action"><FaComment /> {story.comments || 0}</button>
-=======
-
-                <div className="story-content">
-                  <p>{story.content}</p>
-                </div>
-
-                <div className="story-footer">
-                  <button className="story-action"><FaHeart /> {story.likes}</button>
-                  <button className="story-action"><FaComment /> {story.comments}</button>
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
                   <button className="story-action"><FaShare /> Share</button>
                 </div>
               </div>

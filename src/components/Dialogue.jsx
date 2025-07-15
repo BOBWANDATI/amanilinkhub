@@ -3,12 +3,11 @@ import { FaComments, FaPlus, FaPaperPlane, FaRobot } from 'react-icons/fa';
 import { io } from 'socket.io-client';
 import '../components/styles/Dialogue.css';
 
-const socket = io(import.meta.env.VITE_SOCKET_URL, {
+const BASE_URL = import.meta.env.VITE_SOCKET_URL;
+const socket = io(BASE_URL, {
   transports: ['websocket'],
   withCredentials: true,
 });
-
-const BASE_URL = import.meta.env.VITE_SOCKET_URL;
 
 const Dialogue = () => {
   const [activeTopic, setActiveTopic] = useState(null);
@@ -29,12 +28,6 @@ const Dialogue = () => {
         const res = await fetch(`${BASE_URL}/api/discussions`);
         const data = await res.json();
 
-<<<<<<< HEAD
-  const fetchDiscussions = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/discussions`);
-      const data = await res.json();
-=======
         const aiBot = {
           _id: 'ai-peacebot',
           title: 'Ask PeaceBot (AI)',
@@ -42,7 +35,6 @@ const Dialogue = () => {
           location: 'Virtual',
           participants: 1,
         };
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
 
         setTopics([...data, aiBot]);
       } catch (error) {
@@ -54,7 +46,6 @@ const Dialogue = () => {
   }, []);
 
   useEffect(() => {
-    // Listen to messages coming from backend socket
     socket.on('new_discussion_message', ({ discussionId, message }) => {
       setMessages(prev => ({
         ...prev,
@@ -90,11 +81,7 @@ const Dialogue = () => {
     if (topicId === 'ai-peacebot') {
       setLoading(true);
       try {
-<<<<<<< HEAD
-        const response = await fetch(`${BACKEND_URL}/api/ai/peacebot`, {
-=======
         const response = await fetch(`${BASE_URL}/api/ai/peacebot`, {
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: userMessage.text }),
@@ -155,14 +142,12 @@ const Dialogue = () => {
 
       setMessages(prev => ({
         ...prev,
-        [topic._id]: [
-          {
-            id: 1,
-            text: welcomeText,
-            sender: topic._id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
-            time: new Date().toLocaleTimeString(),
-          },
-        ],
+        [topic._id]: [{
+          id: 1,
+          text: welcomeText,
+          sender: topic._id === 'ai-peacebot' ? 'PeaceBot' : 'Moderator',
+          time: new Date().toLocaleTimeString(),
+        }],
       }));
     }
   };
@@ -175,11 +160,7 @@ const Dialogue = () => {
     }
 
     try {
-<<<<<<< HEAD
-      const response = await fetch(`${BACKEND_URL}/api/discussions/create`, {
-=======
       const response = await fetch(`${BASE_URL}/api/discussions/create`, {
->>>>>>> 23329b2147d48769eb6f629b5f16a8e4b961ef9e
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -193,9 +174,7 @@ const Dialogue = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.msg || 'Failed to create discussion');
-      }
+      if (!response.ok) throw new Error(data.msg || 'Failed to create discussion');
 
       socket.emit('new_discussion_created', data);
 
@@ -252,23 +231,17 @@ const Dialogue = () => {
                       type="text"
                       placeholder="Discussion Title"
                       value={newDiscussion.title}
-                      onChange={e =>
-                        setNewDiscussion({ ...newDiscussion, title: e.target.value })
-                      }
+                      onChange={e => setNewDiscussion({ ...newDiscussion, title: e.target.value })}
                     />
                     <input
                       type="text"
                       placeholder="Location"
                       value={newDiscussion.location}
-                      onChange={e =>
-                        setNewDiscussion({ ...newDiscussion, location: e.target.value })
-                      }
+                      onChange={e => setNewDiscussion({ ...newDiscussion, location: e.target.value })}
                     />
                     <select
                       value={newDiscussion.category}
-                      onChange={e =>
-                        setNewDiscussion({ ...newDiscussion, category: e.target.value })
-                      }
+                      onChange={e => setNewDiscussion({ ...newDiscussion, category: e.target.value })}
                     >
                       <option value="general">General</option>
                       <option value="land">Land</option>
