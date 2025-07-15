@@ -39,25 +39,54 @@ const Admin = () => {
     }
   }, [isLoggedIn, token]);
 
-  // Socket.io event listeners for real-time incident updates
+  // Socket.io event listeners for real-time updates on incidents, discussions, stories
   useEffect(() => {
     if (!socket) return;
 
+    // Incidents
     const handleNewIncident = (incident) => {
       setIncidents((prev) => [incident, ...prev]);
-      alert(`🚨 New Incident: ${incident.title}`);
+      alert(`🚨 New Incident: ${incident.title || incident.incidentType || 'Unknown'}`);
     };
 
     const handleIncidentUpdated = (updated) => {
       setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
     };
 
+    // Discussions
+    const handleNewDiscussion = (discussion) => {
+      setDiscussions((prev) => [discussion, ...prev]);
+      alert(`💬 New Discussion: ${discussion.title || 'Untitled'}`);
+    };
+
+    const handleDiscussionUpdated = (updated) => {
+      setDiscussions((prev) => prev.map((d) => (d._id === updated._id ? updated : d)));
+    };
+
+    // Stories
+    const handleNewStory = (story) => {
+      setStories((prev) => [story, ...prev]);
+      alert(`📚 New Story: ${story.title || 'Untitled'}`);
+    };
+
+    const handleStoryUpdated = (updated) => {
+      setStories((prev) => prev.map((s) => (s._id === updated._id ? updated : s)));
+    };
+
     socket.on('new_incident_reported', handleNewIncident);
     socket.on('incident_updated', handleIncidentUpdated);
+    socket.on('new_discussion_created', handleNewDiscussion);
+    socket.on('discussion_updated', handleDiscussionUpdated);
+    socket.on('new_story_created', handleNewStory);
+    socket.on('story_updated', handleStoryUpdated);
 
     return () => {
       socket.off('new_incident_reported', handleNewIncident);
       socket.off('incident_updated', handleIncidentUpdated);
+      socket.off('new_discussion_created', handleNewDiscussion);
+      socket.off('discussion_updated', handleDiscussionUpdated);
+      socket.off('new_story_created', handleNewStory);
+      socket.off('story_updated', handleStoryUpdated);
     };
   }, []);
 
@@ -380,7 +409,6 @@ const Admin = () => {
 
       if (data.msg) {
         setRegisterMessage(data.msg);
-        // Close register form if registration is successful message contains 'registered'
         if (data.msg.toLowerCase().includes('registered')) {
           setShowRegister(false);
         }
