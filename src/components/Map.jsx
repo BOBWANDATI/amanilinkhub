@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import '../components/styles/Map.css';
 
-// ✅ Use deployed backend (Render)
 const API_URL = 'https://backend-m6u3.onrender.com';
 const socket = io(API_URL);
 
@@ -71,7 +70,7 @@ const Map = () => {
         };
 
         markers.forEach(marker => {
-          const status = marker.options.status || 'pending';
+          const status = marker.options.customStatus || 'pending';
           statusCount[status] = (statusCount[status] || 0) + 1;
         });
 
@@ -95,9 +94,13 @@ const Map = () => {
           radius: 8,
           color: statusColors[status] || 'gray',
           fillColor: statusColors[status] || 'gray',
-          fillOpacity: 0.8,
-          status: status
-        }).bindPopup(`
+          fillOpacity: 0.8
+        });
+
+        // ✅ Attach status safely
+        marker.options.customStatus = status;
+
+        marker.bindPopup(`
           <strong>Type:</strong> ${type}<br/>
           <strong>Status:</strong> <span style="color:${statusColors[status]}">${status}</span><br/>
           <strong>Date:</strong> ${new Date(date).toLocaleString()}
@@ -135,7 +138,7 @@ const Map = () => {
       setMapData(prev => ({
         ...prev,
         incidents: prev.incidents.map(i =>
-          i.id === updatedIncident.id ? updatedIncident : i
+          i.id === updatedIncident.id ? { ...updatedIncident } : i
         )
       }));
     };
