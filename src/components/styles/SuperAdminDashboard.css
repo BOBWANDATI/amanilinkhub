@@ -1,252 +1,192 @@
-/* ================================
-   Super Admin Dashboard Styling
-================================ */
-
 .super-admin-dashboard {
-  padding: 30px;
-  background-color: #f8f9fa;
+  padding: 20px;
+  background-color: #f5f7fa;
   min-height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
-  color: #2c3e50;
 }
 
-/* ================================
-   Section Titles
-================================ */
-.super-admin-dashboard h2,
-.super-admin-dashboard h3 {
-  color: #34495e;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-/* ================================
-   Dashboard Cards
-================================ */
-
+/* Dashboard Cards */
 .dashboard-cards {
   display: flex;
-  flex-wrap: wrap;
   gap: 20px;
-  margin-bottom: 40px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
 }
 
 .dashboard-card {
+  background-color: #fff;
+  padding: 20px;
   flex: 1;
   min-width: 250px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-  text-align: center;
-  transition: transform 0.2s ease;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.dashboard-card:hover {
-  transform: translateY(-3px);
-}
-
-.card-icon {
+.dashboard-card .card-icon {
   font-size: 30px;
   margin-bottom: 10px;
 }
 
-.card-title {
+.dashboard-card .card-title {
+  font-weight: bold;
   font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  color: #333;
 }
 
-.card-desc {
+.dashboard-card .card-desc {
   font-size: 14px;
-  color: #7f8c8d;
-  margin-bottom: 8px;
+  color: #666;
+  margin: 5px 0;
 }
 
-.card-value {
-  font-size: 26px;
+.dashboard-card .card-value {
+  font-size: 24px;
   font-weight: bold;
   color: #007bff;
 }
 
-/* ================================
-   Tables
-================================ */
-
+/* Table */
 .pretty-incident-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
-  margin-bottom: 30px;
-}
-
-.pretty-incident-table thead {
-  background-color: #e3f0ff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .pretty-incident-table th,
 .pretty-incident-table td {
-  padding: 14px 16px;
+  padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .pretty-incident-table th {
+  background-color: #e6f0ff;
+  color: #333;
   font-weight: 600;
-  color: #2c3e50;
 }
 
 .pretty-incident-table td button {
-  background: none;
-  border: none;
-  color: #e74c3c;
-  font-size: 16px;
-  cursor: pointer;
+  margin-right: 5px;
 }
 
-.pretty-incident-table td button:hover {
-  color: #c0392b;
-}
-
+/* Clickable Table Row */
 .clickable-row {
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 }
 
 .clickable-row:hover {
-  background-color: #f5faff;
+  background-color: #f1f8ff;
 }
 
-/* ================================
-   Status Buttons
-================================ */
-
+/* Status Buttons */
 .status-btn {
-  margin: 2px;
-  padding: 5px 10px;
-  font-size: 12px;
+  margin-right: 4px;
+  padding: 4px 8px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
+  font-size: 12px;
   cursor: pointer;
-  font-weight: 500;
+  background-color: #eee;
 }
 
 .status-btn.pending {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #ffeb3b;
 }
 
 .status-btn.investigating {
-  background-color: #cce5ff;
-  color: #004085;
+  background-color: #03a9f4;
+  color: white;
 }
 
 .status-btn.resolved {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #4caf50;
+  color: white;
 }
 
 .status-btn.escalated {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #f44336;
+  color: white;
 }
 
 .status-btn.active {
+  font-weight: bold;
   outline: 2px solid #333;
 }
 
-/* ================================
-   Modal Styling
-================================ */
+/* Delete Button */
+.btn-delete {
+  background-color: #e53935;
+  color: white;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
+/* Detail Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 999;
+  background-color: rgba(0,0,0,0.4);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
 .modal-content {
-  background-color: #fff;
-  width: 95%;
-  max-width: 700px;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-  overflow-y: auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
   max-height: 90vh;
-  animation: fadeIn 0.3s ease-in-out;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .modal-content h3 {
-  margin-bottom: 20px;
-  color: #2c3e50;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.detail-grid .label {
-  font-weight: 600;
-  text-transform: capitalize;
-  color: #444;
-}
-
-.detail-grid .value {
-  color: #555;
+.modal-content pre {
   font-size: 14px;
-  word-wrap: break-word;
+  color: #444;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
 }
 
-.detail-grid ul {
-  padding-left: 18px;
-}
-
-/* ================================
-   Buttons
-================================ */
-
+/* Back Button / General Button */
 .btn {
-  padding: 10px 20px;
+  margin-top: 20px;
+  padding: 8px 16px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
+  font-weight: bold;
 }
 
 .btn:hover {
   background-color: #0056b3;
 }
 
-/* ================================
-   Responsive
-================================ */
-
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .dashboard-cards {
-    flex-direction: column;
-  }
-
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-
   .pretty-incident-table,
   .pretty-incident-table thead,
   .pretty-incident-table tbody,
@@ -256,14 +196,14 @@
     display: block;
   }
 
-  .pretty-incident-table th {
-    display: none;
+  .pretty-incident-table tr {
+    margin-bottom: 15px;
   }
 
   .pretty-incident-table td {
-    position: relative;
-    padding-left: 50%;
     text-align: right;
+    padding-left: 50%;
+    position: relative;
   }
 
   .pretty-incident-table td::before {
@@ -272,20 +212,14 @@
     left: 15px;
     top: 12px;
     font-weight: bold;
-    color: #555;
+    color: #333;
   }
-}
 
-/* ================================
-   Animations
-================================ */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+  .pretty-incident-table th {
+    display: none;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .dashboard-cards {
+    flex-direction: column;
   }
 }
