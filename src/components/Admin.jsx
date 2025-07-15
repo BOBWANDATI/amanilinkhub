@@ -98,19 +98,48 @@ const Admin = () => {
     setModalType('');
   };
 
-  const DetailModal = () => {
-    if (!selectedItem) return null;
-    const item = selectedItem;
-    return (
-      <div className="modal-overlay" onClick={closeModal}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <h3>{modalType === 'incident' ? 'Incident Detail' : modalType === 'discussion' ? 'Discussion Detail' : 'Story Detail'}</h3>
-          <pre>{JSON.stringify(item, null, 2)}</pre>
-          <button onClick={closeModal}>Close</button>
+  //DETAIL MODAL
+
+ const DetailModal = () => {
+  if (!selectedItem) return null;
+  const item = selectedItem;
+
+  return (
+    <div className="modal-overlay" onClick={closeModal}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h3>
+          {modalType === 'incident'
+            ? 'Incident Detail'
+            : modalType === 'discussion'
+            ? 'Discussion Detail'
+            : 'Story Detail'}
+        </h3>
+        <div className="detail-grid">
+          {Object.entries(item).map(([key, value]) => (
+            <React.Fragment key={key}>
+              <div className="label">{key.replace(/([A-Z])/g, ' $1').toUpperCase()}</div>
+              <div className="value">
+                {Array.isArray(value) ? (
+                  <ul>
+                    {value.map((v, i) => (
+                      <li key={i}>{JSON.stringify(v)}</li>
+                    ))}
+                  </ul>
+                ) : typeof value === 'object' && value !== null ? (
+                  <code>{JSON.stringify(value, null, 2)}</code>
+                ) : (
+                  String(value)
+                )}
+              </div>
+            </React.Fragment>
+          ))}
         </div>
+        <button className="btn" onClick={closeModal}>Close</button>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
   const Dashboard = () => (
     <div className="super-admin-dashboard">
