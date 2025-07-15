@@ -17,7 +17,7 @@ const Stories = () => {
   const [loading, setLoading] = useState(false);
 
   // 🌐 Render backend URL
-  const API_BASE_URL = 'https://your-backend.onrender.com/api/stories';
+  const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
 
   // 🔁 Fetch all verified stories
   const fetchStories = async () => {
