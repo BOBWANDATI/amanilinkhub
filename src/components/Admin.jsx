@@ -246,61 +246,139 @@ const handleDeleteStory = async (id) => {
         <button className="btn" onClick={logout}>Logout</button>
       </div>
 
+      {selectedIncident && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>📍 Incident Details</h3>
+      <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+      <p><strong>Status:</strong> {selectedIncident.status}</p>
+      <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+      <p><strong>Description:</strong> {selectedIncident.description}</p>
+      <button onClick={() => setSelectedIncident(null)}>Close</button>
+    </div>
+  </div>
+)}
+
+{selectedDiscussion && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>💬 Discussion Details</h3>
+      <p><strong>Title:</strong> {selectedDiscussion.title}</p>
+      <p><strong>Messages:</strong></p>
+      <ul>
+        {selectedDiscussion.messages?.map((m, i) => (
+          <li key={i}>{m.text || JSON.stringify(m)}</li>
+        ))}
+      </ul>
+      <button onClick={() => setSelectedDiscussion(null)}>Close</button>
+    </div>
+  </div>
+)}
+
+{selectedStory && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>📚 Story Details</h3>
+      <p><strong>Title:</strong> {selectedStory.title}</p>
+      <p><strong>Content:</strong> {selectedStory.content}</p>
+      <button onClick={() => setSelectedStory(null)}>Close</button>
+    </div>
+  </div>
+)}
+
+
       <h3>📍 Incident Reports</h3>
-      <table className="pretty-incident-table">
-        <thead>
-          <tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-          {incidents.map((i, idx) => (
-            <tr key={i._id}>
-              <td>{idx + 1}</td>
-              <td>{i.incidentType}</td>
-              <td>
-                {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
-                  <button key={s} className={`status-btn ${s} ${i.status === s ? 'active' : ''}`} onClick={() => handleStatusChange(i._id, s)}>
-                    {s}
-                  </button>
-                ))}
-              </td>
-              <td>{i.urgency}</td>
-              <td>{new Date(i.date).toLocaleDateString()}</td>
-              <td><button onClick={() => handleDeleteIncident(i._id)}>🗑️</button></td>
-            </tr>
+<table className="pretty-incident-table">
+  <thead>
+    <tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {incidents.map((i, idx) => (
+      <tr key={i._id} onClick={() => setSelectedIncident(i)}>
+        <td>{idx + 1}</td>
+        <td>{i.incidentType}</td>
+        <td>
+          {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
+            <button
+              key={s}
+              className={`status-btn ${s} ${i.status === s ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering row click
+                handleStatusChange(i._id, s);
+              }}
+            >
+              {s}
+            </button>
           ))}
-        </tbody>
-      </table>
+        </td>
+        <td>{i.urgency}</td>
+        <td>{new Date(i.date).toLocaleDateString()}</td>
+        <td>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteIncident(i._id);
+            }}
+          >
+            🗑️
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
-      <h3>💬 Discussions</h3>
-      <table className="pretty-incident-table">
-        <thead><tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Action</th></tr></thead>
-        <tbody>
-          {discussions.map((d, idx) => (
-            <tr key={d._id}>
-              <td>{idx + 1}</td>
-              <td>{d.title}</td>
-              <td>{d.messages?.length || 0}</td>
-              <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-              <td><button onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
 
-      <h3>📚 Stories</h3>
-      <table className="pretty-incident-table">
-        <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
-        <tbody>
-          {stories.map((s, idx) => (
-            <tr key={s._id}>
-              <td>{idx + 1}</td>
-              <td>{s.title || 'Untitled'}</td>
-              <td>{new Date(s.date).toLocaleDateString()}</td>
-              <td><button onClick={() => handleDeleteStory(s._id)}>🗑️</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+     <h3>💬 Discussions</h3>
+<table className="pretty-incident-table">
+  <thead><tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Action</th></tr></thead>
+  <tbody>
+    {discussions.map((d, idx) => (
+      <tr key={d._id} onClick={() => setSelectedDiscussion(d)}>
+        <td>{idx + 1}</td>
+        <td>{d.title}</td>
+        <td>{d.messages?.length || 0}</td>
+        <td>{new Date(d.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteDiscussion(d._id);
+            }}
+          >
+            🗑️
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+
+<h3>📚 Stories</h3>
+<table className="pretty-incident-table">
+  <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
+  <tbody>
+    {stories.map((s, idx) => (
+      <tr key={s._id} onClick={() => setSelectedStory(s)}>
+        <td>{idx + 1}</td>
+        <td>{s.title || 'Untitled'}</td>
+        <td>{new Date(s.date).toLocaleDateString()}</td>
+        <td>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteStory(s._id);
+            }}
+          >
+            🗑️
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
     </div>
   );
 
