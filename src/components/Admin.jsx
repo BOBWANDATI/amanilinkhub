@@ -152,22 +152,28 @@ const Admin = () => {
   };
 
   const handleDeleteIncident = async (id) => {
-    if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
+  if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
 
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIncidents((prev) => prev.filter((i) => i._id !== id));
-        alert('✅ Deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setIncidents((prev) => prev.filter((i) => i._id !== id));
+      alert('✅ Incident deleted successfully');
+    } else {
+      console.error('Delete error:', data);
+      alert(data.msg || '❌ Failed to delete incident');
     }
-  };
+  } catch (err) {
+    console.error('❌ Error deleting incident:', err);
+    alert('❌ Error occurred while deleting incident');
+  }
+};
+
 
  const handleDeleteDiscussion = async (id) => {
   if (!window.confirm('Delete discussion?')) return;
