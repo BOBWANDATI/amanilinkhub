@@ -1,38 +1,38 @@
-/* ===== Stories Page Layout ===== */
-
+/* Container Styling */
 .page {
   padding: 40px 20px;
   background-color: #f9f9f9;
-  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .container {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
+/* Headings */
 .page-title {
-  font-size: 2.2rem;
+  font-size: 2rem;
+  font-weight: bold;
   margin-bottom: 10px;
   text-align: center;
   color: #333;
 }
 
 .page-subtitle {
-  font-size: 1.1rem;
-  text-align: center;
-  color: #555;
+  font-size: 1rem;
+  color: #666;
   margin-bottom: 30px;
+  text-align: center;
 }
 
-/* ===== Filters & Form Button ===== */
-
+/* Filter & Action */
 .stories-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
 .category-filter {
@@ -42,55 +42,52 @@
 }
 
 .category-filter button {
-  background-color: #eee;
-  border: none;
   padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 0.95rem;
+  border: 1px solid #0077cc;
+  background: transparent;
+  color: #0077cc;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .category-filter button.active,
 .category-filter button:hover {
-  background-color: #0066cc;
-  color: #fff;
+  background-color: #0077cc;
+  color: white;
 }
 
-/* ===== Form Styling ===== */
+/* Share Button */
+.btn.btn-primary {
+  background-color: #0077cc;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
 
+.btn.btn-primary:hover {
+  background-color: #005fa3;
+}
+
+/* Story Form */
 .story-form {
   background: #fff;
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.07);
+  padding: 20px;
   margin-bottom: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
 }
 
 .story-form h3 {
   margin-bottom: 20px;
-  color: #222;
 }
 
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  background-color: #fff;
+.form-group,
+.form-row {
+  margin-bottom: 15px;
 }
 
 .form-row {
@@ -99,135 +96,138 @@
   flex-wrap: wrap;
 }
 
-.form-row .form-group {
-  flex: 1;
-  min-width: 150px;
-}
-
-.form-actions {
-  margin-top: 20px;
-}
-
-.btn.btn-primary {
-  background-color: #0066cc;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn.btn-primary:hover {
-  background-color: #004999;
-}
-
-/* ===== Story Cards ===== */
-
-.stories-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-.story-card-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.story-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  transition: box-shadow 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.story-card:hover {
-  box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
-}
-
-.story-header h3 {
-  margin: 0;
-  font-size: 1.4rem;
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
   color: #333;
 }
 
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-actions {
+  text-align: right;
+}
+
+/* Stories Grid */
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Story Card */
+.story-card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.story-card:hover {
+  transform: translateY(-3px);
+}
+
+.story-header h3 {
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+  color: #0077cc;
+}
+
+.story-title-link {
+  color: #0077cc;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.story-title-link:hover {
+  text-decoration: underline;
+}
+
 .story-meta {
+  font-size: 0.85rem;
+  color: #666;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  font-size: 0.9rem;
-  color: #666;
-  margin-top: 6px;
+  gap: 10px;
 }
 
 .story-category {
+  margin-top: 5px;
   font-size: 0.85rem;
-  background-color: #0066cc;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 20px;
-  display: inline-block;
-  margin-top: 10px;
+  color: #0077cc;
+  font-weight: bold;
 }
 
+/* Content */
 .story-content {
-  margin-top: 15px;
+  margin: 10px 0;
+  font-size: 0.95rem;
   color: #444;
-  font-size: 1rem;
-  line-height: 1.5;
 }
 
 .story-video-link {
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: #0066cc;
-  font-weight: 500;
+  font-size: 0.85rem;
+  color: #d9534f;
+  font-style: italic;
+  margin-top: 5px;
 }
 
-/* ===== Footer Actions ===== */
-
+/* Footer / Actions */
 .story-footer {
-  margin-top: 15px;
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-top: 10px;
 }
 
 .story-action {
   background: none;
   border: none;
+  color: #0077cc;
+  cursor: pointer;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #333;
-  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.3s;
 }
 
 .story-action:hover {
-  color: #0066cc;
+  background-color: #e6f3ff;
 }
 
+/* No Stories */
 .no-stories {
-  background-color: #fff;
-  padding: 25px;
   text-align: center;
-  border-radius: 6px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.04);
-  color: #777;
+  color: #999;
+  margin-top: 20px;
 }
 
-/* ===== Responsive Design ===== */
-
-@media (min-width: 768px) {
-  .stories-grid {
-    grid-template-columns: 1fr 1fr;
+/* Responsive Fixes */
+@media (max-width: 600px) {
+  .story-form {
+    padding: 15px;
   }
-}
 
-@media (min-width: 1024px) {
-  .stories-grid {
-    grid-template-columns: 1fr 1fr 1fr;
+  .form-row {
+    flex-direction: column;
+  }
+
+  .stories-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
 }
