@@ -79,51 +79,65 @@ const Admin = () => {
     }
     fetchData();
   }, [isLoggedIn, token]);
+// Socket event listeners for real-time updates
+useEffect(() => {
+  if (!socket) return;
 
-  // Socket event listeners for real-time updates
-  useEffect(() => {
-    if (!socket) return;
+  // 👇 Prevent duplicates by checking _id before appending
+  const addOrUpdate = (prevList, newItem) => {
+    const exists = prevList.find((i) => i._id === newItem._id);
+    return exists ? prevList.map((i) => (i._id === newItem._id ? newItem : i)) : [newItem, ...prevList];
+  };
 
-    const onNewIncident = (incident) => {
-      setIncidents((prev) => [incident, ...prev]);
-      alert(`🚨 New Incident: ${incident.incidentType || 'Unknown'}`);
-    };
-    const onIncidentUpdated = (updated) => {
-      setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
-    };
+  // ✅ Incident listeners
+  const onNewIncident = (incident) => {
+    setIncidents((prev) => addOrUpdate(prev, incident));
+    alert(`🚨 New Incident Reported: ${incident.incidentType || 'Unknown'}`);
+  };
+  const onIncidentUpdated = (updated) => {
+    setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
+  };
 
-    const onNewDiscussion = (discussion) => {
-      setDiscussions((prev) => [discussion, ...prev]);
-      alert(`💬 New Discussion: ${discussion.title || 'Untitled'}`);
-    };
-    const onDiscussionUpdated = (updated) => {
-      setDiscussions((prev) => prev.map((d) => (d._id === updated._id ? updated : d)));
-    };
+  // ✅ Discussion listeners
+  const onNewDiscussion = (discussion) => {
+    setDiscussions((prev) => addOrUpdate(prev, discussion));
+    alert(`💬 New Discussion: ${discussion.title || 'Untitled'}`);
+  };
+  const onDiscussionUpdated = (updated) => {
+    setDiscussions((prev) => prev.map((d) => (d._id === updated._id ? updated : d)));
+  };
 
-    const onNewStory = (story) => {
-      setStories((prev) => [story, ...prev]);
-      alert(`📚 New Story: ${story.title || 'Untitled'}`);
-    };
-    const onStoryUpdated = (updated) => {
-      setStories((prev) => prev.map((s) => (s._id === updated._id ? updated : s)));
-    };
+  // ✅ Story listeners (only if verified)
+  const onNewStory = (story) => {
+    if (story.verified) {
+      setStories((prev) => addOrUpdate(prev, story));
+      alert(`📚 New Story Shared: ${story.title || 'Untitled'}`);
+    }
+  };
+  const onStoryUpdated = (updated) => {
+    setStories((prev) => prev.map((s) => (s._id === updated._id ? updated : s)));
+  };
 
-    socket.on('new_incident_reported', onNewIncident);
-    socket.on('incident_updated', onIncidentUpdated);
-    socket.on('new_discussion_created', onNewDiscussion);
-    socket.on('discussion_updated', onDiscussionUpdated);
-    socket.on('new_story_created', onNewStory);
-    socket.on('story_updated', onStoryUpdated);
+  // 🔌 Register listeners
+  socket.on('new_incident_reported', onNewIncident);
+  socket.on('incident_updated', onIncidentUpdated);
 
-    return () => {
-      socket.off('new_incident_reported', onNewIncident);
-      socket.off('incident_updated', onIncidentUpdated);
-      socket.off('new_discussion_created', onNewDiscussion);
-      socket.off('discussion_updated', onDiscussionUpdated);
-      socket.off('new_story_created', onNewStory);
-      socket.off('story_updated', onStoryUpdated);
-    };
-  }, [socket]);
+  socket.on('new_discussion_created', onNewDiscussion);
+  socket.on('discussion_updated', onDiscussionUpdated);
+
+  socket.on('new_story_created', onNewStory);
+  socket.on('story_updated', onStoryUpdated);
+
+  // 🧹 Clean up listeners on unmount
+  return () => {
+    socket.off('new_incident_reported', onNewIncident);
+    socket.off('incident_updated', onIncidentUpdated);
+    socket.off('new_discussion_created', onNewDiscussion);
+    socket.off('discussion_updated', onDiscussionUpdated);
+    socket.off('new_story_created', onNewStory);
+    socket.off('story_updated', onStoryUpdated);
+  };
+}, [socket]);
 
   // Show modal detail
   const showModal = (type, item) => {
