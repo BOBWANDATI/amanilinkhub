@@ -18,7 +18,6 @@ const Admin = () => {
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
   const [stories, setStories] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
 
   const token = localStorage.getItem('admin_token');
@@ -152,8 +151,57 @@ const Admin = () => {
     }
   };
 
-  const handleDetailClick = (item) => setSelectedItem(item);
-  const handleCloseModal = () => setSelectedItem(null);
+  const handleDeleteIncident = async (id) => {
+    if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIncidents((prev) => prev.filter((i) => i._id !== id));
+        alert('✅ Deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteDiscussion = async (id) => {
+    if (!window.confirm('Delete discussion?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDiscussions((prev) => prev.filter((d) => d._id !== id));
+        alert('✅ Discussion deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteStory = async (id) => {
+    if (!window.confirm('Delete story?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/stories/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStories((prev) => prev.filter((s) => s._id !== id));
+        alert('✅ Story deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const logout = () => {
     localStorage.clear();
@@ -164,6 +212,7 @@ const Admin = () => {
   const Dashboard = () => (
     <div className="super-admin-dashboard">
       <h2>🛡️ AmaniLink Admin Dashboard</h2>
+
       <div className="dashboard-cards">
         <div className="dashboard-card">
           <div className="card-icon">🔥</div>
@@ -188,18 +237,24 @@ const Admin = () => {
 
       <h3>📍 Incident Reports</h3>
       <table className="pretty-incident-table">
-        <thead><tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr></thead>
+        <thead>
+          <tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr>
+        </thead>
         <tbody>
           {incidents.map((i, idx) => (
-            <tr key={i._id} onClick={() => handleDetailClick(i)}>
+            <tr key={i._id}>
               <td>{idx + 1}</td>
               <td>{i.incidentType}</td>
-              <td>{['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
-                <button key={s} className={`status-btn ${s} ${i.status === s ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); handleStatusChange(i._id, s); }}>{s}</button>
-              ))}</td>
+              <td>
+                {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
+                  <button key={s} className={`status-btn ${s} ${i.status === s ? 'active' : ''}`} onClick={() => handleStatusChange(i._id, s)}>
+                    {s}
+                  </button>
+                ))}
+              </td>
               <td>{i.urgency}</td>
               <td>{new Date(i.date).toLocaleDateString()}</td>
-              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteIncident(i._id); }}>🗑️</button></td>
+              <td><button onClick={() => handleDeleteIncident(i._id)}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
@@ -210,12 +265,12 @@ const Admin = () => {
         <thead><tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Action</th></tr></thead>
         <tbody>
           {discussions.map((d, idx) => (
-            <tr key={d._id} onClick={() => handleDetailClick(d)}>
+            <tr key={d._id}>
               <td>{idx + 1}</td>
               <td>{d.title}</td>
               <td>{d.messages?.length || 0}</td>
               <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteDiscussion(d._id); }}>🗑️</button></td>
+              <td><button onClick={() => handleDeleteDiscussion(d._id)}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
@@ -226,24 +281,15 @@ const Admin = () => {
         <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
         <tbody>
           {stories.map((s, idx) => (
-            <tr key={s._id} onClick={() => handleDetailClick(s)}>
+            <tr key={s._id}>
               <td>{idx + 1}</td>
               <td>{s.title || 'Untitled'}</td>
               <td>{new Date(s.date).toLocaleDateString()}</td>
-              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteStory(s._id); }}>🗑️</button></td>
+              <td><button onClick={() => handleDeleteStory(s._id)}>🗑️</button></td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {selectedItem && (
-        <div className="modal" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={handleCloseModal}>✖</button>
-            <pre>{JSON.stringify(selectedItem, null, 2)}</pre>
-          </div>
-        </div>
-      )}
     </div>
   );
 
