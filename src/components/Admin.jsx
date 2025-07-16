@@ -18,10 +18,13 @@ const Admin = () => {
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
   const [stories, setStories] = useState([]);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+  const [selectedDiscussion, setSelectedDiscussion] = useState(null);
+  const [selectedStory, setSelectedStory] = useState(null);
   const navigate = useNavigate();
-
   const token = localStorage.getItem('admin_token');
 
+  // Fetch stats when logged in
   useEffect(() => {
     if (isLoggedIn && token) {
       fetch(`${BASE_URL}/api/admin/stats`, {
@@ -33,59 +36,45 @@ const Admin = () => {
     }
   }, [isLoggedIn]);
 
+  // Socket listeners
   useEffect(() => {
     if (!socket) return;
-
     const handleNewIncident = (incident) => {
       setIncidents((prev) => [incident, ...prev]);
       alert(`🚨 New Incident: ${incident.title}`);
     };
-
     const handleIncidentUpdated = (updated) => {
       setIncidents((prev) => prev.map((i) => (i._id === updated._id ? updated : i)));
     };
-
     socket.on("new_incident_reported", handleNewIncident);
     socket.on("incident_updated", handleIncidentUpdated);
-
     return () => {
       socket.off("new_incident_reported", handleNewIncident);
       socket.off("incident_updated", handleIncidentUpdated);
     };
   }, []);
 
+  // Fetch incidents, discussions, stories
   useEffect(() => {
     if (!token || !isLoggedIn) return;
-
     const fetchData = async () => {
       try {
-        const [incRes, disRes, storyRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/admin/report`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${BASE_URL}/api/discussions`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${BASE_URL}/api/stories`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+        const [inc, dis, sto] = await Promise.all([
+          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
-
-        const incData = await incRes.json();
-        const disData = await disRes.json();
-        const storyData = await storyRes.json();
-
-        setIncidents(incData);
-        setDiscussions(disData);
-        setStories(storyData);
+        setIncidents(await inc.json());
+        setDiscussions(await dis.json());
+        setStories(await sto.json());
       } catch (err) {
         console.error('Fetch error:', err);
       }
     };
-
     fetchData();
   }, [isLoggedIn]);
 
+  // Handlers
   const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
   const handleRegisterChange = (e) => setRegisterData({ ...registerData, [e.target.name]: e.target.value });
 
@@ -130,89 +119,83 @@ const Admin = () => {
     }
   };
 
- const handleStatusChange = async (id, newStatus) => {
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(`✅ Status updated to ${newStatus}`);
-      setIncidents((prev) =>
-        prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
-      );
-    } else alert(data.msg || '❌ Status update failed');
-  } catch (err) {
-    console.error('❌ Status error:', err);
-    alert('❌ Status error');
-  }
-};
-
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`✅ Status updated to ${newStatus}`);
+        setIncidents((prev) =>
+          prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
+        );
+      } else alert(data.msg || '❌ Status update failed');
+    } catch (err) {
+      console.error('❌ Status error:', err);
+      alert('❌ Status error');
+    }
+  };
 
   const handleDeleteIncident = async (id) => {
-  if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      setIncidents((prev) => prev.filter((i) => i._id !== id));
-      alert('✅ Incident deleted successfully');
-    } else {
-      console.error('Delete error:', data);
-      alert(data.msg || '❌ Failed to delete incident');
+    if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/report/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIncidents((prev) => prev.filter((i) => i._id !== id));
+        alert('✅ Incident deleted successfully');
+      } else {
+        console.error('Delete error:', data);
+        alert(data.msg || '❌ Failed to delete incident');
+      }
+    } catch (err) {
+      console.error('❌ Error deleting incident:', err);
+      alert('❌ Error occurred while deleting incident');
     }
-  } catch (err) {
-    console.error('❌ Error deleting incident:', err);
-    alert('❌ Error occurred while deleting incident');
-  }
-};
+  };
 
+  const handleDeleteDiscussion = async (id) => {
+    if (!window.confirm('Delete discussion?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/discussions/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDiscussions((prev) => prev.filter((d) => d._id !== id));
+        alert('✅ Discussion deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error('❌ Error deleting discussion:', err);
+    }
+  };
 
-const handleDeleteDiscussion = async (id) => {
-  if (!window.confirm('Delete discussion?')) return;
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/discussions/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setDiscussions((prev) => prev.filter((d) => d._id !== id));
-      alert('✅ Discussion deleted');
-    } else alert(data.msg || '❌ Delete failed');
-  } catch (err) {
-    console.error('❌ Error deleting discussion:', err);
-  }
-};
-
-
-const handleDeleteStory = async (id) => {
-  if (!window.confirm('Delete story?')) return;
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setStories((prev) => prev.filter((s) => s._id !== id));
-      alert('✅ Story deleted');
-    } else alert(data.msg || '❌ Delete failed');
-  } catch (err) {
-    console.error('❌ Error deleting story:', err);
-  }
-};
-
+  const handleDeleteStory = async (id) => {
+    if (!window.confirm('Delete story?')) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStories((prev) => prev.filter((s) => s._id !== id));
+        alert('✅ Story deleted');
+      } else alert(data.msg || '❌ Delete failed');
+    } catch (err) {
+      console.error('❌ Error deleting story:', err);
+    }
+  };
 
   const logout = () => {
     localStorage.clear();
@@ -223,7 +206,6 @@ const handleDeleteStory = async (id) => {
   const Dashboard = () => (
     <div className="super-admin-dashboard">
       <h2>🛡️ AmaniLink Admin Dashboard</h2>
-
       <div className="dashboard-cards">
         <div className="dashboard-card">
           <div className="card-icon">🔥</div>
@@ -246,139 +228,101 @@ const handleDeleteStory = async (id) => {
         <button className="btn" onClick={logout}>Logout</button>
       </div>
 
+      {/* Incident Modals */}
       {selectedIncident && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>📍 Incident Details</h3>
-      <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
-      <p><strong>Status:</strong> {selectedIncident.status}</p>
-      <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
-      <p><strong>Description:</strong> {selectedIncident.description}</p>
-      <button onClick={() => setSelectedIncident(null)}>Close</button>
-    </div>
-  </div>
-)}
+        <div className="modal">
+          <div className="modal-content">
+            <h3>📍 Incident Details</h3>
+            <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+            <p><strong>Status:</strong> {selectedIncident.status}</p>
+            <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+            <p><strong>Description:</strong> {selectedIncident.description}</p>
+            <button onClick={() => setSelectedIncident(null)}>Close</button>
+          </div>
+        </div>
+      )}
 
-{selectedDiscussion && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>💬 Discussion Details</h3>
-      <p><strong>Title:</strong> {selectedDiscussion.title}</p>
-      <p><strong>Messages:</strong></p>
-      <ul>
-        {selectedDiscussion.messages?.map((m, i) => (
-          <li key={i}>{m.text || JSON.stringify(m)}</li>
-        ))}
-      </ul>
-      <button onClick={() => setSelectedDiscussion(null)}>Close</button>
-    </div>
-  </div>
-)}
+      {/* Discussion Modals */}
+      {selectedDiscussion && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>💬 Discussion Details</h3>
+            <p><strong>Title:</strong> {selectedDiscussion.title}</p>
+            <ul>{selectedDiscussion.messages?.map((m, i) => <li key={i}>{m.text}</li>)}</ul>
+            <button onClick={() => setSelectedDiscussion(null)}>Close</button>
+          </div>
+        </div>
+      )}
 
-{selectedStory && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>📚 Story Details</h3>
-      <p><strong>Title:</strong> {selectedStory.title}</p>
-      <p><strong>Content:</strong> {selectedStory.content}</p>
-      <button onClick={() => setSelectedStory(null)}>Close</button>
-    </div>
-  </div>
-)}
+      {/* Story Modals */}
+      {selectedStory && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>📚 Story Details</h3>
+            <p><strong>Title:</strong> {selectedStory.title}</p>
+            <p><strong>Content:</strong> {selectedStory.content}</p>
+            <button onClick={() => setSelectedStory(null)}>Close</button>
+          </div>
+        </div>
+      )}
 
-
+      {/* Incident Table */}
       <h3>📍 Incident Reports</h3>
-<table className="pretty-incident-table">
-  <thead>
-    <tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr>
-  </thead>
-  <tbody>
-    {incidents.map((i, idx) => (
-      <tr key={i._id} onClick={() => setSelectedIncident(i)}>
-        <td>{idx + 1}</td>
-        <td>{i.incidentType}</td>
-        <td>
-          {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
-            <button
-              key={s}
-              className={`status-btn ${s} ${i.status === s ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent triggering row click
-                handleStatusChange(i._id, s);
-              }}
-            >
-              {s}
-            </button>
+      <table className="pretty-incident-table">
+        <thead><tr><th>#</th><th>Type</th><th>Status</th><th>Urgency</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+          {incidents.map((i, idx) => (
+            <tr key={i._id} onClick={() => setSelectedIncident(i)}>
+              <td>{idx + 1}</td>
+              <td>{i.incidentType}</td>
+              <td>
+                {['pending', 'investigating', 'resolved', 'escalated'].map((s) => (
+                  <button key={s} className={`status-btn ${s} ${i.status === s ? 'active' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); handleStatusChange(i._id, s); }}>
+                    {s}
+                  </button>
+                ))}
+              </td>
+              <td>{i.urgency}</td>
+              <td>{new Date(i.date).toLocaleDateString()}</td>
+              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteIncident(i._id); }}>🗑️</button></td>
+            </tr>
           ))}
-        </td>
-        <td>{i.urgency}</td>
-        <td>{new Date(i.date).toLocaleDateString()}</td>
-        <td>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteIncident(i._id);
-            }}
-          >
-            🗑️
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+        </tbody>
+      </table>
 
+      {/* Discussions Table */}
+      <h3>💬 Discussions</h3>
+      <table className="pretty-incident-table">
+        <thead><tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+          {discussions.map((d, idx) => (
+            <tr key={d._id} onClick={() => setSelectedDiscussion(d)}>
+              <td>{idx + 1}</td>
+              <td>{d.title}</td>
+              <td>{d.messages?.length || 0}</td>
+              <td>{new Date(d.createdAt).toLocaleDateString()}</td>
+              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteDiscussion(d._id); }}>🗑️</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-     <h3>💬 Discussions</h3>
-<table className="pretty-incident-table">
-  <thead><tr><th>#</th><th>Title</th><th>Messages</th><th>Date</th><th>Action</th></tr></thead>
-  <tbody>
-    {discussions.map((d, idx) => (
-      <tr key={d._id} onClick={() => setSelectedDiscussion(d)}>
-        <td>{idx + 1}</td>
-        <td>{d.title}</td>
-        <td>{d.messages?.length || 0}</td>
-        <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-        <td>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteDiscussion(d._id);
-            }}
-          >
-            🗑️
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
-
-<h3>📚 Stories</h3>
-<table className="pretty-incident-table">
-  <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
-  <tbody>
-    {stories.map((s, idx) => (
-      <tr key={s._id} onClick={() => setSelectedStory(s)}>
-        <td>{idx + 1}</td>
-        <td>{s.title || 'Untitled'}</td>
-        <td>{new Date(s.date).toLocaleDateString()}</td>
-        <td>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteStory(s._id);
-            }}
-          >
-            🗑️
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+      {/* Stories Table */}
+      <h3>📚 Stories</h3>
+      <table className="pretty-incident-table">
+        <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+          {stories.map((s, idx) => (
+            <tr key={s._id} onClick={() => setSelectedStory(s)}>
+              <td>{idx + 1}</td>
+              <td>{s.title}</td>
+              <td>{new Date(s.date).toLocaleDateString()}</td>
+              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteStory(s._id); }}>🗑️</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 
