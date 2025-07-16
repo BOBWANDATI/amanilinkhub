@@ -130,26 +130,29 @@ const Admin = () => {
     }
   };
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert(`✅ Status updated to ${newStatus}`);
-        setIncidents((prev) => prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i)));
-      } else alert(data.msg || '❌ Status update failed');
-    } catch (err) {
-      console.error(err);
-      alert('❌ Status error');
-    }
-  };
+ const handleStatusChange = async (id, newStatus) => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/report/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`✅ Status updated to ${newStatus}`);
+      setIncidents((prev) =>
+        prev.map((i) => (i._id === id ? { ...i, status: newStatus } : i))
+      );
+    } else alert(data.msg || '❌ Status update failed');
+  } catch (err) {
+    console.error('❌ Status error:', err);
+    alert('❌ Status error');
+  }
+};
+
 
   const handleDeleteIncident = async (id) => {
   if (!window.confirm("❗ Are you sure you want to delete this incident?")) return;
