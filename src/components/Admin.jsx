@@ -169,39 +169,43 @@ const Admin = () => {
     }
   };
 
-  const handleDeleteDiscussion = async (id) => {
-    if (!window.confirm('Delete discussion?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/discussions/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setDiscussions((prev) => prev.filter((d) => d._id !== id));
-        alert('✅ Discussion deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+ const handleDeleteDiscussion = async (id) => {
+  if (!window.confirm('Delete discussion?')) return;
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/discussions/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setDiscussions((prev) => prev.filter((d) => d._id !== id));
+      alert('✅ Discussion deleted');
+    } else alert(data.msg || '❌ Delete failed');
+  } catch (err) {
+    console.error(err);
+    alert('❌ Error deleting discussion');
+  }
+};
 
-  const handleDeleteStory = async (id) => {
-    if (!window.confirm('Delete story?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/stories/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setStories((prev) => prev.filter((s) => s._id !== id));
-        alert('✅ Story deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
+ const handleDeleteStory = async (id) => {
+  if (!window.confirm('Delete story?')) return;
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setStories((prev) => prev.filter((s) => s._id !== id));
+      alert('✅ Story deleted');
+    } else alert(data.msg || '❌ Delete failed');
+  } catch (err) {
+    console.error(err);
+    alert('❌ Error deleting story');
+  }
+};
+
 
   const logout = () => {
     localStorage.clear();
