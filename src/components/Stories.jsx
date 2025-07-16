@@ -20,6 +20,7 @@ const Stories = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Fetch stories
   const fetchStories = async () => {
     try {
       const res = await axios.get(API_BASE_URL);
@@ -29,6 +30,7 @@ const Stories = () => {
     }
   };
 
+  // Like handler
   const handleLike = async (id) => {
     try {
       await axios.patch(`${API_BASE_URL}/${id}/like`);
@@ -38,10 +40,11 @@ const Stories = () => {
     }
   };
 
+  // Share handler
   const handleShare = (story) => {
-    const shareText = `${story.title} - Read more: ${window.location.origin}/stories/${story._id}`;
-    navigator.clipboard.writeText(shareText);
-    alert('Story link copied to clipboard!');
+    const shareUrl = `${window.location.origin}/stories/${story._id}`;
+    navigator.clipboard.writeText(`${story.title} - Read more: ${shareUrl}`);
+    alert('📋 Story link copied to clipboard!');
   };
 
   useEffect(() => {
@@ -91,6 +94,7 @@ const Stories = () => {
           Read inspiring stories of reconciliation, healing, and unity across communities.
         </p>
 
+        {/* Category Filters */}
         <div className="stories-actions">
           <div className="category-filter">
             {['all', 'reconciliation', 'healing', 'community'].map((cat) => (
@@ -108,6 +112,7 @@ const Stories = () => {
           </button>
         </div>
 
+        {/* Story Form */}
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
             <h3>Submit Your Peace Story</h3>
@@ -195,6 +200,7 @@ const Stories = () => {
           </form>
         )}
 
+        {/* Stories List */}
         <div className="stories-grid">
           {filteredStories.length > 0 ? (
             filteredStories.map((story) => (
