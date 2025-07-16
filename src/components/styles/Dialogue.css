@@ -26,7 +26,7 @@
 /* === Sidebar === */
 .dialogue-sidebar {
   flex: 1;
-  max-width: 350px;
+  max-width: 450px;
 }
 
 /* === Main Chat Area === */
@@ -39,7 +39,7 @@
 .dialogue-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 10px;
-  padding: 1rem;
+  padding: 3rem;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -120,7 +120,7 @@
 
 .dialogue-new-btn,
 .dialogue-peacebot-btn {
-  width: 100%;
+  width: 80%;
 }
 
 /* === Chat === */
