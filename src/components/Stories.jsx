@@ -29,6 +29,21 @@ const Stories = () => {
     }
   };
 
+  const handleLike = async (id) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/${id}/like`);
+      fetchStories();
+    } catch (err) {
+      console.error('Error liking story:', err);
+    }
+  };
+
+  const handleShare = (story) => {
+    const shareText = `${story.title} - Read more: ${window.location.origin}/stories/${story._id}`;
+    navigator.clipboard.writeText(shareText);
+    alert('Story link copied to clipboard!');
+  };
+
   useEffect(() => {
     fetchStories();
   }, []);
@@ -138,7 +153,7 @@ const Stories = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="videoLink">Video Link (optional - YouTube, Vimeo, etc)</label>
+              <label htmlFor="videoLink">Video Link (optional)</label>
               <input
                 type="url"
                 id="videoLink"
@@ -183,44 +198,52 @@ const Stories = () => {
         <div className="stories-grid">
           {filteredStories.length > 0 ? (
             filteredStories.map((story) => (
-              <Link
-                key={story._id}
-                to={`/stories/${story._id}`}
-                className="story-card-link"
-              >
-                <div className="story-card">
-                  <div className="story-header">
+              <div key={story._id} className="story-card">
+                <div className="story-header">
+                  <Link to={`/stories/${story._id}`} className="story-title-link">
                     <h3>{story.title}</h3>
-                    <div className="story-meta">
-                      <span><FaUser /> {story.author || 'Anonymous'}</span>
-                      <span>{story.location}</span>
-                      <span>{new Date(story.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="story-category">
-                      {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
-                    </div>
+                  </Link>
+                  <div className="story-meta">
+                    <span><FaUser /> {story.author || 'Anonymous'}</span>
+                    <span>{story.location}</span>
+                    <span>{new Date(story.date).toLocaleDateString()}</span>
                   </div>
-
-                  <div className="story-content">
-                    <p>
-                      {story.content.length > 180
-                        ? story.content.substring(0, 180) + '...'
-                        : story.content}
-                    </p>
-                    {story.videoLink && (
-                      <p className="story-video-link">
-                        🎥 <em>Video included</em>
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="story-footer">
-                    <button className="story-action"><FaHeart /> {story.likes || 0}</button>
-                    <button className="story-action"><FaComment /> {story.comments || 0}</button>
-                    <button className="story-action"><FaShare /> Share</button>
+                  <div className="story-category">
+                    {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
                   </div>
                 </div>
-              </Link>
+
+                <div className="story-content">
+                  <p>
+                    {story.content.length > 180
+                      ? story.content.substring(0, 180) + '...'
+                      : story.content}
+                  </p>
+                  {story.videoLink && (
+                    <p className="story-video-link">
+                      🎥 <em>Video included</em>
+                    </p>
+                  )}
+                </div>
+
+                <div className="story-footer">
+                  <button
+                    className="story-action"
+                    onClick={() => handleLike(story._id)}
+                  >
+                    <FaHeart /> {story.likes || 0}
+                  </button>
+                  <button className="story-action">
+                    <FaComment /> {story.comments || 0}
+                  </button>
+                  <button
+                    className="story-action"
+                    onClick={() => handleShare(story)}
+                  >
+                    <FaShare /> Share
+                  </button>
+                </div>
+              </div>
             ))
           ) : (
             <div className="no-stories">
