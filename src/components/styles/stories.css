@@ -1,260 +1,233 @@
-/* === Background & Wrapper === */
-#stories {
-  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/yux-xiang-bAsOgzNy3XM-unsplash.jpg?raw=true');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/* ===== Stories Page Layout ===== */
+
+.page {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
   min-height: 100vh;
-  padding: 80px 30px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #2d3748;
 }
 
-/* === Container === */
 .container {
-  max-width: 3000px;
+  max-width: 900px;
   margin: 0 auto;
-  background-color: rgba(255, 255, 255, 0.96);
-  padding: 10rem 7rem;
-  border-radius: 20px;
-  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12);
 }
 
-/* === Titles === */
 .page-title {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
   text-align: center;
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  color: #333;
 }
 
 .page-subtitle {
+  font-size: 1.1rem;
   text-align: center;
-  color: #4a5568;
-  font-size: 1.2rem;
-  margin-bottom: 2.5rem;
+  color: #555;
+  margin-bottom: 30px;
 }
 
-/* === Category Filter & Button Row === */
+/* ===== Filters & Form Button ===== */
+
 .stories-actions {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
 }
 
 .category-filter {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .category-filter button {
-  padding: 0.6rem 1.2rem;
-  background-color: #edf2f7;
+  background-color: #eee;
   border: none;
-  border-radius: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+  transition: background-color 0.3s ease;
 }
 
 .category-filter button.active,
 .category-filter button:hover {
-  background-color: #3182ce;
-  color: white;
+  background-color: #0066cc;
+  color: #fff;
 }
 
-/* === Story Form === */
+/* ===== Form Styling ===== */
+
 .story-form {
-  background: #f9fafb;
-  padding: 2rem;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2.5rem;
+  background: #fff;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.07);
+  margin-bottom: 30px;
 }
 
 .story-form h3 {
-  margin-bottom: 1.2rem;
-  color: #2b6cb0;
+  margin-bottom: 20px;
+  color: #222;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1.2rem;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
 }
 
 .form-row {
   display: flex;
-  gap: 1.2rem;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
 .form-row .form-group {
   flex: 1;
-}
-
-input,
-select,
-textarea {
-  padding: 0.8rem 1rem;
-  border: 1px solid #cbd5e0;
-  border-radius: 8px;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  background-color: #fff;
-}
-
-textarea {
-  resize: vertical;
+  min-width: 150px;
 }
 
 .form-actions {
-  text-align: right;
-  margin-top: 1rem;
+  margin-top: 20px;
 }
 
-/* === Button Styles === */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  background-color: #2b6cb0;
+.btn.btn-primary {
+  background-color: #0066cc;
   color: white;
-  padding: 0.8rem 1.5rem;
+  padding: 10px 20px;
+  border-radius: 6px;
   border: none;
-  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.btn:hover {
-  background-color: #2c5282;
+.btn.btn-primary:hover {
+  background-color: #004999;
 }
 
-/* === Stories Grid === */
+/* ===== Story Cards ===== */
+
 .stories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+  grid-template-columns: 1fr;
+  gap: 20px;
 }
 
-/* === Story Card === */
+.story-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .story-card {
-  background-color: #ffffff;
-  border-radius: 14px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .story-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.08);
 }
 
 .story-header h3 {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-size: 1.4rem;
+  color: #333;
 }
 
 .story-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #718096;
-  margin-bottom: 0.5rem;
-}
-
-.story-meta span {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 6px;
 }
 
 .story-category {
-  background-color: #bee3f8;
-  color: #2c5282;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-  border-radius: 50px;
-  width: fit-content;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  background-color: #0066cc;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 10px;
 }
 
 .story-content {
-  flex: 1;
+  margin-top: 15px;
+  color: #444;
   font-size: 1rem;
-  color: #2d3748;
-  margin-bottom: 1.2rem;
+  line-height: 1.5;
 }
 
+.story-video-link {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #0066cc;
+  font-weight: 500;
+}
+
+/* ===== Footer Actions ===== */
+
 .story-footer {
+  margin-top: 15px;
   display: flex;
-  gap: 1rem;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.8rem;
+  gap: 15px;
 }
 
 .story-action {
   background: none;
   border: none;
-  color: #4a5568;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 6px;
+  color: #333;
   cursor: pointer;
-  transition: color 0.3s ease;
 }
 
 .story-action:hover {
-  color: #2b6cb0;
+  color: #0066cc;
 }
 
-/* === No Stories === */
 .no-stories {
+  background-color: #fff;
+  padding: 25px;
   text-align: center;
-  padding: 2rem;
-  color: #718096;
-  font-style: italic;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.04);
+  color: #777;
 }
 
-/* === Responsive === */
-@media (max-width: 768px) {
-  .stories-actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+/* ===== Responsive Design ===== */
 
-  .form-actions {
-    text-align: left;
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .container {
-    padding: 2rem;
-  }
-
-  .page-title {
-    font-size: 2rem;
-  }
-
+@media (min-width: 768px) {
   .stories-grid {
-    gap: 1.2rem;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stories-grid {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
