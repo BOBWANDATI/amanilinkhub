@@ -1,29 +1,29 @@
 /* === Background & Wrapper === */
 #stories {
-  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/yux-xiang-bAsOgzNy3XM-unsplash.jpg?raw=true'); /* Replace with your best image */
+  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/yux-xiang-bAsOgzNy3XM-unsplash.jpg?raw=true');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   min-height: 100vh;
-  padding: 60px 20px;
+  padding: 80px 30px;
   font-family: 'Segoe UI', sans-serif;
   color: #2d3748;
 }
 
 /* === Container === */
 .container {
-  max-width: 1400px;
-  margin-bottom: 40px;
+  max-width: 1800px;
+  margin: 0 auto;
   background-color: rgba(255, 255, 255, 0.96);
-  padding: 4rem;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  padding: 5rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12);
 }
 
 /* === Titles === */
 .page-title {
   text-align: center;
-  font-size: 2.2rem;
+  font-size: 2.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
@@ -31,8 +31,8 @@
 .page-subtitle {
   text-align: center;
   color: #4a5568;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
+  font-size: 1.2rem;
+  margin-bottom: 2.5rem;
 }
 
 /* === Category Filter & Button Row === */
@@ -41,21 +41,21 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
 }
 
 .category-filter {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .category-filter button {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   background-color: #edf2f7;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   transition: 0.2s;
@@ -70,26 +70,26 @@
 /* === Story Form === */
 .story-form {
   background: #f9fafb;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2.5rem;
 }
 
 .story-form h3 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   color: #2b6cb0;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .form-row {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   flex-wrap: wrap;
 }
 
@@ -100,11 +100,11 @@
 input,
 select,
 textarea {
-  padding: 0.75rem;
+  padding: 0.8rem 1rem;
   border: 1px solid #cbd5e0;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  margin-top: 0.4rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-top: 0.5rem;
   background-color: #fff;
 }
 
@@ -121,12 +121,12 @@ textarea {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   background-color: #2b6cb0;
   color: white;
-  padding: 0.7rem 1.4rem;
+  padding: 0.8rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -139,23 +139,30 @@ textarea {
 /* === Stories Grid === */
 .stories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 0.5rem;
 }
 
 /* === Story Card === */
 .story-card {
   background-color: #ffffff;
-  border-radius: 12px;
-  padding: 1.2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
 }
 
 .story-header h3 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 0.5rem;
 }
 
@@ -177,7 +184,7 @@ textarea {
 .story-category {
   background-color: #bee3f8;
   color: #2c5282;
-  padding: 0.3rem 0.7rem;
+  padding: 0.4rem 0.8rem;
   font-size: 0.8rem;
   font-weight: bold;
   border-radius: 50px;
@@ -187,16 +194,16 @@ textarea {
 
 .story-content {
   flex: 1;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #2d3748;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .story-footer {
   display: flex;
   gap: 1rem;
   border-top: 1px solid #e2e8f0;
-  padding-top: 0.5rem;
+  padding-top: 0.8rem;
 }
 
 .story-action {
@@ -206,7 +213,7 @@ textarea {
   font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   cursor: pointer;
   transition: color 0.3s ease;
 }
@@ -220,6 +227,7 @@ textarea {
   text-align: center;
   padding: 2rem;
   color: #718096;
+  font-style: italic;
 }
 
 /* === Responsive === */
@@ -236,5 +244,17 @@ textarea {
   .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .container {
+    padding: 2rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .stories-grid {
+    gap: 1.2rem;
   }
 }
