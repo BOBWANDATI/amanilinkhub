@@ -5,7 +5,6 @@
   position: relative;
   color: #ffffff;
   padding-bottom: 70px;
-
 }
 
 .stats-section .container {
@@ -15,9 +14,7 @@
   z-index: 1;
   padding-bottom: 40px;
   padding-top: 40px;
-
-
- 
+}
 
 /* ===== Titles ===== */
 .section-title {
