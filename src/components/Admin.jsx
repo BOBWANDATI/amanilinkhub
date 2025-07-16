@@ -178,7 +178,7 @@ const Admin = () => {
 };
 
 
- const handleDeleteDiscussion = async (id) => {
+const handleDeleteDiscussion = async (id) => {
   if (!window.confirm('Delete discussion?')) return;
   try {
     const res = await fetch(`${BASE_URL}/api/admin/discussions/${id}`, {
@@ -191,13 +191,12 @@ const Admin = () => {
       alert('✅ Discussion deleted');
     } else alert(data.msg || '❌ Delete failed');
   } catch (err) {
-    console.error(err);
-    alert('❌ Error deleting discussion');
+    console.error('❌ Error deleting discussion:', err);
   }
 };
 
 
- const handleDeleteStory = async (id) => {
+const handleDeleteStory = async (id) => {
   if (!window.confirm('Delete story?')) return;
   try {
     const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
@@ -210,8 +209,7 @@ const Admin = () => {
       alert('✅ Story deleted');
     } else alert(data.msg || '❌ Delete failed');
   } catch (err) {
-    console.error(err);
-    alert('❌ Error deleting story');
+    console.error('❌ Error deleting story:', err);
   }
 };
 
