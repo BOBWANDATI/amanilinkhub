@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import './styles/stories.css';
 
-// 🟢 Use your actual backend URL here
 const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
-// For local testing: 'http://localhost:5000/api/stories';
 
 const Stories = () => {
   const [stories, setStories] = useState([]);
@@ -23,7 +22,7 @@ const Stories = () => {
   const fetchStories = async () => {
     try {
       const res = await axios.get(API_BASE_URL);
-      setStories(res.data.reverse()); // Show newest stories first
+      setStories(res.data.reverse());
     } catch (err) {
       console.error('Failed to fetch stories:', err.message);
     }
@@ -54,7 +53,7 @@ const Stories = () => {
         location: ''
       });
       setShowForm(false);
-      fetchStories(); // Refresh after submission
+      fetchStories();
     } catch (err) {
       console.error('Error submitting story:', err.message);
     } finally {
@@ -170,29 +169,39 @@ const Stories = () => {
         <div className="stories-grid">
           {filteredStories.length > 0 ? (
             filteredStories.map((story) => (
-              <div key={story._id} className="story-card">
-                <div className="story-header">
-                  <h3>{story.title}</h3>
-                  <div className="story-meta">
-                    <span><FaUser /> {story.author || 'Anonymous'}</span>
-                    <span>{story.location}</span>
-                    <span>{new Date(story.date).toLocaleDateString()}</span>
+              <Link
+                key={story._id}
+                to={`/stories/${story._id}`}
+                className="story-card-link"
+              >
+                <div className="story-card">
+                  <div className="story-header">
+                    <h3>{story.title}</h3>
+                    <div className="story-meta">
+                      <span><FaUser /> {story.author || 'Anonymous'}</span>
+                      <span>{story.location}</span>
+                      <span>{new Date(story.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="story-category">
+                      {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
+                    </div>
                   </div>
-                  <div className="story-category">
-                    {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
+
+                  <div className="story-content">
+                    <p>
+                      {story.content.length > 200
+                        ? story.content.substring(0, 200) + '...'
+                        : story.content}
+                    </p>
+                  </div>
+
+                  <div className="story-footer">
+                    <button className="story-action"><FaHeart /> {story.likes || 0}</button>
+                    <button className="story-action"><FaComment /> {story.comments || 0}</button>
+                    <button className="story-action"><FaShare /> Share</button>
                   </div>
                 </div>
-
-                <div className="story-content">
-                  <p>{story.content}</p>
-                </div>
-
-                <div className="story-footer">
-                  <button className="story-action"><FaHeart /> {story.likes || 0}</button>
-                  <button className="story-action"><FaComment /> {story.comments || 0}</button>
-                  <button className="story-action"><FaShare /> Share</button>
-                </div>
-              </div>
+              </Link>
             ))
           ) : (
             <div className="no-stories">
