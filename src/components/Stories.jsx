@@ -14,7 +14,8 @@ const Stories = () => {
     category: 'reconciliation',
     content: '',
     author: '',
-    location: ''
+    location: '',
+    videoLink: ''
   });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,7 +51,8 @@ const Stories = () => {
         category: 'reconciliation',
         content: '',
         author: '',
-        location: ''
+        location: '',
+        videoLink: ''
       });
       setShowForm(false);
       fetchStories();
@@ -71,7 +73,7 @@ const Stories = () => {
       <div className="container">
         <h2 className="page-title">Peace Stories</h2>
         <p className="page-subtitle">
-          Read inspiring stories of reconciliation and healing from communities across Kenya
+          Read inspiring stories of reconciliation, healing, and unity across communities.
         </p>
 
         <div className="stories-actions">
@@ -93,7 +95,7 @@ const Stories = () => {
 
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
-            <h3>Share Your Peace Story</h3>
+            <h3>Submit Your Peace Story</h3>
 
             <div className="form-group">
               <label htmlFor="title">Story Title *</label>
@@ -133,6 +135,18 @@ const Stories = () => {
                   onChange={handleInputChange}
                 />
               </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="videoLink">Video Link (optional - YouTube, Vimeo, etc)</label>
+              <input
+                type="url"
+                id="videoLink"
+                name="videoLink"
+                placeholder="https://..."
+                value={newStory.videoLink}
+                onChange={handleInputChange}
+              />
             </div>
 
             <div className="form-group">
@@ -189,10 +203,15 @@ const Stories = () => {
 
                   <div className="story-content">
                     <p>
-                      {story.content.length > 200
-                        ? story.content.substring(0, 200) + '...'
+                      {story.content.length > 180
+                        ? story.content.substring(0, 180) + '...'
                         : story.content}
                     </p>
+                    {story.videoLink && (
+                      <p className="story-video-link">
+                        🎥 <em>Video included</em>
+                      </p>
+                    )}
                   </div>
 
                   <div className="story-footer">
