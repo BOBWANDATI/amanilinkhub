@@ -28,62 +28,80 @@ Our mission is to bridge communication gaps, amplify marginalized voices, and su
         </div>
       </section>
 
+      {/* Vision, Mission, What We Do */}
+      <section className="intro-section">
+        <div className="container">
+          <h1 className="section-title">Welcome to Amanilink Hub</h1>
+
+          <div className="vision-mission">
+            <div className="intro-block">
+              <h2 className="intro-title">Our Vision</h2>
+              <p className="intro-text">
+                To be a trusted platform empowering communities to prevent, manage, and resolve conflicts through inclusive digital peacebuilding tools and networks.
+              </p>
+            </div>
+
+            <div className="intro-block">
+              <h2 className="intro-title">Our Mission</h2>
+              <p className="intro-text">
+                To enhance local capacities in conflict resolution by offering innovative reporting tools, data-driven insights, and connections with key peace actors at every level.
+              </p>
+            </div>
+
+            <div className="intro-block">
+              <h2 className="intro-title">What We Do</h2>
+              <p className="intro-text">
+                Amanilink Hub enables individuals and institutions to report incidents, access peace data, participate in dialogue, connect with stakeholders, and share testimonies to foster understanding and resilience in conflict-affected areas.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="features-section">
         <div className="container">
-          <h2 className="section-title">COMPREHENSIVE AMANILINK HUB TOOLS</h2>
+          <h2 className="section-title">Comprehensive Amanilink Hub Tools</h2>
           <p className="section-subtitle">Everything communities need to prevent, report, and resolve conflicts effectively</p>
-          
+
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon blue">
-                <FaMapPin />
-              </div>
+              <div className="feature-icon blue"><FaMapPin /></div>
               <h3>Incident Reporting</h3>
               <p>Report conflicts anonymously or publicly with location, media, and real-time alerts</p>
               <button className="btn btn-secondary" onClick={() => navigate('/report')}>Try Now</button>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon green">
-                <FaShieldAlt />
-              </div>
+              <div className="feature-icon green"><FaShieldAlt /></div>
               <h3>Conflict Mapping</h3>
               <p>Interactive maps showing incident patterns, hotspots, and resolution status</p>
               <button className="btn btn-secondary" onClick={() => navigate('/map')}>View Map</button>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon purple">
-                <FaUsers />
-              </div>
+              <div className="feature-icon purple"><FaUsers /></div>
               <h3>Peace Actor Network</h3>
               <p>Connect with NGOs, community leaders, and government peace officers</p>
               <button className="btn btn-secondary" onClick={() => navigate('/contact')}>Connect</button>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon orange">
-                <FaComments />
-              </div>
+              <div className="feature-icon orange"><FaComments /></div>
               <h3>Dialogue Platform</h3>
               <p>Facilitated discussions between conflicting parties and mediators</p>
               <button className="btn btn-secondary" onClick={() => navigate('/dialogue')}>Join Discussion</button>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon pink">
-                <FaCalendar />
-              </div>
+              <div className="feature-icon pink"><FaCalendar /></div>
               <h3>Peace Testimonies</h3>
               <p>Share and read inspiring stories of reconciliation and healing</p>
               <button className="btn btn-secondary" onClick={() => setShowSuccessModal(true)}>Read Stories</button>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon teal">
-                <FaPhone />
-              </div>
+              <div className="feature-icon teal"><FaPhone /></div>
               <h3>USSD Access</h3>
               <p>Report incidents via simple mobile codes - no internet required</p>
               <button className="btn btn-secondary" onClick={() => setShowUSSDModal(true)}>Learn More</button>
