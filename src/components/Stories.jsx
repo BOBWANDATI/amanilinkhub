@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import '../styles/stories.css';
 
+
 const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
 
 const Stories = () => {
