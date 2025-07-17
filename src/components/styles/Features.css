@@ -97,14 +97,35 @@
 /* Vision, Mission, What We Do Section */
 /* Vision, Mission, What We Do Section */
 /* ========== Vision, Mission, What We Do Section ========== */
-/* ========== Vision, Mission, What We Do Section ========== */
-.intro-section {
+/* ========== Shared Background Image Section ========== */
+.intro-section,
+.features-section {
   padding: 4rem 1rem;
-  background: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/fidel-fernando-1WZbWDOo5K0-unsplash.jpg?raw=true') no-repeat center center / cover;
+  background: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/bennett-tobias-nsQDm1nBGIs-unsplash.jpg?raw=true') no-repeat center center / cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   text-align: center;
+  position: relative;
+  color: var(--text-light);
 }
 
-/* ========== Card Container ========== */
+.intro-section::before,
+.features-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--overlay); /* optional: e.g., rgba(0, 0, 0, 0.4) */
+  z-index: 0;
+}
+
+.intro-section > *,
+.features-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== Vision, Mission, What We Do Cards ========== */
 .vision-mission {
   display: flex;
   justify-content: center;
@@ -113,9 +134,8 @@
   margin-top: 2rem;
 }
 
-/* ========== Card ========== */
 .intro-card {
-  background: rgba(255, 255, 255, 0.05); /* semi-transparent glass effect */
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   padding: 2rem;
   width: 300px;
@@ -123,12 +143,11 @@
   animation: slowPop 4s ease-in-out infinite;
   z-index: 1;
   overflow: hidden;
-  backdrop-filter: blur(10px); /* glass blur effect */
+  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* ========== Animated Colorful Ring Around Card ========== */
 .intro-card::after {
   content: "";
   position: absolute;
@@ -147,19 +166,14 @@
     #ff5733
   );
   animation: ringSpin 6s linear infinite;
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask-composite: destination-out;
   padding: 4px;
   box-sizing: border-box;
 }
 
-/* ========== Top Bar Color Strip ========== */
 .intro-card::before {
   content: '';
   height: 6px;
@@ -175,7 +189,6 @@
 .intro-card.vision::before { background-color: #00bcd4; }
 .intro-card.values::before { background-color: #f4b400; }
 
-/* ========== Card Content ========== */
 .intro-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -197,48 +210,19 @@
 
 /* ========== Animations ========== */
 @keyframes ringSpin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes slowPop {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.015);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
 }
 
-
-/* ========== Features Section ========== */
-.features-section {
-  padding: 80px 60px;
-  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/bennett-tobias-nsQDm1nBGIs-unsplash.jpg?raw=true');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  position: relative;
-  color: var(--text-light);
-}
-
-.features-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--overlay);
-  z-index: 0;
-}
-
+/* ========== Feature Section Cards (Unchanged) ========== */
 .features-section .container {
   max-width: 1600px;
   margin: 0 auto;
-  position: relative;
   z-index: 1;
 }
 
