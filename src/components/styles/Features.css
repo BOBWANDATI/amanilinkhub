@@ -95,9 +95,10 @@
 
 /* ========== Vision, Mission, What We Do Section ========== */
 /* Vision, Mission, What We Do Section */
+/* Vision, Mission, What We Do Section */
 .intro-section {
   padding: 4rem 1rem;
-  background-color: transparent; /* No background */
+  background-color: transparent;
   text-align: center;
 }
 
@@ -112,17 +113,39 @@
 .intro-card {
   background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   padding: 2rem;
   width: 300px;
   position: relative;
-  transition: all 0.3s ease-in-out;
+  animation: slowPop 4s ease-in-out infinite;
+  z-index: 1;
 }
 
-.intro-card:hover {
-  transform: translateY(-5px);
+/* Colored Ring Animation */
+.intro-card::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  border-radius: 25px;
+  border: 4px solid transparent;
+  z-index: -1;
+  animation: ringSpin 6s linear infinite;
 }
 
+/* Color-specific borders */
+.intro-card.mission::after {
+  border-color: #ff5733;
+}
+.intro-card.vision::after {
+  border-color: #00bcd4;
+}
+.intro-card.values::after {
+  border-color: #f4b400;
+}
+
+/* Top color bar */
 .intro-card::before {
   content: '';
   height: 6px;
@@ -134,17 +157,9 @@
   border-top-right-radius: 20px;
 }
 
-.intro-card.mission::before {
-  background-color: #ff5733;
-}
-
-.intro-card.vision::before {
-  background-color: #00bcd4;
-}
-
-.intro-card.values::before {
-  background-color: #f4b400;
-}
+.intro-card.mission::before { background-color: #ff5733; }
+.intro-card.vision::before { background-color: #00bcd4; }
+.intro-card.values::before { background-color: #f4b400; }
 
 .intro-icon {
   font-size: 2.5rem;
@@ -164,6 +179,35 @@
   color: #555;
   line-height: 1.6;
 }
+
+/* ========== Animations ========== */
+
+/* Ring spin effect */
+@keyframes ringSpin {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.01);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.8;
+  }
+}
+
+/* Gentle popping animation */
+@keyframes slowPop {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+}
+
 
 
 /* ========== Features Section ========== */
