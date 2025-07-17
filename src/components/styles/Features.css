@@ -131,13 +131,13 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 6rem;
-  margin-top: 2rem;
+  margin-top: 1.3rem;
 }
 
 .intro-card {
   background: #ffffff; /* ✅ Solid white background */
   border-radius: 20px;
-  padding: 2.5rem;
+  padding: 2.3rem;
   width: 360px; /* ✅ Increased width */
   position: relative;
   animation: slowPop 4s ease-in-out infinite;
@@ -190,13 +190,13 @@
 
 /* ========== Card Content ========== */
 .intro-icon {
-  font-size: 3rem;
-  margin-bottom: 1.3rem;
+  font-size: 2.2rem;
+  margin-bottom: 1.1rem;
   color: #333;
 }
 
 .intro-title {
-  font-size: 2rem; /* ✅ Larger title */
+  font-size: 1.3rem; /* ✅ Larger title */
   font-weight: bold;
   color: #000; /* ✅ Black title for contrast */
   margin-bottom: 1rem;
