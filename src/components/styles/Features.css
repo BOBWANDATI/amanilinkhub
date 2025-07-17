@@ -98,13 +98,13 @@
 /* Vision, Mission, What We Do Section */
 /* ========== Vision, Mission, What We Do Section ========== */
 /* ========== Vision, Mission, What We Do Section ========== */
-/* ========== Vision, Mission, What We Do Section ========== */
 .intro-section {
   padding: 4rem 1rem;
-  background-color: transparent;
+  background: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center / cover;
   text-align: center;
 }
 
+/* ========== Card Container ========== */
 .vision-mission {
   display: flex;
   justify-content: center;
@@ -115,7 +115,7 @@
 
 /* ========== Card ========== */
 .intro-card {
-  background: transparent; /* ✅ Fully transparent */
+  background: rgba(255, 255, 255, 0.05); /* semi-transparent glass effect */
   border-radius: 20px;
   padding: 2rem;
   width: 300px;
@@ -123,6 +123,9 @@
   animation: slowPop 4s ease-in-out infinite;
   z-index: 1;
   overflow: hidden;
+  backdrop-filter: blur(10px); /* glass blur effect */
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* ========== Animated Colorful Ring Around Card ========== */
@@ -176,19 +179,19 @@
 .intro-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: #fff;
 }
 
 .intro-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #111;
+  color: #fff;
   margin-bottom: 0.5rem;
 }
 
 .intro-text {
   font-size: 0.95rem;
-  color: #333;
+  color: #eaeaea;
   line-height: 1.6;
 }
 
