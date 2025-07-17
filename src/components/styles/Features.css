@@ -97,6 +97,7 @@
 /* Vision, Mission, What We Do Section */
 /* Vision, Mission, What We Do Section */
 /* ========== Vision, Mission, What We Do Section ========== */
+/* ========== Vision, Mission, What We Do Section ========== */
 .intro-section {
   padding: 4rem 1rem;
   background-color: transparent;
@@ -113,7 +114,8 @@
 
 /* ========== Card ========== */
 .intro-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.05); /* Super transparent */
+  backdrop-filter: blur(6px); /* Optional: glass effect */
   border-radius: 20px;
   padding: 2rem;
   width: 300px;
@@ -121,6 +123,7 @@
   animation: slowPop 4s ease-in-out infinite;
   z-index: 1;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Subtle depth */
 }
 
 /* ========== Animated Colorful Ring Around Card ========== */
@@ -174,25 +177,24 @@
 .intro-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #444;
+  color: #ffffff;
 }
 
 .intro-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #2b2b2b;
+  color: #ffffff;
   margin-bottom: 0.5rem;
 }
 
 .intro-text {
   font-size: 0.95rem;
-  color: #555;
+  color: #dddddd;
   line-height: 1.6;
+  text-align: left;
 }
 
 /* ========== Animations ========== */
-
-/* Rotating ring effect */
 @keyframes ringSpin {
   0% {
     transform: rotate(0deg);
@@ -202,7 +204,6 @@
   }
 }
 
-/* Gentle popping animation */
 @keyframes slowPop {
   0%, 100% {
     transform: scale(1);
