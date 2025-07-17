@@ -96,7 +96,7 @@
 /* ========== Vision, Mission, What We Do Section ========== */
 /* Vision, Mission, What We Do Section */
 /* Vision, Mission, What We Do Section */
-/* ========== Intro Section Styles ========== */
+/* ========== Vision, Mission, What We Do Section ========== */
 .intro-section {
   padding: 4rem 1rem;
   background-color: transparent;
@@ -111,60 +111,64 @@
   margin-top: 2rem;
 }
 
-/* ========== Card Styles ========== */
+/* ========== Card ========== */
 .intro-card {
   background: #ffffff;
   border-radius: 20px;
   padding: 2rem;
   width: 300px;
   position: relative;
+  animation: slowPop 4s ease-in-out infinite;
   z-index: 1;
-  animation: slowPop 6s ease-in-out infinite;
   overflow: hidden;
 }
 
-/* ========== Glowing Colorful Animated Border ========== */
-.intro-card::before {
-  content: '';
+/* ========== Animated Colorful Ring Around Card ========== */
+.intro-card::after {
+  content: "";
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 22px;
-  padding: 2px;
-  background: linear-gradient(
-    270deg,
+  top: -4px;
+  left: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  border-radius: 24px;
+  z-index: -1;
+  background: conic-gradient(
+    from 0deg,
     #ff5733,
     #f4b400,
     #00bcd4,
     #8e44ad,
     #ff5733
   );
-  background-size: 600% 600%;
-  z-index: -1;
-  animation: glowingBorder 12s ease infinite;
+  animation: ringSpin 6s linear infinite;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
-/* ========== Inner Container to Mask the Border Effect ========== */
-.intro-card > * {
-  position: relative;
-  z-index: 2;
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 0.5rem;
+/* ========== Top Bar Color Strip ========== */
+.intro-card::before {
+  content: '';
+  height: 6px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
-/* Optional Color Strip Top - Keep if Needed */
-.intro-card.mission > *:first-child::before {
-  background-color: #ff5733;
-}
-.intro-card.vision > *:first-child::before {
-  background-color: #00bcd4;
-}
-.intro-card.values > *:first-child::before {
-  background-color: #f4b400;
-}
+.intro-card.mission::before { background-color: #ff5733; }
+.intro-card.vision::before { background-color: #00bcd4; }
+.intro-card.values::before { background-color: #f4b400; }
 
 /* ========== Card Content ========== */
 .intro-icon {
@@ -188,20 +192,17 @@
 
 /* ========== Animations ========== */
 
-/* Glowing Multicolor Border Loop */
-@keyframes glowingBorder {
+/* Rotating ring effect */
+@keyframes ringSpin {
   0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
+    transform: rotate(0deg);
   }
   100% {
-    background-position: 0% 50%;
+    transform: rotate(360deg);
   }
 }
 
-/* Gentle Popping Effect */
+/* Gentle popping animation */
 @keyframes slowPop {
   0%, 100% {
     transform: scale(1);
