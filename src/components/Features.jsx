@@ -47,48 +47,41 @@ const Features = ({ setShowUSSDModal, setShowSuccessModal }) => {
         </div>
       </section>
 
-      {/* Vision, Mission, What We Do */}
-      <section className="intro-section">
-        <div className="container">
-          <h1 className="section-title">Welcome to Amanilink Hub</h1>
+    {/* Vision, Mission, What We Do */}
+<section className="intro-section">
+  <h1 className="section-title">Welcome to Amanilink Hub</h1>
 
-          <div className="vision-mission">
-            <div className="intro-card mission">
-              <div className="intro-icon">
-                <FaBullseye />
-              </div>
-              <h2 className="intro-title">Mission</h2>
-              <p className="intro-text">
-                To enhance local capacities in conflict resolution by offering innovative reporting tools,
-                data-driven insights, and connections with key peace actors at every level.
-              </p>
-            </div>
+  <div className="vision-mission">
+    <div className="intro-card mission">
+      <div className="intro-icon"><FaBullseye /></div>
+      <h2 className="intro-title">Mission</h2>
+      <p className="intro-text">
+        To enhance local capacities in conflict resolution by offering innovative reporting tools,
+        data-driven insights, and connections with key peace actors at every level.
+      </p>
+    </div>
 
-            <div className="intro-card vision">
-              <div className="intro-icon">
-                <FaLightbulb />
-              </div>
-              <h2 className="intro-title">Vision</h2>
-              <p className="intro-text">
-                To be a trusted platform empowering communities to prevent, manage, and resolve conflicts
-                through inclusive digital peacebuilding tools and networks.
-              </p>
-            </div>
+    <div className="intro-card vision">
+      <div className="intro-icon"><FaLightbulb /></div>
+      <h2 className="intro-title">Vision</h2>
+      <p className="intro-text">
+        To be a trusted platform empowering communities to prevent, manage, and resolve conflicts
+        through inclusive digital peacebuilding tools and networks.
+      </p>
+    </div>
 
-            <div className="intro-card values">
-              <div className="intro-icon">
-                <FaBalanceScale />
-              </div>
-              <h2 className="intro-title">What We Do</h2>
-              <p className="intro-text">
-                Amanilink Hub enables individuals and institutions to report incidents, access peace data,
-                participate in dialogue, connect with stakeholders, and share testimonies to foster
-                understanding and resilience in conflict-affected areas.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="intro-card values">
+      <div className="intro-icon"><FaBalanceScale /></div>
+      <h2 className="intro-title">What We Do</h2>
+      <p className="intro-text">
+        Amanilink Hub enables individuals and institutions to report incidents, access peace data,
+        participate in dialogue, connect with stakeholders, and share testimonies to foster
+        understanding and resilience in conflict-affected areas.
+      </p>
+    </div>
+  </div>
+</section>
+
 
       {/* Features Section */}
       <section id="features" className="features-section">
