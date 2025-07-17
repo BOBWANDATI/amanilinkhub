@@ -96,6 +96,7 @@
 /* ========== Vision, Mission, What We Do Section ========== */
 /* Vision, Mission, What We Do Section */
 /* Vision, Mission, What We Do Section */
+/* ========== Intro Section Styles ========== */
 .intro-section {
   padding: 4rem 1rem;
   background-color: transparent;
@@ -110,57 +111,62 @@
   margin-top: 2rem;
 }
 
+/* ========== Card Styles ========== */
 .intro-card {
   background: #ffffff;
   border-radius: 20px;
   padding: 2rem;
   width: 300px;
   position: relative;
-  animation: slowPop 4s ease-in-out infinite;
   z-index: 1;
+  animation: slowPop 6s ease-in-out infinite;
+  overflow: hidden;
 }
 
-/* Colored Ring Animation */
-.intro-card::after {
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  width: calc(100% + 16px);
-  height: calc(100% + 16px);
-  border-radius: 25px;
-  border: 4px solid transparent;
-  z-index: -1;
-  animation: ringSpin 6s linear infinite;
-}
-
-/* Color-specific borders */
-.intro-card.mission::after {
-  border-color: #ff5733;
-}
-.intro-card.vision::after {
-  border-color: #00bcd4;
-}
-.intro-card.values::after {
-  border-color: #f4b400;
-}
-
-/* Top color bar */
+/* ========== Glowing Colorful Animated Border ========== */
 .intro-card::before {
   content: '';
-  height: 6px;
-  width: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 22px;
+  padding: 2px;
+  background: linear-gradient(
+    270deg,
+    #ff5733,
+    #f4b400,
+    #00bcd4,
+    #8e44ad,
+    #ff5733
+  );
+  background-size: 600% 600%;
+  z-index: -1;
+  animation: glowingBorder 12s ease infinite;
 }
 
-.intro-card.mission::before { background-color: #ff5733; }
-.intro-card.vision::before { background-color: #00bcd4; }
-.intro-card.values::before { background-color: #f4b400; }
+/* ========== Inner Container to Mask the Border Effect ========== */
+.intro-card > * {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 0.5rem;
+}
 
+/* Optional Color Strip Top - Keep if Needed */
+.intro-card.mission > *:first-child::before {
+  background-color: #ff5733;
+}
+.intro-card.vision > *:first-child::before {
+  background-color: #00bcd4;
+}
+.intro-card.values > *:first-child::before {
+  background-color: #f4b400;
+}
+
+/* ========== Card Content ========== */
 .intro-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -182,23 +188,20 @@
 
 /* ========== Animations ========== */
 
-/* Ring spin effect */
-@keyframes ringSpin {
+/* Glowing Multicolor Border Loop */
+@keyframes glowingBorder {
   0% {
-    transform: rotate(0deg) scale(1);
-    opacity: 0.8;
+    background-position: 0% 50%;
   }
   50% {
-    transform: rotate(180deg) scale(1.01);
-    opacity: 1;
+    background-position: 100% 50%;
   }
   100% {
-    transform: rotate(360deg) scale(1);
-    opacity: 0.8;
+    background-position: 0% 50%;
   }
 }
 
-/* Gentle popping animation */
+/* Gentle Popping Effect */
 @keyframes slowPop {
   0%, 100% {
     transform: scale(1);
