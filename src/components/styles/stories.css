@@ -3,6 +3,10 @@
   padding: 40px 20px;
   background-color: #f9f9f9;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/bennett-tobias-nsQDm1nBGIs-unsplash.jpg?raw=true') no-repeat center center / cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .container {
