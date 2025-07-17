@@ -49,7 +49,7 @@ const Features = ({ setShowUSSDModal, setShowSuccessModal }) => {
 
     {/* Vision, Mission, What We Do */}
 <section className="intro-section">
-  <h1 className="section-title">Welcome to Amanilink Hub</h1>
+  
 
   <div className="vision-mission">
     <div className="intro-card mission">
