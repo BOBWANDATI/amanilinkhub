@@ -97,7 +97,7 @@
 /* Vision, Mission, What We Do Section */
 /* Vision, Mission, What We Do Section */
 /* ========== Vision, Mission, What We Do Section ========== */
-/* ========== Shared Background Image Section ========== */
+/* ========== Shared Background for Both Sections ========== */
 .intro-section,
 .features-section {
   padding: 4rem 1rem;
@@ -115,7 +115,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--overlay); /* optional: e.g., rgba(0, 0, 0, 0.4) */
+  background: var(--overlay); /* optional: rgba(0, 0, 0, 0.4) */
   z-index: 0;
 }
 
@@ -130,24 +130,23 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 8rem;
+  gap: 6rem;
   margin-top: 2rem;
 }
 
 .intro-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff; /* ✅ Solid white background */
   border-radius: 20px;
-  padding: 2rem;
-  width: 300px;
+  padding: 2.5rem;
+  width: 360px; /* ✅ Increased width */
   position: relative;
   animation: slowPop 4s ease-in-out infinite;
   z-index: 1;
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* optional visual depth */
 }
 
+/* ========== Animated Colorful Ring Around Card ========== */
 .intro-card::after {
   content: "";
   position: absolute;
@@ -189,23 +188,24 @@
 .intro-card.vision::before { background-color: #00bcd4; }
 .intro-card.values::before { background-color: #f4b400; }
 
+/* ========== Card Content ========== */
 .intro-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #fff;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: #333;
 }
 
 .intro-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem; /* ✅ Larger title */
   font-weight: bold;
-  color: #fff;
-  margin-bottom: 0.5rem;
+  color: #000; /* ✅ Black title for contrast */
+  margin-bottom: 1rem;
 }
 
 .intro-text {
-  font-size: 0.95rem;
-  color: #eaeaea;
-  line-height: 1.6;
+  font-size: 1.1rem; /* ✅ Increased text size */
+  color: #222; /* ✅ Black text */
+  line-height: 1.7;
 }
 
 /* ========== Animations ========== */
@@ -218,6 +218,7 @@
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.015); }
 }
+
 
 /* ========== Feature Section Cards (Unchanged) ========== */
 .features-section .container {
