@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
-import './styles/stories.css';
+import '../styles/stories.css';
 
 const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
 
@@ -90,7 +90,6 @@ const Stories = () => {
         <h2 className="page-title">Peace Stories</h2>
         <p className="page-subtitle">Read inspiring stories of reconciliation, healing, and unity.</p>
 
-        {/* Category Filters */}
         <div className="stories-actions">
           <div className="category-filter">
             {['all', 'reconciliation', 'healing', 'community'].map((cat) => (
@@ -108,7 +107,6 @@ const Stories = () => {
           </button>
         </div>
 
-        {/* Share Story Form */}
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
             <h3>Submit Your Peace Story</h3>
@@ -128,34 +126,33 @@ const Stories = () => {
           </form>
         )}
 
-        {/* Stories */}
         <div className="stories-grid">
           {filteredStories.length > 0 ? (
             filteredStories.map((story) => (
-              <div key={story._id} className="story-card">
-                <div className="story-header">
-                  <Link to={`/stories/${story._id}`} className="story-title-link">
+              <Link to={`/stories/${story._id}`} key={story._id} className="story-card-link">
+                <div className="story-card">
+                  <div className="story-header">
                     <h3>{story.title}</h3>
-                  </Link>
-                  <div className="story-meta">
-                    <span><FaUser /> {story.author || 'Anonymous'}</span>
-                    <span>{story.location}</span>
-                    <span>{new Date(story.date).toLocaleDateString()}</span>
+                    <div className="story-meta">
+                      <span><FaUser /> {story.author || 'Anonymous'}</span>
+                      <span>{story.location}</span>
+                      <span>{new Date(story.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="story-category">
+                      {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
+                    </div>
                   </div>
-                  <div className="story-category">
-                    {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
+                  <div className="story-content">
+                    <p>{story.content.length > 180 ? story.content.substring(0, 180) + '...' : story.content}</p>
+                    {story.videoLink && <p className="story-video-link">🎥 <em>Video included</em></p>}
+                  </div>
+                  <div className="story-footer">
+                    <button type="button" onClick={(e) => { e.preventDefault(); handleLike(story._id); }}><FaHeart /> {story.likes || 0}</button>
+                    <button type="button"><FaComment /> {story.comments || 0}</button>
+                    <button type="button" onClick={(e) => { e.preventDefault(); handleShare(story); }}><FaShare /> Share</button>
                   </div>
                 </div>
-                <div className="story-content">
-                  <p>{story.content.length > 180 ? story.content.substring(0, 180) + '...' : story.content}</p>
-                  {story.videoLink && <p className="story-video-link">🎥 <em>Video included</em></p>}
-                </div>
-                <div className="story-footer">
-                  <button onClick={() => handleLike(story._id)}><FaHeart /> {story.likes || 0}</button>
-                  <button><FaComment /> {story.comments || 0}</button>
-                  <button onClick={() => handleShare(story)}><FaShare /> Share</button>
-                </div>
-              </div>
+              </Link>
             ))
           ) : (
             <div className="no-stories">No stories found.</div>
