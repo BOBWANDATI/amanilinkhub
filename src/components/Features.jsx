@@ -34,24 +34,31 @@ Our mission is to bridge communication gaps, amplify marginalized voices, and su
           <h1 className="section-title">Welcome to Amanilink Hub</h1>
 
           <div className="vision-mission">
-            <div className="intro-block">
-              <h2 className="intro-title">Our Vision</h2>
+            <div className="intro-card mission">
+              <div className="intro-icon"><FaBullseye /></div>
+              <h2 className="intro-title">Mission</h2>
               <p className="intro-text">
-                To be a trusted platform empowering communities to prevent, manage, and resolve conflicts through inclusive digital peacebuilding tools and networks.
+                To enhance local capacities in conflict resolution by offering innovative reporting tools,
+                data-driven insights, and connections with key peace actors at every level.
               </p>
             </div>
 
-            <div className="intro-block">
-              <h2 className="intro-title">Our Mission</h2>
+            <div className="intro-card vision">
+              <div className="intro-icon"><FaLightbulb /></div>
+              <h2 className="intro-title">Vision</h2>
               <p className="intro-text">
-                To enhance local capacities in conflict resolution by offering innovative reporting tools, data-driven insights, and connections with key peace actors at every level.
+                To be a trusted platform empowering communities to prevent, manage, and resolve conflicts
+                through inclusive digital peacebuilding tools and networks.
               </p>
             </div>
 
-            <div className="intro-block">
+            <div className="intro-card values">
+              <div className="intro-icon"><FaBalanceScale /></div>
               <h2 className="intro-title">What We Do</h2>
               <p className="intro-text">
-                Amanilink Hub enables individuals and institutions to report incidents, access peace data, participate in dialogue, connect with stakeholders, and share testimonies to foster understanding and resilience in conflict-affected areas.
+                Amanilink Hub enables individuals and institutions to report incidents, access peace data,
+                participate in dialogue, connect with stakeholders, and share testimonies to foster
+                understanding and resilience in conflict-affected areas.
               </p>
             </div>
           </div>
