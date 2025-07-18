@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import '../components/styles/VerifiedNews.css';
 
-const BASE_URL = import.meta.env.VITE_SOCKET_URL;
+//const BASE_URL = import.meta.env.VITE_SOCKET_URL;
+const BASE_URL = 'https://backend-m6u3.onrender.com';
+
 const isAdmin = false; // Set to true if the current user is an admin (this can be dynamic)
 
 const VerifiedNews = () => {
