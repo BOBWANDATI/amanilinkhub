@@ -25,8 +25,15 @@ const Admin = () => {
   const token = localStorage.getItem('admin_token');
   
   //NEWS UPDATE
+  //const [news, setNews] = useState([]);
+  //const [selectedNews, setSelectedNews] = useState(null);
+
   const [news, setNews] = useState([]);
   const [selectedNews, setSelectedNews] = useState(null);
+
+
+
+
 
 
   // Fetch stats when logged in
@@ -207,48 +214,38 @@ const Admin = () => {
   };
 
 
-  //NEWS UPDATE
-  const handleVerifyNews = async (id) => {
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/news/${id}/verify`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert('✅ News verified');
-      setNews((prev) => prev.map((n) => n._id === id ? { ...n, verified: true } : n));
-    } else {
-      alert(data.msg || '❌ Failed to verify');
-    }
-  } catch (err) {
-    console.error('❌ Verify news error:', err);
-    alert('❌ Error verifying news');
-  }
+ const fetchNews = async () => {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${BASE_URL}/api/admin/news`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  setNews(data);
 };
 
-
-
- // NEWS DELETE
-
-  const handleDeleteNews = async (id) => {
-  if (!window.confirm('❌ Delete this news post?')) return;
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/news/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      setNews((prev) => prev.filter((n) => n._id !== id));
-      alert('✅ News deleted');
-    } else {
-      alert('❌ Failed to delete news');
-    }
-  } catch (err) {
-    console.error(err);
-    alert('❌ News deletion failed');
-  }
+const handleVerify = async (id, status) => {
+  const token = localStorage.getItem('token');
+  await fetch(`${BASE_URL}/api/admin/news/${id}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ status })
+  });
+  fetchNews();
 };
+
+const handleDelete = async (id) => {
+  if (!window.confirm('Are you sure you want to delete this news item?')) return;
+  const token = localStorage.getItem('token');
+  await fetch(`${BASE_URL}/api/admin/news/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  fetchNews();
+};
+
 
 
 //LOGOUT
@@ -373,63 +370,42 @@ const Admin = () => {
       </table>
 
       
-{/* News Table */}
-<h3>📰 News</h3>
+{/* ✅ News Table */}
+<h3>📰 News Management</h3>
 <table className="pretty-incident-table">
   <thead>
-    <tr>
-      <th>#</th>
-      <th>Title</th>
-      <th>Status</th>
-      <th>Date</th>
-      <th>Actions</th>
-    </tr>
+    <tr><th>#</th><th>Title</th><th>Status</th><th>Date</th><th>Actions</th></tr>
   </thead>
   <tbody>
     {news.map((n, idx) => (
       <tr key={n._id} onClick={() => setSelectedNews(n)}>
         <td>{idx + 1}</td>
         <td>{n.title}</td>
-        <td>
-          {n.status === 'verified' && '✅'}
-          {n.status === 'pending' && '⏳'}
-          {n.status === 'rejected' && '❌'}
-        </td>
+        <td>{n.status}</td>
         <td>{new Date(n.createdAt).toLocaleDateString()}</td>
         <td>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteNews(n._id);
-            }}
-          >
-            🗑️
-          </button>
+          <button onClick={(e) => { e.stopPropagation(); handleVerify(n._id, 'verified'); }}>✅</button>
+          <button onClick={(e) => { e.stopPropagation(); handleVerify(n._id, 'rejected'); }}>❌</button>
+          <button onClick={(e) => { e.stopPropagation(); handleDelete(n._id); }}>🗑️</button>
         </td>
       </tr>
     ))}
   </tbody>
 </table>
 
-{/* News Detail Modal */}
+{/* ✅ Modal for News Preview */}
 {selectedNews && (
   <div className="modal">
     <div className="modal-content">
       <h3>{selectedNews.title}</h3>
       <p>{selectedNews.content}</p>
-      {selectedNews.link && (
-        <p>
-          🔗 <a href={selectedNews.link} target="_blank" rel="noopener noreferrer">Read more</a>
-        </p>
-      )}
-      {selectedNews.image && (
-        <img src={selectedNews.image} alt="News" style={{ maxWidth: '100%', marginTop: '10px' }} />
-      )}
-      <p>Status: <strong>{selectedNews.status}</strong></p>
+      {selectedNews.link && <a href={selectedNews.link} target="_blank">Read More</a>}
+      {selectedNews.image && <img src={selectedNews.image} alt="news" style={{ maxWidth: '100%' }} />}
       <button onClick={() => setSelectedNews(null)}>Close</button>
     </div>
   </div>
 )}
+
 
 
 
