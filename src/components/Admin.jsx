@@ -64,20 +64,18 @@ const Admin = () => {
     if (!token || !isLoggedIn) return;
     const fetchData = async () => {
       try {
-        const [inc, dis, sto] = await Promise.all([
-          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
-
-          //NEWS UPDATE
-          fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
-          
+       const [inc, dis, sto, nws] = await Promise.all([
+         fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } })  // ✅ CORRECT!
         ]);
+
         setIncidents(await inc.json());
         setDiscussions(await dis.json());
         setStories(await sto.json());
-        //NEWS UPDATE
-        setNews(await nws.json());
+        setNews(await nws.json()); // ✅ FIXED — now works
+
       } catch (err) {
         console.error('Fetch error:', err);
       }
@@ -393,20 +391,22 @@ const Admin = () => {
       <tr key={n._id} onClick={() => setSelectedNews(n)}>
         <td>{idx + 1}</td>
         <td>{n.title}</td>
-        <td>
-          {['pending', 'verified'].map((status) => (
-            <button
-              key={status}
-              className={`status-btn ${status} ${n.status === status ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNewsStatusChange(n._id, status);
-              }}
-            >
-              {status}
-            </button>
-          ))}
-        </td>
+            <td>
+  {n.verified ? (
+    <span className="status-label verified">✅ Verified</span>
+  ) : (
+    <button
+      className="status-btn pending"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleVerifyNews(n._id);
+      }}
+    >
+      Verify
+    </button>
+  )}
+</td>
+
         <td>
           <a href={n.link} target="_blank" rel="noopener noreferrer">
             View Link
