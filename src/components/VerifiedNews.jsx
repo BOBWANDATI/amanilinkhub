@@ -16,29 +16,17 @@ const VerifiedNews = () => {
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    // You can replace this with a fetch from `/api/news`
-    const sampleNews = [
-      {
-        id: 1,
-        title: 'Peace Deal Signed in Tana River',
-        content:
-          'Leaders from opposing communities agreed to long-term cooperation and reconciliation...',
-        image: 'https://via.placeholder.com/400x200',
-        link: 'https://example.com/peace-deal',
-        verified: true,
-      },
-      {
-        id: 2,
-        title: 'Youth Peace Training Launched',
-        content:
-          'Over 100 youth from different counties attended workshops on peacebuilding...',
-        image: 'https://via.placeholder.com/400x200',
-        link: 'https://example.com/peace-training',
-        verified: true,
-      },
-    ];
+    const fetchNews = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/news`);
+        const data = await res.json();
+        setNewsList(data);
+      } catch (err) {
+        console.error('❌ Error fetching news:', err);
+      }
+    };
 
-    setNewsList(sampleNews);
+    fetchNews();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -54,7 +42,7 @@ const VerifiedNews = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/news/create`, {
+      const response = await fetch(`${BASE_URL}/api/news`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,21 +50,19 @@ const VerifiedNews = () => {
           content,
           image: image || 'https://via.placeholder.com/400x200',
           link,
-          verified: true,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to post news.');
+        throw new Error(data.message || 'Failed to submit news.');
       }
 
-      setNewsList([data, ...newsList]);
       setNewArticle({ title: '', content: '', image: '', link: '' });
-      setSuccess('✅ News submitted successfully.');
+      setSuccess('✅ News submitted! Awaiting admin verification.');
     } catch (err) {
-      console.error('News post error:', err);
+      console.error('❌ News post error:', err);
       setError('❌ Failed to submit news. Try again later.');
     }
   };
@@ -133,14 +119,14 @@ const VerifiedNews = () => {
         {newsList.length > 0 ? (
           newsList.map((news) => (
             <a
-              key={news.id}
+              key={news._id}
               href={news.link}
               target="_blank"
               rel="noopener noreferrer"
               className="news-item clickable"
             >
               <img
-                src={news.image}
+                src={news.image || 'https://via.placeholder.com/400x200'}
                 alt={news.title}
                 className="news-image"
               />
