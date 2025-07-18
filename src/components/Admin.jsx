@@ -373,42 +373,62 @@ const Admin = () => {
       </table>
 
       
-{news && news.length > 0 ? (
-  <div className="news-section">
-    <h2>📰 Latest News</h2>
-    <table>
+{/* News Table */}
+<h3>📰 News</h3>
+<table className="pretty-incident-table">
   <thead>
     <tr>
       <th>#</th>
       <th>Title</th>
       <th>Status</th>
+      <th>Date</th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {news.length === 0 ? (
-      <tr>
-        <td colSpan="4">No news available.</td>
+    {news.map((n, idx) => (
+      <tr key={n._id} onClick={() => setSelectedNews(n)}>
+        <td>{idx + 1}</td>
+        <td>{n.title}</td>
+        <td>
+          {n.status === 'verified' && '✅'}
+          {n.status === 'pending' && '⏳'}
+          {n.status === 'rejected' && '❌'}
+        </td>
+        <td>{new Date(n.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteNews(n._id);
+            }}
+          >
+            🗑️
+          </button>
+        </td>
       </tr>
-    ) : (
-      news.map((n, index) => (
-        <tr key={n._id}>
-          <td>{index + 1}</td>
-          <td>{n.title}</td>
-          <td>{n.status}</td>
-          <td>
-            <button onClick={() => handleVerifyNews(n._id)}>Verify</button>
-            <button onClick={() => handleDeleteNews(n._id)}>Delete</button>
-          </td>
-        </tr>
-      ))
-    )}
+    ))}
   </tbody>
 </table>
 
+{/* News Detail Modal */}
+{selectedNews && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>{selectedNews.title}</h3>
+      <p>{selectedNews.content}</p>
+      {selectedNews.link && (
+        <p>
+          🔗 <a href={selectedNews.link} target="_blank" rel="noopener noreferrer">Read more</a>
+        </p>
+      )}
+      {selectedNews.image && (
+        <img src={selectedNews.image} alt="News" style={{ maxWidth: '100%', marginTop: '10px' }} />
+      )}
+      <p>Status: <strong>{selectedNews.status}</strong></p>
+      <button onClick={() => setSelectedNews(null)}>Close</button>
+    </div>
   </div>
-) : (
-  <p>No news to display.</p>
 )}
 
 
