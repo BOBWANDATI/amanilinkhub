@@ -373,60 +373,37 @@ const Admin = () => {
       </table>
 
       
-      {/* News Table */}
-<h3>📰 News Submissions</h3>
-<table className="pretty-incident-table">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Title</th>
-      <th>Status</th>
-      <th>Link</th>
-      <th>Date</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {news.map((n, idx) => (
-      <tr key={n._id} onClick={() => setSelectedNews(n)}>
-        <td>{idx + 1}</td>
-        <td>{n.title}</td>
+{news && news.length > 0 ? (
+  <div className="news-section">
+    <h2>📰 Latest News</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {news.map((item, index) => (
+          <tr key={item._id}>
+            <td>{index + 1}</td>
+            <td>{item.title}</td>
+            <td>{item.status}</td>
             <td>
-  {n.verified ? (
-    <span className="status-label verified">✅ Verified</span>
-  ) : (
-    <button
-      className="status-btn pending"
-      onClick={(e) => {
-        e.stopPropagation();
-        handleVerifyNews(n._id);
-      }}
-    >
-      Verify
-    </button>
-  )}
-</td>
+              <button onClick={() => handleVerifyNews(item._id)}>Verify</button>
+              <button onClick={() => handleDeleteNews(item._id)}>Delete</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+) : (
+  <p>No news to display.</p>
+)}
 
-        <td>
-          <a href={n.link} target="_blank" rel="noopener noreferrer">
-            View Link
-          </a>
-        </td>
-        <td>{new Date(n.createdAt).toLocaleDateString()}</td>
-        <td>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteNews(n._id);
-            }}
-          >
-            🗑️
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
 
 
       {/* Stories Table */}
