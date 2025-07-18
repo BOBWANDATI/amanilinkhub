@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import '../components/styles/VerifiedNews.css';
 
 const BASE_URL = import.meta.env.VITE_SOCKET_URL;
-const isAdmin = true;
+const isAdmin = false; // Set to true if the current user is an admin (this can be dynamic)
 
 const VerifiedNews = () => {
   const [newsList, setNewsList] = useState([]);
@@ -20,7 +20,8 @@ const VerifiedNews = () => {
       try {
         const res = await fetch(`${BASE_URL}/api/news`);
         const data = await res.json();
-        setNewsList(data);
+        const verifiedNews = data.filter((n) => n.status === 'verified'); // Only show verified news
+        setNewsList(verifiedNews);
       } catch (err) {
         console.error('❌ Error fetching news:', err);
       }
@@ -50,6 +51,7 @@ const VerifiedNews = () => {
           content,
           image: image || 'https://via.placeholder.com/400x200',
           link,
+          status: 'pending', // 🟡 Mark as pending until admin approves
         }),
       });
 
@@ -60,7 +62,7 @@ const VerifiedNews = () => {
       }
 
       setNewArticle({ title: '', content: '', image: '', link: '' });
-      setSuccess('✅ News submitted! Awaiting admin verification.');
+      setSuccess('✅ News submitted successfully! Awaiting admin verification.');
     } catch (err) {
       console.error('❌ News post error:', err);
       setError('❌ Failed to submit news. Try again later.');
@@ -71,7 +73,7 @@ const VerifiedNews = () => {
     <div className="verified-news-container">
       <h2 className="news-title">📰 Verified Peace News</h2>
 
-      {isAdmin && (
+      {!isAdmin && (
         <form className="news-form" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -108,7 +110,7 @@ const VerifiedNews = () => {
             required
           />
           <button type="submit" className="btn btn-primary">
-            Post News
+            Submit News
           </button>
           {error && <p className="error-message">{error}</p>}
           {success && <p className="success-message">{success}</p>}
