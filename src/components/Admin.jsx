@@ -73,7 +73,7 @@ const Admin = () => {
     if (!token || !isLoggedIn) return;
     const fetchData = async () => {
       try {
-       const [inc, dis, sto, nws] = await Promise.all([
+       const [inc, dis, sto, nws, sts] = await Promise.all([
          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -314,12 +314,7 @@ const handleStoryDelete = async (id) => {
           <div className="card-value">{news.length}</div>
         </div>
 
-        <div className="dashboard-card">
-        <div className="card-icon">📚</div>
-        <div className="card-title">Stories</div>
-        <div className="card-desc">User-submitted peace stories</div>
-       <div className="card-value">{stories.length}</div>
-      </div>
+       
 
 
         
