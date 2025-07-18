@@ -374,7 +374,7 @@ const Admin = () => {
         </tbody>
       </table>
 
-      //NEWS
+      
       {/* News Table */}
 <h3>📰 News Submissions</h3>
 <table className="pretty-incident-table">
