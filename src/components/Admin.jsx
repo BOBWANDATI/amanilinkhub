@@ -377,28 +377,35 @@ const Admin = () => {
   <div className="news-section">
     <h2>📰 Latest News</h2>
     <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Title</th>
-          <th>Status</th>
-          <th>Action</th>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {news.length === 0 ? (
+      <tr>
+        <td colSpan="4">No news available.</td>
+      </tr>
+    ) : (
+      news.map((n, index) => (
+        <tr key={n._id}>
+          <td>{index + 1}</td>
+          <td>{n.title}</td>
+          <td>{n.status}</td>
+          <td>
+            <button onClick={() => handleVerifyNews(n._id)}>Verify</button>
+            <button onClick={() => handleDeleteNews(n._id)}>Delete</button>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {news.map((item, index) => (
-          <tr key={item._id}>
-            <td>{index + 1}</td>
-            <td>{item.title}</td>
-            <td>{item.status}</td>
-            <td>
-              <button onClick={() => handleVerifyNews(item._id)}>Verify</button>
-              <button onClick={() => handleDeleteNews(item._id)}>Delete</button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      ))
+    )}
+  </tbody>
+</table>
+
   </div>
 ) : (
   <p>No news to display.</p>
