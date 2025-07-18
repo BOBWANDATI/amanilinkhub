@@ -31,6 +31,8 @@ const Admin = () => {
   const [news, setNews] = useState([]);
   const [selectedNews, setSelectedNews] = useState(null);
 
+  
+
 
 
 
@@ -75,6 +77,7 @@ const Admin = () => {
          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } })  // ✅ CORRECT!
         ]);
 
@@ -82,6 +85,7 @@ const Admin = () => {
         setDiscussions(await dis.json());
         setStories(await sto.json());
         setNews(await nws.json()); // ✅ FIXED — now works
+        setStories(await sts.json());
 
       } catch (err) {
         console.error('Fetch error:', err);
@@ -248,6 +252,31 @@ const handleDelete = async (id) => {
 
 
 
+  const handleStoryVerify = async (id, status) => {
+  await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+  fetchData(); // refresh
+};
+
+const handleStoryDelete = async (id) => {
+  if (confirm('Delete story?')) {
+    await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchData();
+  }
+};
+
+
+
+
 //LOGOUT
   const logout = () => {
     localStorage.clear();
@@ -284,6 +313,14 @@ const handleDelete = async (id) => {
           <div className="card-desc">Pending & verified news</div>
           <div className="card-value">{news.length}</div>
         </div>
+
+        <div className="dashboard-card">
+        <div className="card-icon">📚</div>
+        <div className="card-title">Stories</div>
+        <div className="card-desc">User-submitted peace stories</div>
+       <div className="card-value">{stories.length}</div>
+      </div>
+
 
         
         <button className="btn" onClick={logout}>Logout</button>
@@ -368,6 +405,61 @@ const handleDelete = async (id) => {
           ))}
         </tbody>
       </table>
+
+
+
+        {/* Story Table */}
+      <h3>📖 Stories</h3>
+<table className="pretty-incident-table">
+  <thead>
+    <tr><th>#</th><th>Title</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {stories.map((story, idx) => (
+      <tr key={story._id}>
+        <td>{idx + 1}</td>
+        <td>{story.title}</td>
+        <td>{story.status}</td>
+        <td>{new Date(story.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button onClick={() => handleStoryVerify(story._id, 'verified')}>✅</button>
+          <button onClick={() => handleStoryVerify(story._id, 'rejected')}>❌</button>
+          <button onClick={() => handleStoryDelete(story._id)}>🗑️</button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+
+      {selectedStory && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>{selectedStory.title}</h3>
+      <p><strong>Author:</strong> {selectedStory.author || 'Anonymous'}</p>
+      <p><strong>Location:</strong> {selectedStory.location}</p>
+      <p><strong>Category:</strong> {selectedStory.category}</p>
+      <p>{selectedStory.content}</p>
+      {selectedStory.imageUrl && (
+        <img src={selectedStory.imageUrl} alt="Story" style={{ maxWidth: '100%', marginTop: '1rem' }} />
+      )}
+      {selectedStory.videoUrl && (
+        <iframe
+          width="100%"
+          height="300"
+          src={selectedStory.videoUrl.replace("watch?v=", "embed/")}
+          frameBorder="0"
+          allowFullScreen
+          title="Story Video"
+          style={{ marginTop: '1rem' }}
+        ></iframe>
+      )}
+      <button onClick={() => setSelectedStory(null)}>Close</button>
+    </div>
+  </div>
+)}
+
+
 
       
 {/* ✅ News Table */}
