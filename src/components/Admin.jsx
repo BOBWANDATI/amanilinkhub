@@ -280,7 +280,7 @@ const Admin = () => {
           <div className="card-desc">Shared stories</div>
           <div className="card-value">{stories.length}</div>
         </div>
-        //NEWS
+        
         <div className="dashboard-card">
           <div className="card-icon">📰</div>
           <div className="card-title">News</div>
