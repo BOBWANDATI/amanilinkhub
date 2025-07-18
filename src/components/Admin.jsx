@@ -23,6 +23,11 @@ const Admin = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
+  
+  //NEWS UPDATE
+  const [news, setNews] = useState([]);
+  const [selectedNews, setSelectedNews] = useState(null);
+
 
   // Fetch stats when logged in
   useEffect(() => {
@@ -63,10 +68,16 @@ const Admin = () => {
           fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+
+          //NEWS UPDATE
+          fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
+          
         ]);
         setIncidents(await inc.json());
         setDiscussions(await dis.json());
         setStories(await sto.json());
+        //NEWS UPDATE
+        setNews(await nws.json());
       } catch (err) {
         console.error('Fetch error:', err);
       }
@@ -197,6 +208,52 @@ const Admin = () => {
     }
   };
 
+
+  //NEWS UPDATE
+  const handleVerifyNews = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/news/${id}/verify`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('✅ News verified');
+      setNews((prev) => prev.map((n) => n._id === id ? { ...n, verified: true } : n));
+    } else {
+      alert(data.msg || '❌ Failed to verify');
+    }
+  } catch (err) {
+    console.error('❌ Verify news error:', err);
+    alert('❌ Error verifying news');
+  }
+};
+
+
+
+ // NEWS DELETE
+
+  const handleDeleteNews = async (id) => {
+  if (!window.confirm('❌ Delete this news post?')) return;
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/news/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      setNews((prev) => prev.filter((n) => n._id !== id));
+      alert('✅ News deleted');
+    } else {
+      alert('❌ Failed to delete news');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('❌ News deletion failed');
+  }
+};
+
+
+//LOGOUT
   const logout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
@@ -225,6 +282,15 @@ const Admin = () => {
           <div className="card-desc">Shared stories</div>
           <div className="card-value">{stories.length}</div>
         </div>
+        //NEWS
+        <div className="dashboard-card">
+          <div className="card-icon">📰</div>
+          <div className="card-title">News</div>
+          <div className="card-desc">Pending & verified news</div>
+          <div className="card-value">{news.length}</div>
+        </div>
+
+        
         <button className="btn" onClick={logout}>Logout</button>
       </div>
 
@@ -307,6 +373,61 @@ const Admin = () => {
           ))}
         </tbody>
       </table>
+
+      //NEWS
+      {/* News Table */}
+<h3>📰 News Submissions</h3>
+<table className="pretty-incident-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Link</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {news.map((n, idx) => (
+      <tr key={n._id} onClick={() => setSelectedNews(n)}>
+        <td>{idx + 1}</td>
+        <td>{n.title}</td>
+        <td>
+          {['pending', 'verified'].map((status) => (
+            <button
+              key={status}
+              className={`status-btn ${status} ${n.status === status ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNewsStatusChange(n._id, status);
+              }}
+            >
+              {status}
+            </button>
+          ))}
+        </td>
+        <td>
+          <a href={n.link} target="_blank" rel="noopener noreferrer">
+            View Link
+          </a>
+        </td>
+        <td>{new Date(n.createdAt).toLocaleDateString()}</td>
+        <td>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteNews(n._id);
+            }}
+          >
+            🗑️
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
 
       {/* Stories Table */}
       <h3>📚 Stories</h3>
