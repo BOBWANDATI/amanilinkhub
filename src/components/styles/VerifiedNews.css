@@ -1,114 +1,155 @@
-/* === Background Setup === */
-.verified-news-container {
-  background-image: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/ivy-dao-XQI0lnDd0Pg-unsplash.jpg?raw=true');
+/* ====== Base Styles with Background ====== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: url('https://github.com/BOBWANDATI/My-Portfolio/blob/main/ivy-dao-XQI0lnDd0Pg-unsplash.jpg?raw=true') no-repeat center center fixed;
   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh;
-  padding: 3rem 2rem;
-  /* Removed backdrop-filter or opacity overlay */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  backdrop-filter: blur(3px);
 }
 
-/* Removed this overlay completely:
-.verified-news-container::before {
-  ...
+.verified-news-container {
+  max-width: 1100px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
 }
-*/
 
-/* === Title === */
 .news-title {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 1.5rem;
+  color: #1e3d59;
+  margin-bottom: 1.8rem;
   text-align: center;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
-/* === Admin Form === */
+/* ====== News Submission Form ====== */
 .news-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.97); /* Slightly transparent white box for contrast */
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  gap: 1.2rem;
   margin-bottom: 2rem;
-  max-width: 600px;
-  width: 100%;
 }
 
 .news-form input,
 .news-form textarea {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: 1rem;
   font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  transition: border 0.3s ease;
+}
+
+.news-form input:focus,
+.news-form textarea:focus {
+  border-color: #1e90ff;
+  background-color: #fff;
+  outline: none;
 }
 
 .news-form button {
-  background-color: #007bff;
-  color: white;
-  padding: 0.7rem;
+  background-color: #1e90ff;
+  color: #fff;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  padding: 0.9rem;
+  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .news-form button:hover {
-  background-color: #0056b3;
+  background-color: #0077cc;
 }
 
-/* === News List === */
+.error-message,
+.success-message {
+  font-size: 0.95rem;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+}
+
+.error-message {
+  background-color: #ffe5e5;
+  color: #c0392b;
+}
+
+.success-message {
+  background-color: #e6f9ed;
+  color: #27ae60;
+}
+
+/* ====== Verified News List ====== */
 .news-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  width: 100%;
 }
 
-/* === News Card === */
 .news-item {
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 12px;
   text-decoration: none;
-  color: inherit;
+  color: #333;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
 }
 
 .news-item:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .news-image {
   width: 100%;
   height: 180px;
   object-fit: cover;
+  border-bottom: 1px solid #eee;
 }
 
 .news-item h3 {
-  margin: 0.8rem 1rem 0.5rem;
   font-size: 1.2rem;
+  font-weight: 600;
+  padding: 1rem 1rem 0 1rem;
   color: #2c3e50;
 }
 
 .news-item p {
-  margin: 0 1rem;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem 1rem;
   color: #555;
 }
 
 .verified-label {
-  display: inline-block;
-  margin-top: 0.8rem;
-  margin-left: 1rem;
-  color: #28a745;
+  align-self: flex-end;
+  margin: 0 1rem 1rem;
+  background-color: #e0f7ef;
+  color: #128f6b;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
   font-weight: bold;
+}
+
+/* ====== Responsive Design ====== */
+@media (max-width: 768px) {
+  .news-form input,
+  .news-form textarea,
+  .news-form button {
+    font-size: 0.95rem;
+  }
+
+  .news-item h3 {
+    font-size: 1rem;
+  }
+
+  .news-item p {
+    font-size: 0.9rem;
+  }
 }
