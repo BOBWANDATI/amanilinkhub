@@ -495,25 +495,6 @@ const handleStoryDelete = async (id) => {
 
 
 
-
-      {/* Stories Table */}
-      <h3>📚 Stories</h3>
-      <table className="pretty-incident-table">
-        <thead><tr><th>#</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
-        <tbody>
-          {stories.map((s, idx) => (
-            <tr key={s._id} onClick={() => setSelectedStory(s)}>
-              <td>{idx + 1}</td>
-              <td>{s.title}</td>
-              <td>{new Date(s.date).toLocaleDateString()}</td>
-              <td><button onClick={(e) => { e.stopPropagation(); handleDeleteStory(s._id); }}>🗑️</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
   return (
     <div className="admin-container">
       {!isLoggedIn ? (
