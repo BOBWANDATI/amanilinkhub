@@ -495,119 +495,120 @@ const handleStoryDelete = async (id) => {
 
 
 
-return (
-  <div className="admin-container">
-    {!isLoggedIn ? (
-      showForgotPassword ? (
-        <div className="container">
-          <h3>Reset Password</h3>
-          <input
-            type="email"
-            value={resetEmail}
-            onChange={(e) => setResetEmail(e.target.value)}
-            placeholder="Your email"
-          />
-          <button className="btn" onClick={() => alert(`📧 Sent to ${resetEmail}`)}>
-            Send
-          </button>
-          <p onClick={() => setShowForgotPassword(false)}>← Back to login</p>
-        </div>
-      ) : showRegister ? (
-        <div className="container">
-          <h2>Register</h2>
-          <form onSubmit={handleRegisterSubmit}>
+
+  return (
+    <div className="admin-container">
+      {!isLoggedIn ? (
+        showForgotPassword ? (
+          <div className="container">
+            <h3>Reset Password</h3>
             <input
-              name="username"
-              placeholder="Username"
-              value={registerData.username}
-              onChange={handleRegisterChange}
-              required
+              type="email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              placeholder="Your email"
             />
-            <input
-              name="email"
-              placeholder="Email"
-              value={registerData.email}
-              onChange={handleRegisterChange}
-              required
-            />
-            <input
-              name="password"
-              placeholder="Password"
-              type="password"
-              value={registerData.password}
-              onChange={handleRegisterChange}
-              required
-            />
-            <select
-              name="role"
-              value={registerData.role}
-              onChange={handleRegisterChange}
-              required
-            >
-              <option value="">Role</option>
-              <option value="admin">Admin</option>
-              <option value="super">Super Admin</option>
-            </select>
-            <select
-              name="department"
-              value={registerData.department}
-              onChange={handleRegisterChange}
-              required
-            >
-              <option value="">Department</option>
-              <option value="Health">Health</option>
-              <option value="Police">Police</option>
-            </select>
-            <button className="btn" type="submit">Register</button>
-          </form>
-          <p>
-            Have an account?{" "}
-            <span onClick={() => setShowRegister(false)}>Login</span>
-          </p>
-        </div>
+            <button className="btn" onClick={() => alert(`📧 Sent to ${resetEmail}`)}>
+              Send
+            </button>
+            <p onClick={() => setShowForgotPassword(false)}>← Back to login</p>
+          </div>
+        ) : showRegister ? (
+          <div className="container">
+            <h2>Register</h2>
+            <form onSubmit={handleRegisterSubmit}>
+              <input
+                name="username"
+                placeholder="Username"
+                value={registerData.username}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                name="email"
+                placeholder="Email"
+                value={registerData.email}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                name="password"
+                placeholder="Password"
+                type="password"
+                value={registerData.password}
+                onChange={handleRegisterChange}
+                required
+              />
+              <select
+                name="role"
+                value={registerData.role}
+                onChange={handleRegisterChange}
+                required
+              >
+                <option value="">Role</option>
+                <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
+              </select>
+              <select
+                name="department"
+                value={registerData.department}
+                onChange={handleRegisterChange}
+                required
+              >
+                <option value="">Department</option>
+                <option value="Health">Health</option>
+                <option value="Police">Police</option>
+              </select>
+              <button className="btn" type="submit">Register</button>
+            </form>
+            <p>
+              Have an account?{' '}
+              <span onClick={() => setShowRegister(false)}>Login</span>
+            </p>
+          </div>
+        ) : (
+          <div className="container">
+            <h2>Admin Login</h2>
+            <form onSubmit={handleLoginSubmit}>
+              <input
+                name="username"
+                placeholder="Username"
+                value={loginData.username}
+                onChange={handleLoginChange}
+                required
+              />
+              <input
+                name="password"
+                placeholder="Password"
+                type="password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+                required
+              />
+              <select
+                name="role"
+                value={loginData.role}
+                onChange={handleLoginChange}
+                required
+              >
+                <option value="">Role</option>
+                <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
+              </select>
+              <button className="btn" type="submit">Login</button>
+            </form>
+            <p>
+              <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span>{' '}
+              |{' '}
+              <span onClick={() => setShowRegister(true)}>Register</span>
+            </p>
+          </div>
+        )
       ) : (
-        <div className="container">
-          <h2>Admin Login</h2>
-          <form onSubmit={handleLoginSubmit}>
-            <input
-              name="username"
-              placeholder="Username"
-              value={loginData.username}
-              onChange={handleLoginChange}
-              required
-            />
-            <input
-              name="password"
-              placeholder="Password"
-              type="password"
-              value={loginData.password}
-              onChange={handleLoginChange}
-              required
-            />
-            <select
-              name="role"
-              value={loginData.role}
-              onChange={handleLoginChange}
-              required
-            >
-              <option value="">Role</option>
-              <option value="admin">Admin</option>
-              <option value="super">Super Admin</option>
-            </select>
-            <button className="btn" type="submit">Login</button>
-          </form>
-          <p>
-            <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span>{" "}
-            |{" "}
-            <span onClick={() => setShowRegister(true)}>Register</span>
-          </p>
-        </div>
-      )
-    ) : (
-      <Dashboard />
-    )}
-  </div>
-);
+        <Dashboard />
+      )}
+    </div>
+  );
 };
 
 export default Admin;
