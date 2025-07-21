@@ -69,66 +69,30 @@ const Admin = () => {
   }, []);
 
   // Fetch incidents, discussions, stories
-useEffect(() => {
-  if (!token || !isLoggedIn) return;
+  useEffect(() => {
+    if (!token || !isLoggedIn) return;
+    const fetchData = async () => {
+      try {
+       const [inc, dis, sto, nws, sts] = await Promise.all([
+         fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+         fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } })  // ✅ CORRECT!
+        ]);
 
-// ✅ Move fetchData to top level
-const fetchData = async () => {
-  if (!token || !isLoggedIn) return;
-  try {
-   const fetchData = async () => {
-  if (!token) return;
-  try {
-   // ✅ Move fetchData here
-useEffect(() => {
-  if (!token || !isLoggedIn) return;
+        setIncidents(await inc.json());
+        setDiscussions(await dis.json());
+        setStories(await sto.json());
+        setNews(await nws.json()); // ✅ FIXED — now works
+        setStories(await sts.json());
 
- // ✅ Define fetchData outside of useEffect
-const fetchData = async () => {
-  try {
-    const [inc, dis, nws, sto] = await Promise.all([
-      fetch(`${BASE_URL}/api/admin/report`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${BASE_URL}/api/discussions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${BASE_URL}/api/admin/news`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${BASE_URL}/api/admin/stories`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-    ]);
-
-    const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
-      inc.json(),
-      dis.json(),
-      nws.json(),
-      sto.json(),
-    ]);
-
-    setIncidents(incidentsData);
-    setDiscussions(discussionsData);
-    setNews(newsData);
-    setStories(storiesData);
-  } catch (err) {
-    console.error('❌ Fetch error:', err);
-  }
-};
-
-// ✅ Call fetchData only when logged in and token exists
-useEffect(() => {
-  if (!isLoggedIn || !token) return;
-  fetchData();
-}, [isLoggedIn, token]);
-
-
-
-
-
-
-
+      } catch (err) {
+        console.error('Fetch error:', err);
+      }
+    };
+    fetchData();
+  }, [isLoggedIn]);
 
   // Handlers
   const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -255,9 +219,7 @@ useEffect(() => {
 
 
  const fetchNews = async () => {
- // const token = localStorage.getItem('token');
-   const token = localStorage.getItem('admin_token');
-
+  const token = localStorage.getItem('token');
   const res = await fetch(`${BASE_URL}/api/admin/news`, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -266,9 +228,7 @@ useEffect(() => {
 };
 
 const handleVerify = async (id, status) => {
-  //const token = localStorage.getItem('token');
-  const token = localStorage.getItem('admin_token');
-
+  const token = localStorage.getItem('token');
   await fetch(`${BASE_URL}/api/admin/news/${id}/status`, {
     method: 'PUT',
     headers: {
@@ -282,9 +242,7 @@ const handleVerify = async (id, status) => {
 
 const handleDelete = async (id) => {
   if (!window.confirm('Are you sure you want to delete this news item?')) return;
-  //const token = localStorage.getItem('token');
-  const token = localStorage.getItem('admin_token');
-
+  const token = localStorage.getItem('token');
   await fetch(`${BASE_URL}/api/admin/news/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` }
@@ -294,69 +252,25 @@ const handleDelete = async (id) => {
 
 
 
-const handleStoryVerify = async (id, status) => {
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      alert(`✅ Story marked as ${status}`);
-      await fetchData(); // Ensure data refresh after update
-    } else {
-      alert(data.msg || '❌ Failed to update story status');
-    }
-  } catch (err) {
-    console.error('❌ Error verifying story:', err);
-    alert('❌ An error occurred while updating story status');
-  }
+  const handleStoryVerify = async (id, status) => {
+  await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+  fetchData(); // refresh
 };
 
 const handleStoryDelete = async (id) => {
-  if (!window.confirm('🗑️ Are you sure you want to delete this story?')) return;
-  try {
-    const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
+  if (confirm('Delete story?')) {
+    await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
-
-    const data = await res.json();
-    if (res.ok) {
-      alert('✅ Story deleted successfully');
-      await fetchData(); // Ensure refresh after deletion
-    } else {
-      alert(data.msg || '❌ Failed to delete story');
-    }
-  } catch (err) {
-    console.error('❌ Error deleting story:', err);
-    alert('❌ An error occurred while deleting the story');
-  }
-};
-
-
-
-  const handleResetPassword = async () => {
-  try {
-    const res = await fetch(`${BASE_URL}/api/auth/reset-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: resetEmail }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert(`📧 Password reset link sent to ${resetEmail}`);
-    } else {
-      alert(data.msg || '❌ Failed to send reset email');
-    }
-  } catch (err) {
-    console.error('Reset error:', err);
-    alert('❌ Error sending reset email');
+    fetchData();
   }
 };
 
@@ -581,119 +495,120 @@ const handleStoryDelete = async (id) => {
 
 
 
-return (
-  <div className="admin-container">
-    {!isLoggedIn ? (
-      showForgotPassword ? (
-        <div className="container">
-          <h3>Reset Password</h3>
-          <input
-            type="email"
-            value={resetEmail}
-            onChange={(e) => setResetEmail(e.target.value)}
-            placeholder="Your email"
-          />
-          <button className="btn" onClick={handleResetPassword}>
-            Send
-          </button>
-          <p onClick={() => setShowForgotPassword(false)}>← Back to login</p>
-        </div>
-      ) : showRegister ? (
-        <div className="container">
-          <h2>Register</h2>
-          <form onSubmit={handleRegisterSubmit}>
+
+  return (
+    <div className="admin-container">
+      {!isLoggedIn ? (
+        showForgotPassword ? (
+          <div className="container">
+            <h3>Reset Password</h3>
             <input
-              name="username"
-              placeholder="Username"
-              value={registerData.username}
-              onChange={handleRegisterChange}
-              required
+              type="email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              placeholder="Your email"
             />
-            <input
-              name="email"
-              placeholder="Email"
-              value={registerData.email}
-              onChange={handleRegisterChange}
-              required
-            />
-            <input
-              name="password"
-              placeholder="Password"
-              type="password"
-              value={registerData.password}
-              onChange={handleRegisterChange}
-              required
-            />
-            <select
-              name="role"
-              value={registerData.role}
-              onChange={handleRegisterChange}
-              required
-            >
-              <option value="">Role</option>
-              <option value="admin">Admin</option>
-              <option value="super">Super Admin</option>
-            </select>
-            <select
-              name="department"
-              value={registerData.department}
-              onChange={handleRegisterChange}
-              required
-            >
-              <option value="">Department</option>
-              <option value="Health">Health</option>
-              <option value="Police">Police</option>
-            </select>
-            <button className="btn" type="submit">Register</button>
-          </form>
-          <p>
-            Have an account?{" "}
-            <span onClick={() => setShowRegister(false)}>Login</span>
-          </p>
-        </div>
+            <button className="btn" onClick={() => alert(`📧 Sent to ${resetEmail}`)}>
+              Send
+            </button>
+            <p onClick={() => setShowForgotPassword(false)}>← Back to login</p>
+          </div>
+        ) : showRegister ? (
+          <div className="container">
+            <h2>Register</h2>
+            <form onSubmit={handleRegisterSubmit}>
+              <input
+                name="username"
+                placeholder="Username"
+                value={registerData.username}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                name="email"
+                placeholder="Email"
+                value={registerData.email}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                name="password"
+                placeholder="Password"
+                type="password"
+                value={registerData.password}
+                onChange={handleRegisterChange}
+                required
+              />
+              <select
+                name="role"
+                value={registerData.role}
+                onChange={handleRegisterChange}
+                required
+              >
+                <option value="">Role</option>
+                <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
+              </select>
+              <select
+                name="department"
+                value={registerData.department}
+                onChange={handleRegisterChange}
+                required
+              >
+                <option value="">Department</option>
+                <option value="Health">Health</option>
+                <option value="Police">Police</option>
+              </select>
+              <button className="btn" type="submit">Register</button>
+            </form>
+            <p>
+              Have an account?{' '}
+              <span onClick={() => setShowRegister(false)}>Login</span>
+            </p>
+          </div>
+        ) : (
+          <div className="container">
+            <h2>Admin Login</h2>
+            <form onSubmit={handleLoginSubmit}>
+              <input
+                name="username"
+                placeholder="Username"
+                value={loginData.username}
+                onChange={handleLoginChange}
+                required
+              />
+              <input
+                name="password"
+                placeholder="Password"
+                type="password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+                required
+              />
+              <select
+                name="role"
+                value={loginData.role}
+                onChange={handleLoginChange}
+                required
+              >
+                <option value="">Role</option>
+                <option value="admin">Admin</option>
+                <option value="super">Super Admin</option>
+              </select>
+              <button className="btn" type="submit">Login</button>
+            </form>
+            <p>
+              <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span>{' '}
+              |{' '}
+              <span onClick={() => setShowRegister(true)}>Register</span>
+            </p>
+          </div>
+        )
       ) : (
-        <div className="container">
-          <h2>Admin Login</h2>
-          <form onSubmit={handleLoginSubmit}>
-            <input
-              name="username"
-              placeholder="Username"
-              value={loginData.username}
-              onChange={handleLoginChange}
-              required
-            />
-            <input
-              name="password"
-              placeholder="Password"
-              type="password"
-              value={loginData.password}
-              onChange={handleLoginChange}
-              required
-            />
-            <select
-              name="role"
-              value={loginData.role}
-              onChange={handleLoginChange}
-              required
-            >
-              <option value="">Role</option>
-              <option value="admin">Admin</option>
-              <option value="super">Super Admin</option>
-            </select>
-            <button className="btn" type="submit">Login</button>
-          </form>
-          <p>
-            <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> |{" "}
-            <span onClick={() => setShowRegister(true)}>Register</span>
-          </p>
-        </div>
-      )
-    ) : (
-      <Dashboard />
-    )}
-  </div>
-);
-
-
+        <Dashboard />
+      )}
+    </div>
+  );
+};
 
 export default Admin;
