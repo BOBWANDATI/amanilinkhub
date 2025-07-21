@@ -73,7 +73,7 @@ const Admin = () => {
     if (!token || !isLoggedIn) return;
     const fetchData = async () => {
       try {
-       const [inc, dis, sto, nws, sts] = await Promise.all([
+       const [inc, dis, nws, sts] = await Promise.all([
          fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
          fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -83,7 +83,6 @@ const Admin = () => {
 
         setIncidents(await inc.json());
         setDiscussions(await dis.json());
-        setStories(await sto.json());
         setNews(await nws.json()); // ✅ FIXED — now works
         setStories(await sts.json());
 
