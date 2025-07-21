@@ -71,7 +71,7 @@ const Admin = () => {
   // Fetch incidents, discussions, stories
   useEffect(() => {
     if (!token || !isLoggedIn) return;
-   const fetchData = async () => {
+const fetchData = async () => {
   try {
     const [inc, dis, sto, nws] = await Promise.all([
       fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -84,17 +84,16 @@ const Admin = () => {
     const disData = await dis.json();
     const stoData = await sto.json();
     const nwsData = await nws.json();
-    
 
     setIncidents(incData);
     setDiscussions(disData);
-    setStories(stoData); // from /api/stories
+    setStories(stoData);
     setNews(nwsData);
-    setStories(stsData); // from /api/admin/stories (might overwrite previous line)
   } catch (err) {
     console.error('Fetch error:', err);
   }
 };
+
     fetchData();
   }, [isLoggedIn]);
 
@@ -204,25 +203,8 @@ const Admin = () => {
     }
   };
 
-  const handleDeleteStory = async (id) => {
-    if (!window.confirm('Delete story?')) return;
-    try {
-      const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setStories((prev) => prev.filter((s) => s._id !== id));
-        alert('✅ Story deleted');
-      } else alert(data.msg || '❌ Delete failed');
-    } catch (err) {
-      console.error('❌ Error deleting story:', err);
-    }
-  };
-
-
- const fetchNews = async () => {
+  
+  const fetchNews = async () => {
   const token = localStorage.getItem('token');
   const res = await fetch(`${BASE_URL}/api/admin/news`, {
     headers: { Authorization: `Bearer ${token}` }
