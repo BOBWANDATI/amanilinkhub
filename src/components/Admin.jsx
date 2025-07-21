@@ -71,25 +71,30 @@ const Admin = () => {
   // Fetch incidents, discussions, stories
   useEffect(() => {
     if (!token || !isLoggedIn) return;
-    const fetchData = async () => {
-      try {
-       const [inc, dis, nws, sts] = await Promise.all([
-         fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
-         fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
-         fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
-         fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
-         fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } })  // ✅ CORRECT!
-        ]);
+   const fetchData = async () => {
+  try {
+    const [inc, dis, sto, nws] = await Promise.all([
+      fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
+    ]);
 
-        setIncidents(await inc.json());
-        setDiscussions(await dis.json());
-        setNews(await nws.json()); // ✅ FIXED — now works
-        setStories(await sts.json());
+    const incData = await inc.json();
+    const disData = await dis.json();
+    const stoData = await sto.json();
+    const nwsData = await nws.json();
+    
 
-      } catch (err) {
-        console.error('Fetch error:', err);
-      }
-    };
+    setIncidents(incData);
+    setDiscussions(disData);
+    setStories(stoData); // from /api/stories
+    setNews(nwsData);
+    setStories(stsData); // from /api/admin/stories (might overwrite previous line)
+  } catch (err) {
+    console.error('Fetch error:', err);
+  }
+};
     fetchData();
   }, [isLoggedIn]);
 
@@ -251,25 +256,34 @@ const handleDelete = async (id) => {
 
 
 
-  const handleStoryVerify = async (id, status) => {
-  await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ status }),
-  });
-  fetchData(); // refresh
+
+
+const handleStoryVerify = async (id, status) => {
+  try {
+    await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+    fetchData(); // Refresh data
+  } catch (err) {
+    console.error('❌ Failed to verify story:', err);
+  }
 };
 
 const handleStoryDelete = async (id) => {
-  if (confirm('Delete story?')) {
+  if (!window.confirm('Delete story?')) return;
+  try {
     await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
-    fetchData();
+    fetchData(); // Refresh after delete
+  } catch (err) {
+    console.error('❌ Failed to delete story:', err);
   }
 };
 
