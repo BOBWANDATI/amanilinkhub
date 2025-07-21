@@ -70,39 +70,26 @@ const Admin = () => {
 
   // Fetch incidents, discussions, stories
  useEffect(() => {
-  if (!token || !isLoggedIn) return;
+    if (!token || !isLoggedIn) return;
+    const fetchData = async () => {
+      try {
+       const [inc, dis, sto, nws, sts] = await Promise.all([
+         fetch(${BASE_URL}/api/admin/report, { headers: { Authorization: Bearer ${token} } }),
+         fetch(${BASE_URL}/api/discussions, { headers: { Authorization: Bearer ${token} } }),
+         //fetch(${BASE_URL}/api/stories, { headers: { Authorization: Bearer ${token} } }),
+         fetch(${BASE_URL}/api/admin/stories, { headers: { Authorization: Bearer ${token} } }),
+         fetch(${BASE_URL}/api/admin/news, { headers: { Authorization: Bearer ${token} } })  // ✅ CORRECT!
+        ]);
 
-  const fetchData = async () => {
-    try {
-      const [inc, dis, adminStories, newsRes] = await Promise.all([
-        fetch(`${BASE_URL}/api/admin/report`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${BASE_URL}/api/discussions`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${BASE_URL}/api/admin/stories`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${BASE_URL}/api/admin/news`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
+        setIncidents(await inc.json());
+        setDiscussions(await dis.json());
+        //setStories(await sto.json());
+        setNews(await nws.json()); // ✅ FIXED — now works
+        setStories(await sts.json());
 
-      const [incData, disData, storiesData, newsData] = await Promise.all([
-        inc.json(),
-        dis.json(),
-        adminStories.json(),
-        newsRes.json(),
-      ]);
-
-      setIncidents(incData);
-      setDiscussions(disData);
-      setStories(storiesData);
-      setNews(newsData);
-    } catch (err) {
-      console.error('❌ Fetch error:', err);
-    }
+      } catch (err) {
+        console.error('Fetch error:', err);
+      }
   };
 
   fetchData();
