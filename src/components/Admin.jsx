@@ -80,31 +80,34 @@ const fetchData = async () => {
   if (!token) return;
   try {
    // ✅ Move fetchData here
-const fetchData = async () => {
-  if (!token || !isLoggedIn) return;
-  try {
-    const [inc, dis, nws, sto] = await Promise.all([
-      fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
-    ]);
-    const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
-      inc.json(), dis.json(), nws.json(), sto.json(),
-    ]);
-    setIncidents(incidentsData);
-    setDiscussions(discussionsData);
-    setNews(newsData);
-    setStories(storiesData);
-  } catch (err) {
-    console.error('Fetch error:', err);
-  }
-};
-
-// ✅ Simple, clean useEffect
 useEffect(() => {
-  if (isLoggedIn) fetchData();
+  if (!token || !isLoggedIn) return;
+
+  const fetchData = async () => {
+    try {
+      const [inc, dis, nws, sto] = await Promise.all([
+        fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+
+      const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
+        inc.json(), dis.json(), nws.json(), sto.json(),
+      ]);
+
+      setIncidents(incidentsData);
+      setDiscussions(discussionsData);
+      setNews(newsData);
+      setStories(storiesData);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    }
+  };
+
+  fetchData();
 }, [isLoggedIn, token]);
+
 
 
 
@@ -275,25 +278,48 @@ const handleDelete = async (id) => {
 
 
 
-  const handleStoryVerify = async (id, status) => {
-  await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ status }),
-  });
-  fetchData(); // refresh
+const handleStoryVerify = async (id, status) => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/stories/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert(`✅ Story marked as ${status}`);
+      await fetchData(); // Ensure data refresh after update
+    } else {
+      alert(data.msg || '❌ Failed to update story status');
+    }
+  } catch (err) {
+    console.error('❌ Error verifying story:', err);
+    alert('❌ An error occurred while updating story status');
+  }
 };
 
 const handleStoryDelete = async (id) => {
-  if (confirm('Delete story?')) {
-    await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
+  if (!window.confirm('🗑️ Are you sure you want to delete this story?')) return;
+  try {
+    const res = await fetch(`${BASE_URL}/api/admin/stories/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
-    fetchData();
+
+    const data = await res.json();
+    if (res.ok) {
+      alert('✅ Story deleted successfully');
+      await fetchData(); // Ensure refresh after deletion
+    } else {
+      alert(data.msg || '❌ Failed to delete story');
+    }
+  } catch (err) {
+    console.error('❌ Error deleting story:', err);
+    alert('❌ An error occurred while deleting the story');
   }
 };
 
