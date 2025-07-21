@@ -72,6 +72,7 @@ const Admin = () => {
 useEffect(() => {
   if (!token || !isLoggedIn) return;
 
+// ✅ Move fetchData to top level
 const fetchData = async () => {
   if (!token || !isLoggedIn) return;
   try {
@@ -101,13 +102,11 @@ const fetchData = async () => {
   }
 };
 
-
-
-  //fetchData();
-//}, [isLoggedIn, token]);
-  useEffect(() => {
-  fetchData();
+// ✅ Call it cleanly in a single useEffect
+useEffect(() => {
+  if (isLoggedIn) fetchData();
 }, [isLoggedIn, token]);
+
 
 
 
