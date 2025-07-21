@@ -608,6 +608,7 @@ const handleStoryDelete = async (id) => {
         <Dashboard />
       )}
     </div>
+         </div>
   );
 };
 
