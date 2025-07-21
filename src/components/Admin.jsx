@@ -83,30 +83,46 @@ const fetchData = async () => {
 useEffect(() => {
   if (!token || !isLoggedIn) return;
 
-  const fetchData = async () => {
-    try {
-      const [inc, dis, nws, sto] = await Promise.all([
-        fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
-      ]);
+ // ✅ Define fetchData outside of useEffect
+const fetchData = async () => {
+  try {
+    const [inc, dis, nws, sto] = await Promise.all([
+      fetch(`${BASE_URL}/api/admin/report`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${BASE_URL}/api/discussions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${BASE_URL}/api/admin/news`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${BASE_URL}/api/admin/stories`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
 
-      const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
-        inc.json(), dis.json(), nws.json(), sto.json(),
-      ]);
+    const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
+      inc.json(),
+      dis.json(),
+      nws.json(),
+      sto.json(),
+    ]);
 
-      setIncidents(incidentsData);
-      setDiscussions(discussionsData);
-      setNews(newsData);
-      setStories(storiesData);
-    } catch (err) {
-      console.error('Fetch error:', err);
-    }
-  };
+    setIncidents(incidentsData);
+    setDiscussions(discussionsData);
+    setNews(newsData);
+    setStories(storiesData);
+  } catch (err) {
+    console.error('❌ Fetch error:', err);
+  }
+};
 
+// ✅ Call fetchData only when logged in and token exists
+useEffect(() => {
+  if (!isLoggedIn || !token) return;
   fetchData();
 }, [isLoggedIn, token]);
+
 
 
 
