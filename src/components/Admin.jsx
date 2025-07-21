@@ -73,6 +73,7 @@ useEffect(() => {
   if (!token || !isLoggedIn) return;
 
 const fetchData = async () => {
+  if (!token || !isLoggedIn) return;
   try {
     const [inc, dis, nws, sto] = await Promise.all([
       fetch(`${BASE_URL}/api/admin/report`, {
@@ -88,14 +89,9 @@ const fetchData = async () => {
         headers: { Authorization: `Bearer ${token}` },
       }),
     ]);
-
     const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
-      inc.json(),
-      dis.json(),
-      nws.json(),
-      sto.json(),
+      inc.json(), dis.json(), nws.json(), sto.json(),
     ]);
-
     setIncidents(incidentsData);
     setDiscussions(discussionsData);
     setNews(newsData);
@@ -106,8 +102,13 @@ const fetchData = async () => {
 };
 
 
+
+  //fetchData();
+//}, [isLoggedIn, token]);
+  useEffect(() => {
   fetchData();
 }, [isLoggedIn, token]);
+
 
 
 
@@ -539,8 +540,7 @@ const handleStoryDelete = async (id) => {
 
 
 
-
- return (
+return (
   <div className="admin-container">
     {!isLoggedIn ? (
       showForgotPassword ? (
@@ -552,7 +552,7 @@ const handleStoryDelete = async (id) => {
             onChange={(e) => setResetEmail(e.target.value)}
             placeholder="Your email"
           />
-          <button className="btn" onClick={() => alert(`📧 Sent to ${resetEmail}`)}>
+          <button className="btn" onClick={handleResetPassword}>
             Send
           </button>
           <p onClick={() => setShowForgotPassword(false)}>← Back to login</p>
@@ -642,15 +642,7 @@ const handleStoryDelete = async (id) => {
             <button className="btn" type="submit">Login</button>
           </form>
           <p>
-            //<span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> |{" "}
-             </select>
-            <button className="btn" type="submit">Login</button>
-          </form>
-          <p>
             <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> |{" "}
-            <span onClick={() => setShowRegister(true)}>Register</span>
-          </p>
-        </div>
             <span onClick={() => setShowRegister(true)}>Register</span>
           </p>
         </div>
@@ -660,6 +652,7 @@ const handleStoryDelete = async (id) => {
     )}
   </div>
 );
+
 
 
 export default Admin;
