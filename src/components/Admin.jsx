@@ -76,19 +76,14 @@ useEffect(() => {
 const fetchData = async () => {
   if (!token || !isLoggedIn) return;
   try {
+   const fetchData = async () => {
+  if (!token) return;
+  try {
     const [inc, dis, nws, sto] = await Promise.all([
-      fetch(`${BASE_URL}/api/admin/report`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${BASE_URL}/api/discussions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${BASE_URL}/api/admin/news`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${BASE_URL}/api/admin/stories`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
+      fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/admin/news`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${BASE_URL}/api/admin/stories`, { headers: { Authorization: `Bearer ${token}` } }),
     ]);
     const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
       inc.json(), dis.json(), nws.json(), sto.json(),
@@ -102,7 +97,6 @@ const fetchData = async () => {
   }
 };
 
-// ✅ Call it cleanly in a single useEffect
 useEffect(() => {
   if (isLoggedIn) fetchData();
 }, [isLoggedIn, token]);
