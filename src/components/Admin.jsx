@@ -135,36 +135,64 @@ const Admin = () => {
 
   // Socket.io event listeners
 useEffect(() => {
-  if (!socket || !isLoggedIn) return;
+  if (!socket?.connected || !isLoggedIn) return;
+
+  let audioTimeout;
 
   const handleNewIncident = (incident) => {
     setIncidents(prev => [incident, ...prev]);
-    alert(`🚨 New Incident: ${incident.title}`);
 
-    // 🔊 Attempt to play sound immediately
+    // Play alert sound with retry
     const playAudio = async () => {
       try {
         alertAudio.current.currentTime = 0;
         await alertAudio.current.play();
       } catch (err) {
-        console.warn('🔇 Autoplay failed, will retry after user interaction.', err);
+        console.warn('🔇 Autoplay blocked. Will retry after user interaction.', err);
+        document.body.addEventListener('click', () => {
+          alertAudio.current.play().catch(console.error);
+        }, { once: true });
       }
     };
-    playAudio();
 
-    // 🔔 Browser notification
-    if (Notification.permission === "granted") {
-      new Notification("🚨 New Incident", {
-        body: incident.incidentType || "A new incident has been reported",
-        icon: "/alert-icon.png"
-      });
-    } else {
-      Notification.requestPermission();
+    // Avoid overlapping audio triggers
+    clearTimeout(audioTimeout);
+    audioTimeout = setTimeout(playAudio, 100);
+
+    // Show browser notification
+    const notify = async () => {
+      if (Notification.permission === 'granted') {
+        new Notification("🚨 New Incident", {
+          body: incident.incidentType || "A new incident has been reported",
+          icon: "/alert-icon.png"
+        });
+      } else if (Notification.permission !== 'denied') {
+        try {
+          const permission = await Notification.requestPermission();
+          if (permission === 'granted') {
+            new Notification("🚨 New Incident", {
+              body: incident.incidentType || "A new incident has been reported",
+              icon: "/alert-icon.png"
+            });
+          }
+        } catch (err) {
+          console.warn("Notification permission request failed:", err);
+        }
+      }
+    };
+
+    notify();
+
+    if (import.meta.env.DEV) {
+      console.log('📡 New incident received:', incident);
     }
   };
 
   const handleIncidentUpdated = (updated) => {
     setIncidents(prev => prev.map(i => i._id === updated._id ? updated : i));
+    if (import.meta.env.DEV) {
+      console.log('📡 Incident updated:', updated);
+    }
   };
 
   socket.on("new_incident_reported", handleNewIncident);
@@ -173,8 +201,10 @@ useEffect(() => {
   return () => {
     socket.off("new_incident_reported", handleNewIncident);
     socket.off("incident_updated", handleIncidentUpdated);
+    clearTimeout(audioTimeout);
   };
 }, [isLoggedIn]);
+
 
   // Form handlers
   const handleLoginChange = (e) => {
