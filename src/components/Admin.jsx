@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
+import { useRef } from 'react';
+
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
 const socket = io(BASE_URL);
@@ -13,6 +15,8 @@ const Admin = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [loginData, setLoginData] = useState({ 
+
+
     username: '', 
     password: '', 
     role: '' 
@@ -43,6 +47,9 @@ const Admin = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
   const user = JSON.parse(localStorage.getItem('admin_user'));
+  const alertAudio = useRef(new Audio('https://freesound.org/people/newlocknew/sounds/692525/'));
+        alertAudio.current.preload = 'auto';
+
 
   // Check authentication status on mount
   useEffect(() => {
@@ -125,26 +132,47 @@ const Admin = () => {
   }, [isLoggedIn, token]);
 
   // Socket.io event listeners
-  useEffect(() => {
-    if (!socket || !isLoggedIn) return;
-    
-    const handleNewIncident = (incident) => {
-      setIncidents(prev => [incident, ...prev]);
-      alert(`🚨 New Incident: ${incident.title}`);
+useEffect(() => {
+  if (!socket || !isLoggedIn) return;
+
+  const handleNewIncident = (incident) => {
+    setIncidents(prev => [incident, ...prev]);
+    alert(`🚨 New Incident: ${incident.title}`);
+
+    // 🔊 Attempt to play sound immediately
+    const playAudio = async () => {
+      try {
+        alertAudio.current.currentTime = 0;
+        await alertAudio.current.play();
+      } catch (err) {
+        console.warn('🔇 Autoplay failed, will retry after user interaction.', err);
+      }
     };
-    
-    const handleIncidentUpdated = (updated) => {
-      setIncidents(prev => prev.map(i => i._id === updated._id ? updated : i));
-    };
-    
-    socket.on("new_incident_reported", handleNewIncident);
-    socket.on("incident_updated", handleIncidentUpdated);
-    
-    return () => {
-      socket.off("new_incident_reported", handleNewIncident);
-      socket.off("incident_updated", handleIncidentUpdated);
-    };
-  }, [isLoggedIn]);
+    playAudio();
+
+    // 🔔 Browser notification
+    if (Notification.permission === "granted") {
+      new Notification("🚨 New Incident", {
+        body: incident.incidentType || "A new incident has been reported",
+        icon: "/alert-icon.png"
+      });
+    } else {
+      Notification.requestPermission();
+    }
+  };
+
+  const handleIncidentUpdated = (updated) => {
+    setIncidents(prev => prev.map(i => i._id === updated._id ? updated : i));
+  };
+
+  socket.on("new_incident_reported", handleNewIncident);
+  socket.on("incident_updated", handleIncidentUpdated);
+
+  return () => {
+    socket.off("new_incident_reported", handleNewIncident);
+    socket.off("incident_updated", handleIncidentUpdated);
+  };
+}, [isLoggedIn]);
 
   // Form handlers
   const handleLoginChange = (e) => {
