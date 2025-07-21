@@ -88,7 +88,7 @@ const Admin = () => {
           fetch(`${BASE_URL}/api/discussions`, { 
             headers: { Authorization: `Bearer ${token}` } 
           }),
-          fetch(`${BASE_URL}/api/stories`, { 
+          fetch(`${BASE_URL}/api/admin/stories`, { 
             headers: { Authorization: `Bearer ${token}` } 
           }),
           fetch(`${BASE_URL}/api/admin/news`, { 
