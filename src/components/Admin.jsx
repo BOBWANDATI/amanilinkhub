@@ -72,38 +72,39 @@ const Admin = () => {
 useEffect(() => {
   if (!token || !isLoggedIn) return;
 
-  const fetchData = async () => {
-    try {
-      const [inc, dis, nws, sto] = await Promise.all([
-        fetch(`${BASE_URL}/api/admin/report`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${BASE_URL}/api/discussions`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${BASE_URL}/api/admin/news`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${BASE_URL}/api/admin/stories`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
+const fetchData = async () => {
+  try {
+    const [inc, dis, nws, sto] = await Promise.all([
+      fetch(`${BASE_URL}/api/admin/report`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${BASE_URL}/api/discussions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${BASE_URL}/api/admin/news`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${BASE_URL}/api/admin/stories`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
 
-      const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
-        inc.json(),
-        dis.json(),
-        nws.json(),
-        sto.json(),
-      ]);
+    const [incidentsData, discussionsData, newsData, storiesData] = await Promise.all([
+      inc.json(),
+      dis.json(),
+      nws.json(),
+      sto.json(),
+    ]);
 
-      setIncidents(incidentsData);
-      setDiscussions(discussionsData);
-      setNews(newsData);
-      setStories(storiesData);
-    } catch (err) {
-      console.error('Fetch error:', err);
-    }
-  };
+    setIncidents(incidentsData);
+    setDiscussions(discussionsData);
+    setNews(newsData);
+    setStories(storiesData);
+  } catch (err) {
+    console.error('Fetch error:', err);
+  }
+};
+
 
   fetchData();
 }, [isLoggedIn, token]);
@@ -235,7 +236,9 @@ useEffect(() => {
 
 
  const fetchNews = async () => {
-  const token = localStorage.getItem('token');
+ // const token = localStorage.getItem('token');
+   const token = localStorage.getItem('admin_token');
+
   const res = await fetch(`${BASE_URL}/api/admin/news`, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -244,7 +247,9 @@ useEffect(() => {
 };
 
 const handleVerify = async (id, status) => {
-  const token = localStorage.getItem('token');
+  //const token = localStorage.getItem('token');
+  const token = localStorage.getItem('admin_token');
+
   await fetch(`${BASE_URL}/api/admin/news/${id}/status`, {
     method: 'PUT',
     headers: {
@@ -258,7 +263,9 @@ const handleVerify = async (id, status) => {
 
 const handleDelete = async (id) => {
   if (!window.confirm('Are you sure you want to delete this news item?')) return;
-  const token = localStorage.getItem('token');
+  //const token = localStorage.getItem('token');
+  const token = localStorage.getItem('admin_token');
+
   await fetch(`${BASE_URL}/api/admin/news/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` }
@@ -287,6 +294,27 @@ const handleStoryDelete = async (id) => {
       headers: { Authorization: `Bearer ${token}` },
     });
     fetchData();
+  }
+};
+
+
+
+  const handleResetPassword = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: resetEmail }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`📧 Password reset link sent to ${resetEmail}`);
+    } else {
+      alert(data.msg || '❌ Failed to send reset email');
+    }
+  } catch (err) {
+    console.error('Reset error:', err);
+    alert('❌ Error sending reset email');
   }
 };
 
@@ -614,7 +642,15 @@ const handleStoryDelete = async (id) => {
             <button className="btn" type="submit">Login</button>
           </form>
           <p>
+            //<span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> |{" "}
+             </select>
+            <button className="btn" type="submit">Login</button>
+          </form>
+          <p>
             <span onClick={() => setShowForgotPassword(true)}>Forgot Password?</span> |{" "}
+            <span onClick={() => setShowRegister(true)}>Register</span>
+          </p>
+        </div>
             <span onClick={() => setShowRegister(true)}>Register</span>
           </p>
         </div>
