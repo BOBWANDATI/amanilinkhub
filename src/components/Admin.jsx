@@ -79,6 +79,10 @@ const fetchData = async () => {
    const fetchData = async () => {
   if (!token) return;
   try {
+   // ✅ Move fetchData here
+const fetchData = async () => {
+  if (!token || !isLoggedIn) return;
+  try {
     const [inc, dis, nws, sto] = await Promise.all([
       fetch(`${BASE_URL}/api/admin/report`, { headers: { Authorization: `Bearer ${token}` } }),
       fetch(`${BASE_URL}/api/discussions`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -97,9 +101,11 @@ const fetchData = async () => {
   }
 };
 
+// ✅ Simple, clean useEffect
 useEffect(() => {
   if (isLoggedIn) fetchData();
 }, [isLoggedIn, token]);
+
 
 
 
