@@ -42,11 +42,7 @@ const Footer = () => {
             <p>Bob Wandati - Founder</p>
             <p>Software Engineer, Peace Advocate & Graphics Designer</p>
             <div className="founder-image-wrapper">
-              <img
-                src="https://github.com/BOBWANDATI/My-Portfolio/blob/main/Snapchat-1702188191~2.jpg?raw=true"
-                alt="Founder Bob Wandati"
-                className="founder-image"
-              />
+              
             </div>
           </div>
         </div>
