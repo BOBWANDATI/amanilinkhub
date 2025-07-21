@@ -135,23 +135,28 @@ const Admin = () => {
 
   // Socket.io event listeners
 useEffect(() => {
-  if (!socket?.connected || !isLoggedIn) return;
+  if (!socket?.connected || !isLoggedIn || user?.role !== "admin") return;
 
   let audioTimeout;
 
   const handleNewIncident = (incident) => {
     setIncidents(prev => [incident, ...prev]);
 
-    // Play alert sound with retry
+    // ✅ Show in-app alert (optional)
+    alert(`🚨 New Incident Reported: ${incident.title || "Untitled"}`);
+
+    // ✅ Play alert sound
     const playAudio = async () => {
       try {
         alertAudio.current.currentTime = 0;
         await alertAudio.current.play();
       } catch (err) {
-        console.warn('🔇 Autoplay blocked. Will retry after user interaction.', err);
-        document.body.addEventListener('click', () => {
-          alertAudio.current.play().catch(console.error);
-        }, { once: true });
+        console.warn('🔇 Audio play failed. Awaiting user interaction.', err);
+        document.body.addEventListener(
+          'click',
+          () => alertAudio.current.play().catch(console.error),
+          { once: true }
+        );
       }
     };
 
@@ -159,8 +164,8 @@ useEffect(() => {
     clearTimeout(audioTimeout);
     audioTimeout = setTimeout(playAudio, 100);
 
-    // Show browser notification
-    const notify = async () => {
+    // ✅ Browser notification
+    const showBrowserNotification = async () => {
       if (Notification.permission === 'granted') {
         new Notification("🚨 New Incident", {
           body: incident.incidentType || "A new incident has been reported",
@@ -176,22 +181,25 @@ useEffect(() => {
             });
           }
         } catch (err) {
-          console.warn("Notification permission request failed:", err);
+          console.warn("❌ Notification permission request failed:", err);
         }
       }
     };
 
-    notify();
+    showBrowserNotification();
 
+    // Debug logs
     if (import.meta.env.DEV) {
-      console.log('📡 New incident received:', incident);
+      console.log("📡 New incident received:", incident);
     }
   };
 
-  const handleIncidentUpdated = (updated) => {
-    setIncidents(prev => prev.map(i => i._id === updated._id ? updated : i));
+  const handleIncidentUpdated = (updatedIncident) => {
+    setIncidents(prev =>
+      prev.map(incident => incident._id === updatedIncident._id ? updatedIncident : incident)
+    );
     if (import.meta.env.DEV) {
-      console.log('📡 Incident updated:', updated);
+      console.log("🔄 Incident updated:", updatedIncident);
     }
   };
 
@@ -203,7 +211,8 @@ useEffect(() => {
     socket.off("incident_updated", handleIncidentUpdated);
     clearTimeout(audioTimeout);
   };
-}, [isLoggedIn]);
+}, [isLoggedIn, user]);
+
 
 
   // Form handlers
