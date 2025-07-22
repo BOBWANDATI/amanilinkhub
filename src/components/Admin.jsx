@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import '../components/styles/Admin.css';
 import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
-import { useRef } from 'react';
-
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
 const socket = io(BASE_URL);
@@ -15,8 +13,6 @@ const Admin = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [loginData, setLoginData] = useState({ 
-
-
     username: '', 
     password: '', 
     role: '' 
@@ -31,7 +27,7 @@ const Admin = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Data states 
+  // Data states
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
@@ -47,11 +43,6 @@ const Admin = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
   const user = JSON.parse(localStorage.getItem('admin_user'));
-
-
-
-        alertAudio.current.preload = 'auto';
-
 
   // Check authentication status on mount
   useEffect(() => {
@@ -97,7 +88,7 @@ const Admin = () => {
           fetch(`${BASE_URL}/api/discussions`, { 
             headers: { Authorization: `Bearer ${token}` } 
           }),
-          fetch(`${BASE_URL}/api/admin/stories`, { 
+          fetch(`${BASE_URL}/api/stories`, { 
             headers: { Authorization: `Bearer ${token}` } 
           }),
           fetch(`${BASE_URL}/api/admin/news`, { 
@@ -134,88 +125,26 @@ const Admin = () => {
   }, [isLoggedIn, token]);
 
   // Socket.io event listeners
-useEffect(() => {
-  if (!socket?.connected || !isLoggedIn || user?.role !== "admin") return;
-
-  let audioTimeout;
-
-  const handleNewIncident = (incident) => {
-    setIncidents(prev => [incident, ...prev]);
-
-    // ✅ Show in-app alert (optional)
-    alert(🚨 New Incident Reported: ${incident.title || "Untitled"});
-
-    // ✅ Play alert sound
-    const playAudio = async () => {
-      try {
-        alertAudio.current.currentTime = 0;
-        await alertAudio.current.play();
-      } catch (err) {
-        console.warn('🔇 Audio play failed. Awaiting user interaction.', err);
-        document.body.addEventListener(
-          'click',
-          () => alertAudio.current.play().catch(console.error),
-          { once: true }
-        );
-      }
+  useEffect(() => {
+    if (!socket || !isLoggedIn) return;
+    
+    const handleNewIncident = (incident) => {
+      setIncidents(prev => [incident, ...prev]);
+      alert(`🚨 New Incident: ${incident.title}`);
     };
-
-    // Avoid overlapping audio triggers
-    clearTimeout(audioTimeout);
-    audioTimeout = setTimeout(playAudio, 100);
-
-    // ✅ Browser notification
-    const showBrowserNotification = async () => {
-      if (Notification.permission === 'granted') {
-        new Notification("🚨 New Incident", {
-          body: incident.incidentType || "A new incident has been reported",
-          icon: "/alert-icon.png"
-        });
-      } else if (Notification.permission !== 'denied') {
-        try {
-          const permission = await Notification.requestPermission();
-          if (permission === 'granted') {
-            new Notification("🚨 New Incident", {
-              body: incident.incidentType || "A new incident has been reported",
-              icon: "/alert-icon.png"
-            });
-          }
-        } catch (err) {
-          console.warn("❌ Notification permission request failed:", err);
-        }
-      }
+    
+    const handleIncidentUpdated = (updated) => {
+      setIncidents(prev => prev.map(i => i._id === updated._id ? updated : i));
     };
-
-    showBrowserNotification();
-
-    // Debug logs
-    if (import.meta.env.DEV) {
-      console.log("📡 New incident received:", incident);
-    }
-  };
-
-  const handleIncidentUpdated = (updatedIncident) => {
-    setIncidents(prev =>
-      prev.map(incident => incident._id === updatedIncident._id ? updatedIncident : incident)
-    );
-    if (import.meta.env.DEV) {
-      console.log("🔄 Incident updated:", updatedIncident);
-    }
-  };
-
-  socket.on("new_incident_reported", handleNewIncident);
-  socket.on("incident_updated", handleIncidentUpdated);
-
-  return () => {
-    socket.off("new_incident_reported", handleNewIncident);
-    socket.off("incident_updated", handleIncidentUpdated);
-    clearTimeout(audioTimeout);
-  };
-}, [isLoggedIn, user]);
-
-
-
-
+    
+    socket.on("new_incident_reported", handleNewIncident);
+    socket.on("incident_updated", handleIncidentUpdated);
+    
+    return () => {
+      socket.off("new_incident_reported", handleNewIncident);
+      socket.off("incident_updated", handleIncidentUpdated);
+    };
+  }, [isLoggedIn]);
 
   // Form handlers
   const handleLoginChange = (e) => {
@@ -812,7 +741,6 @@ useEffect(() => {
               placeholder="Your email"
               required
               disabled={isLoading}
-             
             />
             <button 
               className="btn" 
