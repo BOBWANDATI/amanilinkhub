@@ -47,9 +47,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
   const user = JSON.parse(localStorage.getItem('admin_user'));
-  //const alertAudio = useRef(new Audio('https://freesound.org/people/newlocknew/sounds/692525/'));
- // const alertAudio = useRef(new Audio('https://cdn.freesound.org/previews/692/692525_4019020-lq.mp3'));
- // const alertAudio = useRef(null);
+
 
 
         alertAudio.current.preload = 'auto';
@@ -137,37 +135,36 @@ const Admin = () => {
 
   // Socket.io event listeners
 useEffect(() => {
-  if (!socket?.connected || !isLoggedIn || !['admin', 'super_admin'].includes(user?.role)) return;
+  if (!socket?.connected || !isLoggedIn || user?.role !== "admin") return;
 
   let audioTimeout;
 
   const handleNewIncident = (incident) => {
     setIncidents(prev => [incident, ...prev]);
 
-    // ✅ Optional: In-app alert
-    alert(`🚨 New Incident Reported: ${incident.title || "Untitled Incident"}`);
+    // ✅ Show in-app alert (optional)
+    alert(🚨 New Incident Reported: ${incident.title || "Untitled"});
 
     // ✅ Play alert sound
     const playAudio = async () => {
       try {
-        if (alertAudio.current) {
-          alertAudio.current.currentTime = 0;
-          await alertAudio.current.play();
-        }
+        alertAudio.current.currentTime = 0;
+        await alertAudio.current.play();
       } catch (err) {
-        console.warn('🔇 Audio playback blocked by browser. Retrying on user interaction.', err);
-        const retryPlay = () => {
-          alertAudio.current?.play().catch(console.error);
-          document.body.removeEventListener('click', retryPlay);
-        };
-        document.body.addEventListener('click', retryPlay, { once: true });
+        console.warn('🔇 Audio play failed. Awaiting user interaction.', err);
+        document.body.addEventListener(
+          'click',
+          () => alertAudio.current.play().catch(console.error),
+          { once: true }
+        );
       }
     };
 
+    // Avoid overlapping audio triggers
     clearTimeout(audioTimeout);
     audioTimeout = setTimeout(playAudio, 100);
 
-    // ✅ Browser Notification
+    // ✅ Browser notification
     const showBrowserNotification = async () => {
       if (Notification.permission === 'granted') {
         new Notification("🚨 New Incident", {
@@ -191,6 +188,7 @@ useEffect(() => {
 
     showBrowserNotification();
 
+    // Debug logs
     if (import.meta.env.DEV) {
       console.log("📡 New incident received:", incident);
     }
@@ -198,11 +196,8 @@ useEffect(() => {
 
   const handleIncidentUpdated = (updatedIncident) => {
     setIncidents(prev =>
-      prev.map(incident =>
-        incident._id === updatedIncident._id ? updatedIncident : incident
-      )
+      prev.map(incident => incident._id === updatedIncident._id ? updatedIncident : incident)
     );
-
     if (import.meta.env.DEV) {
       console.log("🔄 Incident updated:", updatedIncident);
     }
@@ -216,7 +211,7 @@ useEffect(() => {
     socket.off("incident_updated", handleIncidentUpdated);
     clearTimeout(audioTimeout);
   };
-}, [isLoggedIn, user, socket]);
+}, [isLoggedIn, user]);
 
 
 
