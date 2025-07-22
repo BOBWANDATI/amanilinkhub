@@ -135,36 +135,38 @@ const Admin = () => {
 
   // Socket.io event listeners
 useEffect(() => {
-  if (!socket?.connected || !isLoggedIn || user?.role !== "admin") return;
+  if (!socket?.connected || !isLoggedIn || !['admin', 'super_admin'].includes(user?.role)) return;
 
   let audioTimeout;
 
   const handleNewIncident = (incident) => {
     setIncidents(prev => [incident, ...prev]);
 
-    // ✅ Show in-app alert (optional)
-    alert(`🚨 New Incident Reported: ${incident.title || "Untitled"}`);
+    // ✅ Optional: In-app alert
+    alert(`🚨 New Incident Reported: ${incident.title || "Untitled Incident"}`);
 
     // ✅ Play alert sound
     const playAudio = async () => {
       try {
-        alertAudio.current.currentTime = 0;
-        await alertAudio.current.play();
+        if (alertAudio.current) {
+          alertAudio.current.currentTime = 0;
+          await alertAudio.current.play();
+        }
       } catch (err) {
-        console.warn('🔇 Audio play failed. Awaiting user interaction.', err);
-        document.body.addEventListener(
-          'click',
-          () => alertAudio.current.play().catch(console.error),
-          { once: true }
-        );
+        console.warn('🔇 Audio playback blocked by browser. Retrying on user interaction.', err);
+        const retryPlay = () => {
+          alertAudio.current?.play().catch(console.error);
+          document.body.removeEventListener('click', retryPlay);
+        };
+        document.body.addEventListener('click', retryPlay, { once: true });
       }
     };
 
-    // Avoid overlapping audio triggers
+    // Prevent overlapping audio
     clearTimeout(audioTimeout);
     audioTimeout = setTimeout(playAudio, 100);
 
-    // ✅ Browser notification
+    // ✅ Browser Notification
     const showBrowserNotification = async () => {
       if (Notification.permission === 'granted') {
         new Notification("🚨 New Incident", {
@@ -188,7 +190,6 @@ useEffect(() => {
 
     showBrowserNotification();
 
-    // Debug logs
     if (import.meta.env.DEV) {
       console.log("📡 New incident received:", incident);
     }
@@ -196,8 +197,11 @@ useEffect(() => {
 
   const handleIncidentUpdated = (updatedIncident) => {
     setIncidents(prev =>
-      prev.map(incident => incident._id === updatedIncident._id ? updatedIncident : incident)
+      prev.map(incident =>
+        incident._id === updatedIncident._id ? updatedIncident : incident
+      )
     );
+
     if (import.meta.env.DEV) {
       console.log("🔄 Incident updated:", updatedIncident);
     }
@@ -211,7 +215,8 @@ useEffect(() => {
     socket.off("incident_updated", handleIncidentUpdated);
     clearTimeout(audioTimeout);
   };
-}, [isLoggedIn, user]);
+}, [isLoggedIn, user, socket]);
+
 
 
 
