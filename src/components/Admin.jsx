@@ -49,7 +49,7 @@ const Admin = () => {
   const user = JSON.parse(localStorage.getItem('admin_user'));
   //const alertAudio = useRef(new Audio('https://freesound.org/people/newlocknew/sounds/692525/'));
  // const alertAudio = useRef(new Audio('https://cdn.freesound.org/previews/692/692525_4019020-lq.mp3'));
-  const alertAudio = useRef(null);
+ // const alertAudio = useRef(null);
 
 
         alertAudio.current.preload = 'auto';
@@ -817,8 +817,7 @@ useEffect(() => {
               placeholder="Your email"
               required
               disabled={isLoading}
-               {/* 🔊 Audio element for incident alert */}
-      //<audio ref={alertAudio} src="https://freesound.org/people/newlocknew/sounds/692523/" preload="auto" />
+             
             />
             <button 
               className="btn" 
