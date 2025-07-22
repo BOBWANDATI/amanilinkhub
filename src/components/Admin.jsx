@@ -31,7 +31,7 @@ const Admin = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Data states
+  // Data states 
   const [stats, setStats] = useState({});
   const [incidents, setIncidents] = useState([]);
   const [discussions, setDiscussions] = useState([]);
@@ -818,7 +818,7 @@ useEffect(() => {
               required
               disabled={isLoading}
                {/* 🔊 Audio element for incident alert */}
-      <audio ref={alertAudio} src="https://freesound.org/people/newlocknew/sounds/692523/" preload="auto" />
+      //<audio ref={alertAudio} src="https://freesound.org/people/newlocknew/sounds/692523/" preload="auto" />
             />
             <button 
               className="btn" 
