@@ -1,53 +1,64 @@
+/* ===== Super Admin Layout ===== */
 .super-admin-dashboard {
   padding: 20px;
   background-color: #f5f7fa;
   min-height: 100vh;
 }
 
-/* Dashboard Cards */
+/* ===== Dashboard Cards ===== */
 .dashboard-cards {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
   margin-bottom: 30px;
+  justify-content: center;
 }
 
 .dashboard-card {
   background-color: #fff;
   padding: 20px;
-  flex: 1;
+  flex: 1 1 250px;
   min-width: 250px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
-.dashboard-card .card-icon {
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  background-color: #f0f4f8;
+}
+
+.card-icon {
   font-size: 30px;
   margin-bottom: 10px;
+  color: #007bff;
 }
 
-.dashboard-card .card-title {
+.card-title {
   font-weight: bold;
   font-size: 18px;
   color: #333;
 }
 
-.dashboard-card .card-desc {
+.card-desc {
   font-size: 14px;
   color: #666;
   margin: 5px 0;
 }
 
-.dashboard-card .card-value {
+.card-value {
   font-size: 24px;
   font-weight: bold;
   color: #007bff;
 }
 
-/* Table */
+/* ===== Table ===== */
 .pretty-incident-table {
   width: 100%;
   border-collapse: collapse;
@@ -55,7 +66,8 @@
   background-color: #fff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
 }
 
 .pretty-incident-table th,
@@ -75,84 +87,86 @@
   margin-right: 5px;
 }
 
-/* Clickable Table Row */
 .clickable-row {
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .clickable-row:hover {
   background-color: #f1f8ff;
 }
 
-/* Status Buttons */
+/* ===== Status Buttons ===== */
 .status-btn {
   margin-right: 4px;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   font-size: 12px;
+  font-weight: bold;
   cursor: pointer;
-  background-color: #eee;
+  transition: background-color 0.2s ease;
+  color: white;
 }
 
 .status-btn.pending {
-  background-color: #ffeb3b;
+  background-color: #ffca28;
+  color: #333;
 }
 
 .status-btn.investigating {
   background-color: #03a9f4;
-  color: white;
 }
 
 .status-btn.resolved {
   background-color: #4caf50;
-  color: white;
 }
 
 .status-btn.escalated {
-  background-color: #f44336;
-  color: white;
+  background-color: #e53935;
 }
 
 .status-btn.active {
+  outline: 2px solid #000;
   font-weight: bold;
-  outline: 2px solid #333;
 }
 
-/* Delete Button */
+/* ===== Delete Button ===== */
 .btn-delete {
   background-color: #e53935;
   color: white;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 13px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Detail Modal */
+.btn-delete:hover {
+  background-color: #c62828;
+}
+
+/* ===== Modal Styles ===== */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.4);
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .modal-content {
-  background-color: white;
+  background-color: #fff;
   padding: 25px;
   border-radius: 10px;
   width: 90%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .modal-content h3 {
@@ -163,13 +177,13 @@
 .modal-content pre {
   font-size: 14px;
   color: #444;
-  background: #f9f9f9;
+  background-color: #f9f9f9;
   padding: 15px;
   border-radius: 6px;
   overflow-x: auto;
 }
 
-/* Back Button / General Button */
+/* ===== General Buttons ===== */
 .btn {
   margin-top: 20px;
   padding: 8px 16px;
@@ -179,14 +193,23 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 .btn:hover {
   background-color: #0056b3;
 }
 
-/* Mobile Responsive */
+/* ===== Responsive Design ===== */
 @media (max-width: 768px) {
+  .dashboard-cards {
+    flex-direction: column;
+  }
+
+  .dashboard-card {
+    width: 100%;
+  }
+
   .pretty-incident-table,
   .pretty-incident-table thead,
   .pretty-incident-table tbody,
@@ -217,9 +240,5 @@
 
   .pretty-incident-table th {
     display: none;
-  }
-
-  .dashboard-cards {
-    flex-direction: column;
   }
 }
