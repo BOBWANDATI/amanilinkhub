@@ -405,50 +405,6 @@ const Admin = () => {
       </header>
 
 
-      <Modal 
-  isOpen={!!selectedIncident}
-  onClose={() => setSelectedIncident(null)}
-  title="📍 Incident Details"
->
-  {selectedIncident ? (
-    <>
-      <p><strong>Title:</strong> {selectedIncident.title || 'N/A'}</p>
-      <p><strong>Type:</strong> {selectedIncident.incidentType || 'N/A'}</p>
-      <p><strong>Status:</strong> {selectedIncident.status || 'N/A'}</p>
-      <p><strong>Urgency:</strong> {selectedIncident.urgency || 'N/A'}</p>
-      <p><strong>Description:</strong> {selectedIncident.description || 'No description provided'}</p>
-      <p><strong>Location:</strong> {selectedIncident.location || 'Not specified'}</p>
-      <p><strong>Date:</strong> {selectedIncident.date ? new Date(selectedIncident.date).toLocaleString() : 'N/A'}</p>
-
-      {selectedIncident.imageUrl && (
-        <div className="media-wrapper">
-          <p><strong>Image:</strong></p>
-          <img
-            src={selectedIncident.imageUrl}
-            alt="Incident"
-            className="media-preview"
-          />
-        </div>
-      )}
-
-      {selectedIncident.videoUrl && (
-        <div className="media-wrapper">
-          <p><strong>Video:</strong></p>
-          <iframe
-            src={selectedIncident.videoUrl.replace('watch?v=', 'embed/')}
-            className="media-preview"
-            title="Incident Video"
-            allowFullScreen
-          ></iframe>
-        </div>
-      )}
-    </>
-  ) : (
-    <p>⚠️ No incident data available.</p>
-  )}
-</Modal>
-
-
       {isLoading ? (
         <div className="loading-spinner">Loading...</div>
       ) : (
