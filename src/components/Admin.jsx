@@ -108,11 +108,20 @@ const Admin = () => {
           nwsRes.json()
         ]);
 
-        setStats(statsData);
-        setIncidents(incData);
-        setDiscussions(disData);
-        setStories(stoData);
-        setNews(nwsData);
+       // setStats(statsData);
+        //setIncidents(incData);
+        //setDiscussions(disData);
+        //setStories(stoData);
+        //setNews(nwsData);setStats(statsData);
+        
+        setIncidents(Array.isArray(incData) ? incData : []);
+        setDiscussions(Array.isArray(disData) ? disData : []);
+        setStories(Array.isArray(stoData) ? stoData : []);
+        setNews(Array.isArray(nwsData) ? nwsData : []);
+
+
+
+        
       } catch (err) {
         console.error('Dashboard data fetch error:', err);
         alert('Failed to load dashboard data');
@@ -685,29 +694,38 @@ const Admin = () => {
   );
 
   // Reusable Components
-  const DashboardSection = ({ title, items, columns, onRowClick }) => (
-    <div className="dashboard-section">
-      <h3>{title}</h3>
-      <table className="pretty-incident-table">
-        <thead>
-          <tr>
-            {columns.map((col, idx) => (
-              <th key={idx}>{col.header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item, idx) => (
-            <tr key={item._id} onClick={() => onRowClick(item)}>
+ const DashboardSection = ({ title, items, columns, onRowClick }) => (
+  <div className="dashboard-section">
+    <h3>{title}</h3>
+    <table className="pretty-incident-table">
+      <thead>
+        <tr>
+          {columns.map((col, idx) => (
+            <th key={idx}>{col.header}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {Array.isArray(items) && items.length > 0 ? (
+          items.map((item, idx) => (
+            <tr key={item._id || idx} onClick={() => onRowClick(item)}>
               {columns.map((col, colIdx) => (
                 <td key={colIdx}>{col.render(item, idx)}</td>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+          ))
+        ) : (
+          <tr>
+            <td colSpan={columns.length} style={{ textAlign: 'center' }}>
+              ⚠️ No data available
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+);
+
 
   const Modal = ({ isOpen, onClose, title, children }) => {
     if (!isOpen) return null;
