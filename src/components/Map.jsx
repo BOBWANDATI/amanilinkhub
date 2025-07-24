@@ -27,19 +27,20 @@ const Map = () => {
   const normalizeIncidents = (incidents) =>
     incidents.map((i) => ({ ...i, id: i.id || i._id }));
 
-  const fetchMapData = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/report/map`);
-      const data = await res.json();
-      const normalized = {
-        ...data,
-        incidents: normalizeIncidents(data.incidents || []),
-      };
-      setMapData(normalized);
-    } catch (err) {
-      console.error('❌ Failed to fetch map data:', err);
-    }
-  };
+ const fetchMapData = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/report/map`);
+    const json = await res.json();
+    const normalized = {
+      ...json,
+      incidents: normalizeIncidents(json.data || []),  // 👈 FIXED LINE
+    };
+    setMapData(normalized);
+  } catch (err) {
+    console.error('❌ Failed to fetch map data:', err);
+  }
+};
+
 
   useEffect(() => {
     if (!mapRef.current) {
