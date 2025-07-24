@@ -121,7 +121,12 @@ const Admin = () => {
 
         setIncidents(Array.isArray(incData?.data) ? incData.data : incData);
         setDiscussions(Array.isArray(disData?.data) ? disData.data : disData);
-        setStories(Array.isArray(stoData?.data) ? stoData.data : stoData);
+       // setStories(Array.isArray(stoData?.data) ? stoData.data : stoData);
+        setStories(
+        Array.isArray(stoData?.data) ? stoData.data : 
+        Array.isArray(stoData) ? stoData : []
+        );
+
         setNews(Array.isArray(nwsData?.data) ? nwsData.data : nwsData);
 
 
