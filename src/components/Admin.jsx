@@ -45,37 +45,31 @@ const Admin = () => {
   const user = JSON.parse(localStorage.getItem('admin_user'));
 
   // Check authentication status on mount
- useEffect(() => {
-  const verifyAuth = async () => {
-    if (!token) {
-      navigate('/admin'); // Redirect to login if no token
-      return;
-    }
-    
-    try {
-      setIsLoading(true);
-      const res = await fetch(`${BASE_URL}/api/auth/verify`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+  useEffect(() => {
+    const verifyAuth = async () => {
+      if (!token) return;
       
-      if (res.ok) {
-        setIsLoggedIn(true);
-        navigate('/admin/dashboard'); // Redirect to dashboard if verified
-      } else {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`${BASE_URL}/api/auth/verify`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          localStorage.clear();
+        }
+      } catch (err) {
+        console.error('Auth verification error:', err);
         localStorage.clear();
-        navigate('/admin');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error('Auth verification error:', err);
-      localStorage.clear();
-      navigate('/admin');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  verifyAuth();
-}, [navigate, token]);
+    };
+    
+    verifyAuth();
+  }, []);
 
   // Fetch dashboard data when authenticated
   useEffect(() => {
@@ -171,41 +165,39 @@ const Admin = () => {
   };
 
   // Authentication handlers
- // In the handleLoginSubmit function:
-const handleLoginSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  
-  try {
-    const res = await fetch(`${BASE_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginData),
-    });
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
     
-    const data = await res.json();
-    
-    if (!res.ok) {
-      throw new Error(data.msg || 'Login failed');
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.msg || 'Login failed');
+      }
+      
+      if (!data.admin?.approved) {
+        throw new Error('Account not yet approved by admin');
+      }
+      
+      localStorage.setItem('admin_token', data.token);
+      localStorage.setItem('admin_user', JSON.stringify(data.admin));
+      setIsLoggedIn(true);
+      alert(`✅ Welcome ${data.admin.username}`);
+      setLoginData({ username: '', password: '', role: '' });
+    } catch (err) {
+      console.error('Login error:', err);
+      alert(err.message || '❌ Login failed');
+    } finally {
+      setIsLoading(false);
     }
-    
-    if (!data.admin?.approved) {
-      throw new Error('Account not yet approved by admin');
-    }
-    
-    localStorage.setItem('admin_token', data.token);
-    localStorage.setItem('admin_user', JSON.stringify(data.admin));
-    setIsLoggedIn(true);
-    alert(`✅ Welcome ${data.admin.username}`);
-    setLoginData({ username: '', password: '', role: '' });
-    navigate('/admin/dashboard'); // Add this line to redirect after login
-  } catch (err) {
-    console.error('Login error:', err);
-    alert(err.message || '❌ Login failed');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
