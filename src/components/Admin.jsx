@@ -88,9 +88,10 @@ const Admin = () => {
           fetch(`${BASE_URL}/api/discussions`, { 
             headers: { Authorization: `Bearer ${token}` } 
           }),
-          fetch(`${BASE_URL}/api/stories`, { 
-            headers: { Authorization: `Bearer ${token}` } 
-          }),
+          fetch(`${BASE_URL}/api/admin/stories`, { 
+           headers: { Authorization: `Bearer ${token}` } 
+         }),
+
           fetch(`${BASE_URL}/api/admin/news`, { 
             headers: { Authorization: `Bearer ${token}` } 
           })
@@ -360,20 +361,21 @@ const Admin = () => {
       
       // Refresh data
       const refreshData = async () => {
-        const [stoRes, nwsRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/stories`, { 
-            headers: { Authorization: `Bearer ${token}` } 
-          }),
-          fetch(`${BASE_URL}/api/admin/news`, { 
-            headers: { Authorization: `Bearer ${token}` } 
-          })
-        ]);
-        
-        const [stoData, nwsData] = await Promise.all([stoRes.json(), nwsRes.json()]);
-        
-        setStories(stoData);
-        setNews(nwsData);
-      };
+     const [stoRes, nwsRes] = await Promise.all([
+    fetch(`${BASE_URL}/api/stories`, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    }),
+    fetch(`${BASE_URL}/api/admin/news`, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    })
+  ]);
+
+  const [stoData, nwsData] = await Promise.all([stoRes.json(), nwsRes.json()]);
+
+  setStories(stoData);
+  setNews(nwsData);
+   };
+
       
       await refreshData();
       alert(`✅ ${type.charAt(0).toUpperCase() + type.slice(1)} status updated to ${status}`);
