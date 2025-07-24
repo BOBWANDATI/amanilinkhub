@@ -60,40 +60,79 @@ const Map = () => {
   }, []);
 
   const renderMarkers = (dataOverride = null) => {
-    const map = mapRef.current;
-    const data = dataOverride || mapData;
-    if (!map || !data?.incidents) return;
+  const map = mapRef.current;
+  const data = dataOverride || mapData;
+  if (!map || !data?.incidents) return;
 
-    if (markerLayerRef.current) {
-      map.removeLayer(markerLayerRef.current);
+  // Remove existing marker layer if present
+  if (markerLayerRef.current) {
+    map.removeLayer(markerLayerRef.current);
+  }
+
+  // Create marker cluster
+  const markerCluster = L.markerClusterGroup({
+    iconCreateFunction: (cluster) => {
+      const markers = cluster.getAllChildMarkers();
+      const statusCount = {
+        pending: 0,
+        investigating: 0,
+        resolved: 0,
+        escalated: 0,
+      };
+
+      markers.forEach((marker) => {
+        const status = marker.options.customStatus || 'pending';
+        statusCount[status] = (statusCount[status] || 0) + 1;
+      });
+
+      const dominantStatus = Object.entries(statusCount).sort((a, b) => b[1] - a[1])[0][0];
+      const dominantColor = statusColors[dominantStatus] || 'gray';
+
+      return L.divIcon({
+        html: `<div style="background-color:${dominantColor}; color:white; border-radius:50%; padding:8px 12px; font-size:12px">${cluster.getChildCount()}</div>`,
+        className: 'custom-cluster-icon',
+        iconSize: [30, 30],
+      });
+    },
+  });
+
+  // Add each incident marker
+  data.incidents.forEach((incident) => {
+    const { id, incidentType, status, lat, lng, date } = incident;
+
+    if (lat && lng) {
+      const marker = L.circleMarker([lat, lng], {
+        radius: 8,
+        color: statusColors[status] || 'gray',
+        fillColor: statusColors[status] || 'gray',
+        fillOpacity: 0.9,
+      });
+
+      marker.options.customStatus = status;
+      marker.options.incidentId = id;
+
+      marker.bindPopup(`
+        <strong>Type:</strong> ${incidentType}<br/>
+        <strong>Status:</strong> <span style="color:${statusColors[status]}">${status}</span><br/>
+        <strong>Date:</strong> ${new Date(date).toLocaleString()}
+      `);
+
+      markerCluster.addLayer(marker);
     }
+  });
 
-    const markerCluster = L.markerClusterGroup({
-      iconCreateFunction: (cluster) => {
-        const markers = cluster.getAllChildMarkers();
-        const statusCount = {
-          pending: 0,
-          investigating: 0,
-          resolved: 0,
-          escalated: 0,
-        };
+  markerCluster.addTo(map);
+  markerLayerRef.current = markerCluster;
 
-        markers.forEach((marker) => {
-          const status = marker.options.customStatus || 'pending';
-          statusCount[status] = (statusCount[status] || 0) + 1;
-        });
+  if (markerCluster.getLayers().length > 0) {
+    map.fitBounds(markerCluster.getBounds(), { padding: [50, 50] });
+  }
+};
 
-        const dominantStatus = Object.entries(statusCount).sort((a, b) => b[1] - a[1])[0][0];
-        const dominantColor = statusColors[dominantStatus] || 'gray';
 
-        return L.divIcon({
-          html: `<div style="background-color:${dominantColor}; color:white; border-radius:50%; padding:8px 12px; font-size:12px">${cluster.getChildCount()}</div>`,
-          className: 'custom-cluster-icon',
-          iconSize: [30, 30],
-        });
-      },
-    });
 
+
+    
     data.incidents.forEach((incident) => {
       const { id, incidentType, status, location, date } = incident;
       const lat = location?.lat;
