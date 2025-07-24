@@ -114,10 +114,16 @@ const Admin = () => {
         //setStories(stoData);
         //setNews(nwsData);setStats(statsData);
         
-        setIncidents(Array.isArray(incData) ? incData : []);
-        setDiscussions(Array.isArray(disData) ? disData : []);
-        setStories(Array.isArray(stoData) ? stoData : []);
-        setNews(Array.isArray(nwsData) ? nwsData : []);
+       // setIncidents(Array.isArray(incData) ? incData : []);
+        //setDiscussions(Array.isArray(disData) ? disData : []);
+        //setStories(Array.isArray(stoData) ? stoData : []);
+        //setNews(Array.isArray(nwsData) ? nwsData : []);
+
+        setIncidents(Array.isArray(incData?.data) ? incData.data : incData);
+        setDiscussions(Array.isArray(disData?.data) ? disData.data : disData);
+        setStories(Array.isArray(stoData?.data) ? stoData.data : stoData);
+        setNews(Array.isArray(nwsData?.data) ? nwsData.data : nwsData);
+
 
 
 
