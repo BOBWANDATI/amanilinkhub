@@ -607,25 +607,23 @@ const Admin = () => {
       )}
 
       {/* Modals */}
-      <Modal 
-        isOpen={!!selectedIncident}
-        onClose={() => setSelectedIncident(null)}
-        title="📍 Incident Details"
-      >
-        {selectedIncident && (
-          <>
-            <p><strong>Title:</strong> {selectedIncident.title}</p>
-            <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
-            <p><strong>Status:</strong> {selectedIncident.status}</p>
-            <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
-            <p><strong>Description:</strong> {selectedIncident.description}</p>
-            <p><strong>Location:</strong> {selectedIncident.location}</p>
-            <p><strong>Date:</strong> {new Date(selectedIncident.date).toLocaleString()}</p>
-          </>
-        )}
-      </Modal>
+    <Modal 
+  isOpen={!!selectedIncident}
+  onClose={() => setSelectedIncident(null)}
+  title="📍 Incident Details"
+>
+  {selectedIncident && (
+    <>
+      <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+      <p><strong>Status:</strong> {selectedIncident.status}</p>
+      <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+      <p><strong>Description:</strong> {selectedIncident.description}</p>
+      <p><strong>Location:</strong> {selectedIncident.location}</p>
+      <p><strong>Date:</strong> {new Date(selectedIncident.date).toLocaleString()}</p>
+    </>
+  )}
+</Modal>
 
-      <Modal
         isOpen={!!selectedDiscussion}
         onClose={() => setSelectedDiscussion(null)}
         title="💬 Discussion Details"
