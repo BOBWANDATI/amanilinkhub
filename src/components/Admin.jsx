@@ -485,7 +485,7 @@ const Admin = () => {
           />
 
 
-          {/* Incident Details Modal */}
+          
 
 
           {/* Discussions Section */}
@@ -611,27 +611,64 @@ const Admin = () => {
         </>
       )}
 
+
+
+
+      <Modal
+  isOpen={!!selectedIncident}
+  onClose={() => setSelectedIncident(null)}
+  title="🚨 Incident Details"
+>
+  {selectedIncident && (
+    <>
+      <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+      <p><strong>Status:</strong> {selectedIncident.status}</p>
+      <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+      <p><strong>Description:</strong> {selectedIncident.description}</p>
+      <p><strong>Location:</strong> {selectedIncident.location || 'Not provided'}</p>
+      <p><strong>Date:</strong> {new Date(selectedIncident.date).toLocaleString()}</p>
+
+      {selectedIncident.image && (
+        <img
+          src={selectedIncident.image}
+          alt="Incident"
+          className="media-preview"
+        />
+      )}
+
+      {selectedIncident.video && (
+        <video controls className="media-preview">
+          <source src={selectedIncident.video} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </>
+  )}
+</Modal>
+
  
 
-        isOpen={!!selectedDiscussion}
-        onClose={() => setSelectedDiscussion(null)}
-        title="💬 Discussion Details"
-      >
-        {selectedDiscussion && (
-          <>
-            <p><strong>Title:</strong> {selectedDiscussion.title}</p>
-            <p><strong>Creator:</strong> {selectedDiscussion.creator?.username || 'Anonymous'}</p>
-            <p><strong>Messages:</strong></p>
-            <ul className="messages-list">
-              {selectedDiscussion.messages?.map((m, i) => (
-                <li key={i}>
-                  <strong>{m.sender?.username || 'Anonymous'}:</strong> {m.text}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </Modal>
+       <Modal
+  isOpen={!!selectedDiscussion}
+  onClose={() => setSelectedDiscussion(null)}
+  title="💬 Discussion Details"
+>
+  {selectedDiscussion && (
+    <>
+      <p><strong>Title:</strong> {selectedDiscussion.title}</p>
+      <p><strong>Creator:</strong> {selectedDiscussion.creator?.username || 'Anonymous'}</p>
+      <p><strong>Messages:</strong></p>
+      <ul className="messages-list">
+        {selectedDiscussion.messages?.map((m, i) => (
+          <li key={i}>
+            <strong>{m.sender?.username || 'Anonymous'}:</strong> {m.text}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</Modal>
+
 
       <Modal
         isOpen={!!selectedStory}
