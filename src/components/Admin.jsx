@@ -615,7 +615,9 @@ const Admin = () => {
 
   <Modal
       isOpen={!!selectedIncident}
-      onClose={onClose}
+      //onClose={onClose}
+      onClose={() => setSelectedIncident(null)}
+
       title="🚨 Incident Details"
     >
       {selectedIncident && (
@@ -635,7 +637,9 @@ const Admin = () => {
                 <div key={index}>
                   {file.match(/\.(jpeg|jpg|png|gif)$/i) ? (
                     <img
-                      src={`https://your-backend-url.com${file}`}
+                      //src={`https://your-backend-url.com${file}`}
+                      src={`${BASE_URL}${file}`}
+
                       alt={`File ${index + 1}`}
                       style={{ maxWidth: '100%', marginTop: '10px' }}
                     />
