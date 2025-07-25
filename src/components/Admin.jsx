@@ -613,38 +613,53 @@ const Admin = () => {
 
 
 
+  <Modal
+      isOpen={!!selectedIncident}
+      onClose={onClose}
+      title="🚨 Incident Details"
+    >
+      {selectedIncident && (
+        <>
+          <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
+          <p><strong>Description:</strong> {selectedIncident.description}</p>
+          <p><strong>Status:</strong> {selectedIncident.status}</p>
+          <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
+          <p><strong>Location Name:</strong> {selectedIncident.locationName || 'N/A'}</p>
+          <p><strong>Coordinates:</strong> {selectedIncident.location?.coordinates?.join(', ') || 'N/A'}</p>
+          <p><strong>Reported By:</strong> {selectedIncident.reporter}</p>
 
-      <Modal
-  isOpen={!!selectedIncident}
-  onClose={() => setSelectedIncident(null)}
-  title="🚨 Incident Details"
->
-  {selectedIncident && (
-    <>
-      <p><strong>Type:</strong> {selectedIncident.incidentType}</p>
-      <p><strong>Status:</strong> {selectedIncident.status}</p>
-      <p><strong>Urgency:</strong> {selectedIncident.urgency}</p>
-      <p><strong>Description:</strong> {selectedIncident.description}</p>
-      <p><strong>Location:</strong> {selectedIncident.location || 'Not provided'}</p>
-      <p><strong>Date:</strong> {new Date(selectedIncident.date).toLocaleString()}</p>
-
-      {selectedIncident.image && (
-        <img
-          src={selectedIncident.image}
-          alt="Incident"
-          className="media-preview"
-        />
+          {selectedIncident.files && selectedIncident.files.length > 0 && (
+            <div>
+              <strong>Attached Files:</strong>
+              {selectedIncident.files.map((file, index) => (
+                <div key={index}>
+                  {file.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                    <img
+                      src={`https://your-backend-url.com${file}`}
+                      alt={`File ${index + 1}`}
+                      style={{ maxWidth: '100%', marginTop: '10px' }}
+                    />
+                  ) : file.match(/\.(mp4|webm|ogg)$/i) ? (
+                    <video controls width="100%" style={{ marginTop: '10px' }}>
+                      <source src={`https://your-backend-url.com${file}`} />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <a
+                      href={`https://your-backend-url.com${file}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View File {index + 1}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
-
-      {selectedIncident.video && (
-        <video controls className="media-preview">
-          <source src={selectedIncident.video} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      )}
-    </>
-  )}
-</Modal>
+    </Modal>
 
  
 
