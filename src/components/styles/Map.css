@@ -2,7 +2,7 @@
 
 /* Ensure the map container is visible and has height */
 #mapDisplay {
-  height: 500px;
+  height: 700px;
   width: 100%;
   border: 2px solid #ccc;
   margin-top: 15px;
@@ -17,7 +17,7 @@
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: auto;
 }
 
