@@ -9,10 +9,10 @@ body {
 }
 
 .verified-news-container {
-  max-width: 1100px;
+  max-width: 1600px;
   margin: 3rem auto;
   padding: 2rem;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.99);
   border-radius: 12px;
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
 }
