@@ -22,7 +22,7 @@ const Features = ({ setShowUSSDModal, setShowSuccessModal }) => {
         <div className="about-container">
           <div className="about-image animate-pop">
             <img
-              src="https://github.com/BOBWANDATI/My-Portfolio/blob/main/e-diop-AdX3zAKr_jI-unsplash%20(1).jpg?raw=true"
+              src="https://github.com/BOBWANDATI/images/blob/main/e-diop-AdX3zAKr_jI-unsplash.jpg?raw=true"
               alt="Peace Building Hub"
             />
           </div>
