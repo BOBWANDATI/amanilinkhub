@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import './styles/stories.css';
 
-// your backend API base
+// ✅ Backend endpoints
 const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
 const IMAGE_BASE_URL = 'https://backend-m6u3.onrender.com/uploads/';
 
@@ -22,12 +22,13 @@ const Stories = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Fetch stories from backend
   const fetchStories = async () => {
     try {
       const res = await axios.get(API_BASE_URL);
       setStories(res.data.reverse());
     } catch (err) {
-      console.error('Failed to fetch stories:', err.message);
+      console.error('❌ Failed to fetch stories:', err.message);
     }
   };
 
@@ -35,6 +36,7 @@ const Stories = () => {
     fetchStories();
   }, []);
 
+  // ✅ Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStory((prev) => ({
@@ -43,6 +45,7 @@ const Stories = () => {
     }));
   };
 
+  // ✅ Submit story
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,17 +63,19 @@ const Stories = () => {
       setShowForm(false);
       fetchStories();
     } catch (err) {
-      console.error('Error submitting story:', err.message);
+      console.error('❌ Error submitting story:', err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // helper to fix image URL
+  // ✅ Fix relative or incomplete image URLs
   const getImageUrl = (url) => {
     if (!url) return null;
+    // If it's already a full link (http, https, data:), return as is
     if (url.startsWith('http') || url.startsWith('data:')) return url;
-    return IMAGE_BASE_URL + url.replace(/^\/+/, '');
+    // Otherwise, prepend backend uploads path
+    return `${IMAGE_BASE_URL}${url.replace(/^\/+/, '')}`;
   };
 
   const filteredStories =
@@ -84,6 +89,7 @@ const Stories = () => {
         <h2 className="page-title">Peace Stories</h2>
         <p className="page-subtitle">Real stories from the community</p>
 
+        {/* ✅ Category + Form Button */}
         <div className="stories-actions">
           <div className="category-filter">
             {['all', 'reconciliation', 'healing', 'community'].map((cat) => (
@@ -96,11 +102,15 @@ const Stories = () => {
               </button>
             ))}
           </div>
-          <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowForm(!showForm)}
+          >
             {showForm ? 'Cancel' : 'Share Your Story'}
           </button>
         </div>
 
+        {/* ✅ Story Form */}
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
             <h3>Share Your Peace Story</h3>
@@ -121,7 +131,7 @@ const Stories = () => {
             />
             <input
               name="imageUrl"
-              placeholder="Image URL or Filename (optional)"
+              placeholder="Image URL or filename (optional)"
               value={newStory.imageUrl}
               onChange={handleInputChange}
             />
@@ -158,12 +168,17 @@ const Stories = () => {
           </form>
         )}
 
+        {/* ✅ Display Stories */}
         <div className="stories-grid">
           {filteredStories.map((story) => (
             <div key={story._id} className="story-card">
               <h3>{story.title}</h3>
               {story.imageUrl && (
-                <img src={getImageUrl(story.imageUrl)} alt="Story Visual" />
+                <img
+                  src={getImageUrl(story.imageUrl)}
+                  alt="Story Visual"
+                  onError={(e) => (e.target.style.display = 'none')} // hides broken images
+                />
               )}
               {story.videoUrl && (
                 <iframe
@@ -176,7 +191,8 @@ const Stories = () => {
               )}
               <p>{story.content}</p>
               <p>
-                <strong>{story.author || 'Anonymous'}</strong> — {story.location}
+                <strong>{story.author || 'Anonymous'}</strong> —{' '}
+                {story.location || 'Unknown location'}
               </p>
               <p className="category">{story.category}</p>
             </div>
