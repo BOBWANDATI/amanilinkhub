@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import './styles/stories.css';
 
-// ✅ Backend endpoints
+// Backend API base URLs
 const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
 const IMAGE_BASE_URL = 'https://backend-m6u3.onrender.com/uploads/';
 
@@ -22,7 +22,6 @@ const Stories = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch stories from backend
   const fetchStories = async () => {
     try {
       const res = await axios.get(API_BASE_URL);
@@ -36,7 +35,6 @@ const Stories = () => {
     fetchStories();
   }, []);
 
-  // ✅ Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStory((prev) => ({
@@ -45,7 +43,6 @@ const Stories = () => {
     }));
   };
 
-  // ✅ Submit story
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -69,13 +66,11 @@ const Stories = () => {
     }
   };
 
-  // ✅ Fix relative or incomplete image URLs
+  // ✅ Fix image URLs (if stored as relative filenames)
   const getImageUrl = (url) => {
     if (!url) return null;
-    // If it's already a full link (http, https, data:), return as is
     if (url.startsWith('http') || url.startsWith('data:')) return url;
-    // Otherwise, prepend backend uploads path
-    return `${IMAGE_BASE_URL}${url.replace(/^\/+/, '')}`;
+    return IMAGE_BASE_URL + url.replace(/^\/+/, '').replace(/^uploads[\\/]+/, '');
   };
 
   const filteredStories =
@@ -89,7 +84,6 @@ const Stories = () => {
         <h2 className="page-title">Peace Stories</h2>
         <p className="page-subtitle">Real stories from the community</p>
 
-        {/* ✅ Category + Form Button */}
         <div className="stories-actions">
           <div className="category-filter">
             {['all', 'reconciliation', 'healing', 'community'].map((cat) => (
@@ -102,15 +96,11 @@ const Stories = () => {
               </button>
             ))}
           </div>
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowForm(!showForm)}
-          >
+          <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
             {showForm ? 'Cancel' : 'Share Your Story'}
           </button>
         </div>
 
-        {/* ✅ Story Form */}
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
             <h3>Share Your Peace Story</h3>
@@ -131,7 +121,7 @@ const Stories = () => {
             />
             <input
               name="imageUrl"
-              placeholder="Image URL or filename (optional)"
+              placeholder="Image URL or Filename (optional)"
               value={newStory.imageUrl}
               onChange={handleInputChange}
             />
@@ -168,35 +158,46 @@ const Stories = () => {
           </form>
         )}
 
-        {/* ✅ Display Stories */}
         <div className="stories-grid">
-          {filteredStories.map((story) => (
-            <div key={story._id} className="story-card">
-              <h3>{story.title}</h3>
-              {story.imageUrl && (
-                <img
-                  src={getImageUrl(story.imageUrl)}
-                  alt="Story Visual"
-                  onError={(e) => (e.target.style.display = 'none')} // hides broken images
-                />
-              )}
-              {story.videoUrl && (
-                <iframe
-                  width="100%"
-                  height="250"
-                  src={story.videoUrl.replace('watch?v=', 'embed/')}
-                  frameBorder="0"
-                  allowFullScreen
-                ></iframe>
-              )}
-              <p>{story.content}</p>
-              <p>
-                <strong>{story.author || 'Anonymous'}</strong> —{' '}
-                {story.location || 'Unknown location'}
-              </p>
-              <p className="category">{story.category}</p>
-            </div>
-          ))}
+          {filteredStories.map((story) => {
+            const fixedImageUrl = getImageUrl(story.imageUrl);
+            return (
+              <div key={story._id} className="story-card">
+                <h3>{story.title}</h3>
+
+                {fixedImageUrl && (
+                  <>
+                    <p style={{ fontSize: '12px', color: '#888' }}>
+                      🔗 {fixedImageUrl}
+                    </p>
+                    <img
+                      src={fixedImageUrl}
+                      alt="Story Visual"
+                      onError={(e) => {
+                        e.target.src = '/default-image.jpg';
+                        console.warn('❌ Image failed to load:', fixedImageUrl);
+                      }}
+                    />
+                  </>
+                )}
+
+                {story.videoUrl && (
+                  <iframe
+                    width="100%"
+                    height="250"
+                    src={story.videoUrl.replace('watch?v=', 'embed/')}
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
+                )}
+                <p>{story.content}</p>
+                <p>
+                  <strong>{story.author || 'Anonymous'}</strong> — {story.location}
+                </p>
+                <p className="category">{story.category}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
