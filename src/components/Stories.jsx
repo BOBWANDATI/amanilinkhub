@@ -3,7 +3,9 @@ import axios from 'axios';
 import { FaHeart, FaShare, FaComment, FaUser } from 'react-icons/fa';
 import './styles/stories.css';
 
+// your backend API base
 const API_BASE_URL = 'https://backend-m6u3.onrender.com/api/stories';
+const IMAGE_BASE_URL = 'https://backend-m6u3.onrender.com/uploads/';
 
 const Stories = () => {
   const [stories, setStories] = useState([]);
@@ -64,6 +66,13 @@ const Stories = () => {
     }
   };
 
+  // helper to fix image URL
+  const getImageUrl = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http') || url.startsWith('data:')) return url;
+    return IMAGE_BASE_URL + url.replace(/^\/+/, '');
+  };
+
   const filteredStories =
     activeCategory === 'all'
       ? stories
@@ -95,13 +104,50 @@ const Stories = () => {
         {showForm && (
           <form className="story-form" onSubmit={handleSubmit}>
             <h3>Share Your Peace Story</h3>
-            <input name="title" placeholder="Story Title *" value={newStory.title} onChange={handleInputChange} required />
-            <textarea name="content" placeholder="Your Story *" value={newStory.content} onChange={handleInputChange} required rows="5" />
-            <input name="imageUrl" placeholder="Image URL (optional)" value={newStory.imageUrl} onChange={handleInputChange} />
-            <input name="videoUrl" placeholder="YouTube Video URL (optional)" value={newStory.videoUrl} onChange={handleInputChange} />
-            <input name="author" placeholder="Your Name (optional)" value={newStory.author} onChange={handleInputChange} />
-            <input name="location" placeholder="Location" value={newStory.location} onChange={handleInputChange} />
-            <select name="category" value={newStory.category} onChange={handleInputChange}>
+            <input
+              name="title"
+              placeholder="Story Title *"
+              value={newStory.title}
+              onChange={handleInputChange}
+              required
+            />
+            <textarea
+              name="content"
+              placeholder="Your Story *"
+              value={newStory.content}
+              onChange={handleInputChange}
+              required
+              rows="5"
+            />
+            <input
+              name="imageUrl"
+              placeholder="Image URL or Filename (optional)"
+              value={newStory.imageUrl}
+              onChange={handleInputChange}
+            />
+            <input
+              name="videoUrl"
+              placeholder="YouTube Video URL (optional)"
+              value={newStory.videoUrl}
+              onChange={handleInputChange}
+            />
+            <input
+              name="author"
+              placeholder="Your Name (optional)"
+              value={newStory.author}
+              onChange={handleInputChange}
+            />
+            <input
+              name="location"
+              placeholder="Location"
+              value={newStory.location}
+              onChange={handleInputChange}
+            />
+            <select
+              name="category"
+              value={newStory.category}
+              onChange={handleInputChange}
+            >
               <option value="reconciliation">Reconciliation</option>
               <option value="healing">Healing</option>
               <option value="community">Community</option>
@@ -116,12 +162,22 @@ const Stories = () => {
           {filteredStories.map((story) => (
             <div key={story._id} className="story-card">
               <h3>{story.title}</h3>
-              {story.imageUrl && <img src={story.imageUrl} alt="Story Visual" />}
+              {story.imageUrl && (
+                <img src={getImageUrl(story.imageUrl)} alt="Story Visual" />
+              )}
               {story.videoUrl && (
-                <iframe width="100%" height="250" src={story.videoUrl.replace("watch?v=", "embed/")} frameBorder="0" allowFullScreen></iframe>
+                <iframe
+                  width="100%"
+                  height="250"
+                  src={story.videoUrl.replace('watch?v=', 'embed/')}
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
               )}
               <p>{story.content}</p>
-              <p><strong>{story.author || 'Anonymous'}</strong> — {story.location}</p>
+              <p>
+                <strong>{story.author || 'Anonymous'}</strong> — {story.location}
+              </p>
               <p className="category">{story.category}</p>
             </div>
           ))}
