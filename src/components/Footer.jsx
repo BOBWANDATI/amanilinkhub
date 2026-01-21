@@ -33,7 +33,7 @@ const Footer = () => {
             <h4 className="footer-subtitle">Emergency</h4>
             <p><FaPhone /> Police: 999 / 112</p>
             <p><FaMobileAlt /> USSD: *456*7#</p>
-            <p><FaEnvelope /> emergency@peacehub.ke</p>
+            <p><FaEnvelope /> amanilinkhub@gmail.com</p>
           </div>
 
           <div className="footer-section">
