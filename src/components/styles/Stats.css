@@ -1,118 +1,126 @@
 /* ===== Stats Section ===== */
 .stats-section {
-  position: relative;
-  margin-top: -220px; /* Pull stats into hero background */
-  padding: 120px 20px 110px;
-  background: transparent; /* SAME background image continues */
-  color: #ffffff;
-  z-index: 3;
-}
-
-/* ===== Container ===== */
-.stats-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
+  padding: 130px 40px 110px; /* increased spacing */
+  background: transparent; /* use homepage background */
+  color: #0c3765;
 }
 
 /* ===== Titles ===== */
 .section-title {
-  font-size: 2.6rem;
-  font-weight: 800;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 700;
   margin-bottom: 16px;
-  letter-spacing: -0.5px;
 }
 
 .section-subtitle {
-  font-size: 1.1rem;
+  text-align: center;
+  font-size: 1.2rem;
   max-width: 760px;
-  margin: 0 auto 70px;
-  line-height: 1.8;
-  color: #f1f5f9; /* clear white for visibility */
-  opacity: 0.95;
+  margin: 0 auto 90px; /* more bottom spacing */
+  line-height: 1.7;
+  color: #345a8a;
 }
 
-/* ===== Grid ===== */
+/* ===== Stats Grid ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 40px;
-  max-width: 1400px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 55px; /* increased gap */
+  max-width: 1500px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
-/* ===== Stat Cards ===== */
+/* ===== Stat Card (Standalone / Floating) ===== */
 .stat-card {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08); /* no white block */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 32px 26px;
-  border-radius: 18px;
+  padding: 45px 35px;
+  border-radius: 22px;
   text-align: center;
   box-shadow:
-    0 16px 35px rgba(0, 0, 0, 0.35),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-  animation: floatSoft 6s ease-in-out infinite;
+    0 20px 40px rgba(12, 55, 101, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: floatPulse 5s ease-in-out infinite;
 }
 
-/* Hover */
+/* ===== Hover Effect ===== */
 .stat-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-14px);
   box-shadow:
-    0 24px 50px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    0 28px 55px rgba(12, 55, 101, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
-/* ===== Card Content ===== */
+/* ===== Icon ===== */
 .stat-icon {
-  font-size: 2.4rem;
-  margin-bottom: 18px;
-  color: #ffffff;
+  font-size: 3rem;
+  margin-bottom: 22px;
+  color: #0c3765;
 }
 
+/* ===== Number ===== */
 .stat-value {
-  font-size: 2.3rem;
+  font-size: 2.8rem;
   font-weight: 800;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  color: #0c3765;
 }
 
+/* ===== Label ===== */
 .stat-label {
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 14px;
 }
 
+/* ===== Description ===== */
 .stat-description {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #f1f5f9;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #4a6785;
 }
 
 /* ===== Animation ===== */
-@keyframes floatSoft {
-  0% { transform: translateY(10px); }
-  50% { transform: translateY(0); }
-  100% { transform: translateY(10px); }
+@keyframes floatPulse {
+  0% {
+    transform: translateY(10px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .stats-section {
-    margin-top: -180px;
-    padding: 90px 16px 80px;
+    padding: 90px 20px 80px;
   }
 
   .section-title {
-    font-size: 2.1rem;
+    font-size: 2.2rem;
   }
 
   .section-subtitle {
-    font-size: 1rem;
-    margin-bottom: 55px;
+    font-size: 1.05rem;
+    margin-bottom: 60px;
   }
 
   .stats-grid {
-    gap: 28px;
+    gap: 35px;
+  }
+
+  .stat-card {
+    padding: 35px 26px;
+  }
+
+  .stat-value {
+    font-size: 2.3rem;
   }
 }
