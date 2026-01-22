@@ -1,19 +1,19 @@
-/* Hero Section */
+/* ===== Hero Section ===== */
 .hero {
   position: relative;
   color: white;
-  padding: 8rem 1rem;
+  padding: 8rem 1rem 14rem; /* extra bottom space for stats */
+  min-height: 110vh; /* extend background downward */
   text-align: center;
-  min-height: 80vh;
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: heroCarousel 24s infinite ease-in-out;
 }
 
-/* 🎞️ Hero Background Carousel */
+/* 🎞️ Hero Background (single image) */
 @keyframes heroCarousel {
   0%, 100% {
     background-image:
@@ -26,6 +26,8 @@
 .hero-content {
   max-width: 820px;
   padding: 0 1rem;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-title {
@@ -45,4 +47,16 @@
   gap: 1.5rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 6rem 1rem 12rem;
+    min-height: 100vh;
+  }
+
+  .hero-title {
+    font-size: 2.2rem;
+  }
 }
