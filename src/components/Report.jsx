@@ -133,7 +133,7 @@ const Report = ({ setShowSuccessModal }) => {
                 <option value="cattle">Cattle Theft</option>
                 <option value="land">Land Dispute</option>
                 <option value="water">Water Conflict</option>
-                <option value="domestic">Domestic Violence</option>
+                <option value="domestic">Domestic Gender-based Violence</option>
                 <option value="other">Other</option>
               </select>
             </div>
