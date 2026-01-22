@@ -10,8 +10,7 @@ const Home = ({ setShowTestimonyModal, setShowSuccessModal }) => {
       <div className="hero-content">
         <h1 className="hero-title">BUILDING LASTING PEACE IN COMMNUNITIES</h1>
         <p className="hero-description">
-          Report incidents, share stories, and connect with peace actors to create safer, 
-          more harmonious communities across Kenya and East Africa.
+          Report incidents, including gender-based violence, share stories, and connect with peace actors to foster safer, more inclusive, and harmonious communities across Kenya and East Africa.
         </p>
         <div className="hero-buttons">
           <button 
