@@ -1,126 +1,115 @@
 /* ===== Stats Section ===== */
 .stats-section {
-  padding: 130px 40px 110px; /* increased spacing */
-  background: transparent; /* use homepage background */
-  color: #0c3765;
+  padding: 120px 40px 100px;
+  background:
+    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+    url('https://raw.githubusercontent.com/BOBWANDATI/images/main/hassan-kibwana-NpR4U2GCwVA-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
 }
 
 /* ===== Titles ===== */
 .section-title {
   text-align: center;
-  font-size: 3rem;
+  font-size: 2.6rem;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .section-subtitle {
   text-align: center;
-  font-size: 1.2rem;
-  max-width: 760px;
-  margin: 0 auto 90px; /* more bottom spacing */
+  font-size: 1.1rem;
+  max-width: 720px;
+  margin: 0 auto 80px;
   line-height: 1.7;
-  color: #345a8a;
+  color: #e2e8f0;
 }
 
-/* ===== Stats Grid ===== */
+/* ===== Grid ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 55px; /* increased gap */
-  max-width: 1500px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 45px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px;
 }
 
-/* ===== Stat Card (Standalone / Floating) ===== */
+/* ===== Stat Card (Smaller & Clean) ===== */
 .stat-card {
-  background: rgba(255, 255, 255, 0.08); /* no white block */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 45px 35px;
-  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 32px 26px; /* reduced size */
+  border-radius: 18px;
   text-align: center;
   box-shadow:
-    0 20px 40px rgba(12, 55, 101, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  animation: floatPulse 5s ease-in-out infinite;
+    0 14px 30px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  animation: floatSoft 6s ease-in-out infinite;
 }
 
-/* ===== Hover Effect ===== */
+/* Hover */
 .stat-card:hover {
-  transform: translateY(-14px);
+  transform: translateY(-10px);
   box-shadow:
-    0 28px 55px rgba(12, 55, 101, 0.28),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    0 22px 45px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
-/* ===== Icon ===== */
+/* Icon */
 .stat-icon {
-  font-size: 3rem;
-  margin-bottom: 22px;
-  color: #0c3765;
+  font-size: 2.4rem;
+  margin-bottom: 18px;
+  color: #ffffff;
 }
 
-/* ===== Number ===== */
+/* Value */
 .stat-value {
-  font-size: 2.8rem;
+  font-size: 2.3rem;
   font-weight: 800;
-  margin-bottom: 14px;
-  color: #0c3765;
+  margin-bottom: 10px;
+  color: #ffffff;
 }
 
-/* ===== Label ===== */
+/* Label */
 .stat-label {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
-/* ===== Description ===== */
+/* Description */
 .stat-description {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: #4a6785;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #e5e7eb;
 }
 
-/* ===== Animation ===== */
-@keyframes floatPulse {
-  0% {
-    transform: translateY(10px);
-  }
-  50% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(10px);
-  }
+/* Animation */
+@keyframes floatSoft {
+  0% { transform: translateY(8px); }
+  50% { transform: translateY(0); }
+  100% { transform: translateY(8px); }
 }
 
-/* ===== Responsive ===== */
-@media screen and (max-width: 768px) {
+/* Responsive */
+@media (max-width: 768px) {
   .stats-section {
     padding: 90px 20px 80px;
   }
 
   .section-title {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
   }
 
   .section-subtitle {
-    font-size: 1.05rem;
+    font-size: 1rem;
     margin-bottom: 60px;
   }
 
   .stats-grid {
-    gap: 35px;
-  }
-
-  .stat-card {
-    padding: 35px 26px;
-  }
-
-  .stat-value {
-    font-size: 2.3rem;
+    gap: 30px;
   }
 }
