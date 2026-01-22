@@ -1,6 +1,6 @@
 /* ===== Stats Section ===== */
 .stats-section {
-  padding: 100px 30px 80px;
+  padding: 80px 30px 65px; /* Reduced bottom & top for balance */
   background: linear-gradient(135deg, #eef4fb, #f7f9fc);
   color: #0c3765;
 }
@@ -8,16 +8,16 @@
 /* ===== Titles ===== */
 .section-title {
   text-align: center;
-  font-size: 2.8rem;
+  font-size: 2.6rem;
   font-weight: 700;
-  margin-bottom: 5px;
+  margin-bottom: 10px; /* Improved separation */
 }
 
 .section-subtitle {
   text-align: center;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   max-width: 720px;
-  margin: 0 auto 70px;
+  margin: 0 auto 55px; /* Reduced from 70px */
   line-height: 1.6;
   color: #345a8a;
 }
@@ -26,52 +26,52 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 40px;
+  gap: 36px; /* Slightly tighter grid spacing */
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* ===== Stat Card (Standalone) ===== */
+/* ===== Stat Card ===== */
 .stat-card {
   background: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(240, 246, 255, 0.85)
+    rgba(255, 255, 255, 0.92),
+    rgba(240, 246, 255, 0.88)
   );
-  padding: 40px 30px;
+  padding: 36px 28px; /* Reduced for compact elegance */
   border-radius: 18px;
   text-align: center;
-  box-shadow: 0 15px 35px rgba(12, 55, 101, 0.12);
+  box-shadow: 0 14px 32px rgba(12, 55, 101, 0.12);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   animation: floatPulse 4s ease-in-out infinite;
 }
 
 /* ===== Hover Effect ===== */
 .stat-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 22px 45px rgba(12, 55, 101, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 22px 45px rgba(12, 55, 101, 0.18);
 }
 
 /* ===== Icon ===== */
 .stat-icon {
-  font-size: 2.8rem;
-  margin-bottom: 20px;
+  font-size: 2.6rem;
+  margin-bottom: 16px;
   color: #0c3765;
 }
 
 /* ===== Number ===== */
 .stat-value {
-  font-size: 2.6rem;
+  font-size: 2.4rem;
   font-weight: 800;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: #0c3765;
 }
 
 /* ===== Label ===== */
 .stat-label {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 /* ===== Description ===== */
@@ -84,20 +84,20 @@
 /* ===== Animation ===== */
 @keyframes floatPulse {
   0% {
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   50% {
     transform: translateY(0);
   }
   100% {
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
 }
 
 /* ===== Responsive ===== */
 @media screen and (max-width: 768px) {
   .stats-section {
-    padding: 70px 20px;
+    padding: 65px 20px 55px;
   }
 
   .section-title {
@@ -106,14 +106,14 @@
 
   .section-subtitle {
     font-size: 1rem;
-    margin-bottom: 50px;
+    margin-bottom: 45px;
   }
 
   .stat-card {
-    padding: 30px 22px;
+    padding: 28px 22px;
   }
 
   .stat-value {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
   }
 }
