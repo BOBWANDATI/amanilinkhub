@@ -1,18 +1,17 @@
 /* ===== Stats Section ===== */
 .stats-section {
+  position: relative;
+  margin-top: -220px; /* pull stats into hero background */
   padding: 120px 40px 100px;
-  background:
-    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-    url('https://raw.githubusercontent.com/BOBWANDATI/images/main/hassan-kibwana-NpR4U2GCwVA-unsplash.jpg');
-  background-size: cover;
-  background-position: center;
+  background: transparent; /* SAME image continues */
   color: #ffffff;
+  z-index: 3;
 }
 
 /* ===== Titles ===== */
 .section-title {
   text-align: center;
-  font-size: 2.6rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 14px;
 }
@@ -23,25 +22,25 @@
   max-width: 720px;
   margin: 0 auto 80px;
   line-height: 1.7;
-  color: #e2e8f0;
+  color: #e5e7eb;
 }
 
 /* ===== Grid ===== */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 45px;
+  gap: 40px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* ===== Stat Card (Smaller & Clean) ===== */
+/* ===== Stat Cards (smaller & standalone) ===== */
 .stat-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding: 32px 26px; /* reduced size */
-  border-radius: 18px;
+  padding: 30px 24px;
+  border-radius: 16px;
   text-align: center;
   box-shadow:
     0 14px 30px rgba(0, 0, 0, 0.35),
@@ -58,29 +57,25 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
-/* Icon */
+/* Content */
 .stat-icon {
-  font-size: 2.4rem;
-  margin-bottom: 18px;
+  font-size: 2.3rem;
+  margin-bottom: 16px;
   color: #ffffff;
 }
 
-/* Value */
 .stat-value {
-  font-size: 2.3rem;
+  font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 10px;
-  color: #ffffff;
 }
 
-/* Label */
 .stat-label {
   font-size: 1.05rem;
   font-weight: 600;
   margin-bottom: 10px;
 }
 
-/* Description */
 .stat-description {
   font-size: 0.95rem;
   line-height: 1.6;
@@ -97,6 +92,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .stats-section {
+    margin-top: -180px;
     padding: 90px 20px 80px;
   }
 
