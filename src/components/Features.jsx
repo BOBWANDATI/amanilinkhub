@@ -39,7 +39,7 @@ const Features = ({ setShowUSSDModal, setShowSuccessModal }) => {
               <br />
               Our mission is to bridge communication gaps, amplify marginalized voices, and support
               sustainable peacebuilding efforts across diverse regions. Whether you're a youth leader,
-              community elder, NGO, or simply a concerned citizen, The Peace AMANILINK Hub empowers you to be
+              community elder, NGO, or simply a concerned citizen, AMANILINK Hub empowers you to be
               an active part of conflict prevention and resolution. Together, we envision a connected society
               where peace is not just a goal, but a shared responsibility and everyday reality.
             </p>
