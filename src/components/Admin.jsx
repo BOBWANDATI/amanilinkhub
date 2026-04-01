@@ -6,11 +6,11 @@ import { io } from 'socket.io-client';
 //chnages made 01/04/2026
 const BASE_URL = 'https://backend-m6u3.onrender.com';
 
-const socket = io(BASE_URL, {
-  path: "/socket.io", // ensures correct endpoint
-  transports: ["websocket"],
-  withCredentials: true
-});
+// const socket = io(BASE_URL, {
+//   path: "/socket.io", // ensures correct endpoint
+//   transports: ["websocket"],
+//   withCredentials: true
+// });
 
 
 //const BASE_URL = 'https://backend-m6u3.onrender.com';
@@ -19,6 +19,11 @@ const socket = io(BASE_URL, {
  // transports: ["websocket"], // 🔥 disables polling (your main error)
  // withCredentials: true
 //});
+
+const socket = io(BASE_URL, {
+  transports: ["websocket", "polling"],
+  withCredentials: true
+});
 
 const Admin = () => {
   // Authentication states
