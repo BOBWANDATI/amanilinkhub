@@ -5,7 +5,11 @@ import '../components/styles/SuperAdminDashboard.css';
 import { io } from 'socket.io-client';
 
 const BASE_URL = 'https://backend-m6u3.onrender.com';
-const socket = io(BASE_URL);
+//const socket = io(BASE_URL);
+const socket = io(BASE_URL, {
+  transports: ["websocket"], // 🔥 disables polling (your main error)
+  withCredentials: true
+});
 
 const Admin = () => {
   // Authentication states
